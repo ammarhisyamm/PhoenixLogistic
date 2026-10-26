@@ -35,6 +35,7 @@ Content to confirm with the business:
 
 - Colours: Phoenix red `#e31b24`, charcoal `#232022` / `#3f3c3d`, warm stone `#f5f2f1`, white.
 - Type: two fonts only. Oswald Bold for headlines and big numbers, Inter for everything else (Regular for body, Medium for buttons and labels). Both load from Google Fonts. Chinese text falls back to the system CJK font (PingFang SC, Microsoft YaHei), since neither font has Chinese glyphs.
+- Motion: one entrance style (fade + 24px rise on a strong ease-out), photos unveil on scroll, big numbers count up once. All of it switches off for visitors who ask for reduced motion.
 - Logo: `assets/img/logo.png` (light backgrounds) and `assets/img/logo-white.png` (dark backgrounds), both cut from the supplied logo PDF.
 
 ## Structure

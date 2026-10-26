@@ -62,6 +62,66 @@
   function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
+  /* Scroll reveals and count-ups. Skipped entirely for reduced motion or old browsers,
+     so content is never hidden unless we can bring it back. */
+  var motionOk = window.matchMedia('(prefers-reduced-motion: no-preference)').matches && 'IntersectionObserver' in window;
+  if (motionOk) {
+    document.documentElement.classList.add('js');
+
+    var mark = function (sel, cls, stagger) {
+      $all(sel).forEach(function (el) {
+        el.classList.add(cls);
+        if (stagger) {
+          var i = Array.prototype.indexOf.call(el.parentNode.children, el);
+          el.style.setProperty('--d', Math.min(i, 6) * 70 + 'ms');
+        }
+      });
+    };
+    mark('.section-head, .track-panel, .carrier-sheet, .prose, .quote-callout, .quote-form, .contact-card, .bridge-route, .cta-band .wrap > *', 'reveal');
+    mark('.services > *, .process > *, .fleet-list > *, .industries > *, .checks > li, .track-steps > li, .timeline > li, .bridge-list > li, .amazon-figures > *', 'reveal', true);
+    mark('.quality-photo, .about-photo, .cap-photo', 'reveal-img', true);
+
+    var revealer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        el.classList.add('is-in');
+        revealer.unobserve(el);
+        // Hand the element back to its own hover transitions once it has landed
+        if (el.classList.contains('reveal')) {
+          setTimeout(function () { el.classList.remove('reveal', 'is-in'); el.style.removeProperty('--d'); }, 900 + (parseInt(el.style.getPropertyValue('--d'), 10) || 0));
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    $all('.reveal, .reveal-img').forEach(function (el) { revealer.observe(el); });
+
+    /* Big numbers count up from zero the first time they're seen */
+    var countUp = function (el) {
+      var node = el.firstChild;
+      if (!node || node.nodeType !== 3) return;
+      var raw = node.nodeValue, m = raw.match(/[\d,]+/);
+      if (!m) return;
+      var target = parseInt(m[0].replace(/,/g, ''), 10), start = null;
+      var fmt = function (n) { return raw.replace(m[0], n.toLocaleString('en-AU')); };
+      node.nodeValue = fmt(0);
+      var tick = function (t) {
+        if (start === null) start = t;
+        var p = Math.min((t - start) / 1400, 1);
+        node.nodeValue = fmt(Math.round(target * (1 - Math.pow(1 - p, 4))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    var counter = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        countUp(e.target);
+        counter.unobserve(e.target);
+      });
+    }, { threshold: 0.6 });
+    $all('.proof__num, .fleet-item strong, .amazon-figures strong').forEach(function (el) { counter.observe(el); });
+  }
+
   /* Header: shadow on scroll, mobile menu */
   var header = $('.site-header');
   var menuBtn = $('.menu-btn');
@@ -91,6 +151,7 @@
       var panel = document.getElementById(t.getAttribute('aria-controls'));
       if (panel) panel.hidden = !on;
     });
+    tab.parentNode.style.setProperty('--i', tabs.indexOf(tab));
     if (focus) tab.focus();
   }
   tabs.forEach(function (tab, i) {
