@@ -62,11 +62,28 @@
   function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
-  /* Header: shadow on scroll, mobile menu */
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* Header: transparent over the hero, solid after it; hides while scrolling
+     down and comes back as soon as you scroll up. */
   var header = $('.site-header');
   var menuBtn = $('.menu-btn');
-  function onScroll() { if (header) header.classList.toggle('is-scrolled', window.scrollY > 8); }
+  var hero = $('.hero');
+  var lastY = window.scrollY;
+  function onScroll() {
+    if (!header) return;
+    var y = window.scrollY;
+    var heroEnd = hero ? hero.offsetHeight - header.offsetHeight : 0;
+    var open = header.classList.contains('is-open');
+    header.classList.toggle('is-over', !!hero && y < heroEnd - 40 && !open);
+    var goingDown = y > lastY + 4, goingUp = y < lastY - 4;
+    if (open || y < heroEnd) header.classList.remove('is-hidden');
+    else if (goingDown) header.classList.add('is-hidden');
+    else if (goingUp) header.classList.remove('is-hidden');
+    lastY = y;
+  }
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
   onScroll();
 
   function setMenu(open) {
@@ -74,6 +91,7 @@
     header.classList.toggle('is-open', open);
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? T.closeMenu : T.openMenu);
+    onScroll();
   }
   if (menuBtn) {
     menuBtn.addEventListener('click', function () { setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'); });
@@ -81,9 +99,11 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
   }
 
-  /* Tabs in the hero card */
+  /* Tabs in the quick tools bar; the indicator slides via data-active */
   var tabs = $all('[role="tab"]');
   function selectTab(tab, focus) {
+    var list = tab.closest('[role="tablist"]');
+    if (list) list.setAttribute('data-active', String(tabs.indexOf(tab)));
     tabs.forEach(function (t) {
       var on = t === tab;
       t.setAttribute('aria-selected', String(on));
@@ -174,7 +194,7 @@
       $('#q-to').value = $('#qq-to').value;
       var type = $('#qq-type');
       setQuoteType(type.options[type.selectedIndex].value);
-      $('#quote').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      $('#quote').scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth' });
       setTimeout(function () { $('#q-qty').focus({ preventScroll: true }); }, 450);
     });
   }
@@ -221,7 +241,7 @@
           '<div class="notice"><strong>' + esc(lead || T.mailTitle) + '</strong>' + esc(T.mailBody) +
           '<div class="copy-row"><code>' + esc(CONFIG.email) + '</code>' +
           '<button class="copy-btn" type="button" data-copy="' + esc(CONFIG.email) + '">' + esc(T.copy) + '</button></div>' +
-          '<pre id="quote-summary" style="white-space:pre-wrap;font:0.85rem/1.5 var(--mono);background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px;margin:12px 0 0">' + esc(summary) + '</pre>' +
+          '<pre id="quote-summary" style="white-space:pre-wrap;font:0.85rem/1.5 var(--body);background:#fff;border:1px solid var(--line);border-radius:4px;padding:10px;margin:12px 0 0">' + esc(summary) + '</pre>' +
           '<div class="copy-row"><a class="btn btn--sm" href="' + esc(mailto) + '">' + esc(T.openMail) + '</a>' +
           '<button class="copy-btn" type="button" data-copy="#quote-summary">' + esc(T.copyDetails) + '</button></div></div>';
         result.querySelector('.notice').scrollIntoView({ block: 'nearest' });
@@ -241,6 +261,42 @@
         showMailFallback();
       }
     });
+  }
+
+  /* Scroll reveals. Elements that come into view together are staggered by
+     their order in that batch, so nothing waits on items far off screen. */
+  var revealables = $all('[data-reveal], [data-reveal-media]');
+  function countUp(el) {
+    var target = el.textContent.trim();
+    var end = parseInt(target.replace(/,/g, ''), 10);
+    if (!end || reduceMotion.matches) return;
+    var useComma = target.indexOf(',') > -1;
+    var start = null, dur = 1400;
+    function fmt(n) { return useComma ? n.toLocaleString('en-AU') : String(n); }
+    function frame(t) {
+      if (start === null) start = t;
+      var p = Math.min((t - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 4);
+      el.textContent = fmt(Math.round(end * eased));
+      if (p < 1) requestAnimationFrame(frame); else el.textContent = target;
+    }
+    el.textContent = fmt(0);
+    requestAnimationFrame(frame);
+  }
+  function reveal(el, i) {
+    el.style.setProperty('--i', String(Math.min(i, 6)));
+    el.classList.add('is-in');
+    $all('[data-count]', el).concat(el.hasAttribute('data-count') ? [el] : []).forEach(countUp);
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      var batch = entries.filter(function (e) { return e.isIntersecting; }).map(function (e) { return e.target; });
+      batch.sort(function (a, b) { return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1; });
+      batch.forEach(function (el, i) { reveal(el, i); io.unobserve(el); });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    revealables.forEach(function (el) { io.observe(el); });
+  } else {
+    revealables.forEach(function (el) { el.classList.add('is-in'); });
   }
 
   var y = $('[data-year]');
