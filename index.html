@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phoenix Global Logistics</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Australian family-owned freight and logistics: road freight, warehousing and 3PL, Amazon FBA, international freight, customs and last-mile delivery from Sydney and Melbourne.">
+<meta property="og:title" content="Phoenix Global Logistics">
+<meta property="og:description" content="Family-owned Australian freight and logistics. From the container to the doorstep, handled with care.">
+<meta property="og:image" content="assets/img/hero-dock.jpg">
+<meta name="theme-color" content="#e31b24">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="alternate" hreflang="zh-Hans" href="zh/index.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header" id="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Phoenix Global Logistics, back to top">
+      <img src="assets/img/logo.png" alt="Phoenix Global Logistics" width="560" height="475">
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#process">How it works</a>
+      <a href="#amazon">Amazon FBA</a>
+      <a href="#quality">Quality</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <div class="nav-mobile-extra">
+        <a class="btn btn--sm" href="#quote">Get a quote</a>
+        <a class="btn btn--sm btn--ghost" href="#track">Track</a>
+        <a class="lang" href="zh/index.html" lang="zh-Hans">中文</a>
+      </div>
+    </nav>
+    <div class="header-actions">
+      <a class="lang" href="zh/index.html" lang="zh-Hans" hreflang="zh-Hans">中文</a>
+      <a class="btn btn--sm btn--ghost" href="#track">Track</a>
+      <a class="btn btn--sm" href="#quote">Get a quote</a>
+    </div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span></button>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__media">
+    <img src="assets/img/hero-dock.jpg" alt="" width="1366" height="1024" fetchpriority="high">
+  </div>
+  <div class="wrap">
+    <div class="hero__copy">
+      <span class="eyebrow">Family-owned · Australian · Since 2021</span>
+      <h1 class="display" id="hero-title">Freight handled<br>like it’s <span class="accent">our own.</span></h1>
+      <p class="lede">From the container to the customer’s door, we unload, check, store, ship and deliver your freight across Australia, with a team that picks up the phone and knows where your goods are.</p>
+      <div class="hero__ctas">
+        <a class="btn" href="#quote">Get a quote</a>
+        <a class="btn btn--ghost" href="#services">See our services</a>
+      </div>
+      <div class="hero__meta">
+        <span>Sydney &amp; Melbourne</span>
+        <span>Australia-wide network</span>
+        <span>Strong China connections</span>
+      </div>
+    </div>
+
+    <!-- Quick tools: styled like a consignment label -->
+    <div class="label-card" id="quick">
+      <div class="label-card__top"><span>Phoenix · Quick tools</span><span aria-hidden="true">PGL</span></div>
+      <div class="tabs" role="tablist" aria-label="Quick tools">
+        <button class="tab" role="tab" id="tab-track" aria-selected="true" aria-controls="panel-track" type="button">Track a shipment</button>
+        <button class="tab" role="tab" id="tab-quote" aria-selected="false" aria-controls="panel-quote" type="button" tabindex="-1">Quick quote</button>
+      </div>
+      <form class="tab-panel" role="tabpanel" id="panel-track" aria-labelledby="tab-track" data-track-form novalidate>
+        <div class="field">
+          <label for="hero-con">Consignment number</label>
+          <input class="input input--mono" id="hero-con" name="consignment" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="e.g. PGL000123456">
+          <span class="hint">It’s on your booking confirmation or the tracking email we sent you.</span>
+        </div>
+        <button class="btn" type="submit">Track shipment</button>
+        <div class="track-msg" aria-live="polite"></div>
+      </form>
+      <form class="tab-panel" role="tabpanel" id="panel-quote" aria-labelledby="tab-quote" hidden data-quick-quote novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="qq-from">Pick-up suburb</label>
+            <input class="input" id="qq-from" name="from" type="text" placeholder="Wetherill Park NSW">
+          </div>
+          <div class="field">
+            <label for="qq-to">Delivery suburb</label>
+            <input class="input" id="qq-to" name="to" type="text" placeholder="Dandenong VIC">
+          </div>
+          <div class="field span-2">
+            <label for="qq-type">What are you sending?</label>
+            <select class="input" id="qq-type" name="type">
+              <option>Pallets</option>
+              <option>Cartons</option>
+              <option>Full container (20ft / 40ft)</option>
+              <option>Amazon FBA shipment</option>
+              <option>Something else</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" type="submit">Continue to quote</button>
+      </form>
+      <div class="barcode" aria-hidden="true"></div>
+      <div class="label-card__foot" aria-hidden="true"><span>SYD · MEL · AUS</span><span>Handle with care</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF STRIP -->
+<section class="proof" aria-label="Phoenix at a glance">
+  <div class="wrap">
+    <div class="proof__item proof__item--badge">
+      <div class="proof__badge">
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 2.2 3.4-.4.9 3.3 3 1.7-1.3 3.2 1.3 3.2-3 1.7-.9 3.3-3.4-.4L12 22l-2.6-2.2-3.4.4-.9-3.3-3-1.7L3.4 12 2.1 8.8l3-1.7.9-3.3 3.4.4z"/><path d="M8.5 12.2l2.4 2.4 4.8-5"/></svg></span>
+        <div><strong>Listed by Amazon Australia as a third-party carrier</strong><span>For small-parcel deliveries into fulfilment centres in NSW, QLD &amp; VIC</span></div>
+      </div>
+    </div>
+    <div class="proof__item"><span class="proof__num">55,000</span><span class="proof__label">boxes processed a month for Amazon work alone</span></div>
+    <div class="proof__item"><span class="proof__num">600</span><span class="proof__label">containers unloaded a year, about 50 a month</span></div>
+    <div class="proof__item"><span class="proof__num">20<small>+</small></span><span class="proof__label">years of logistics experience behind the business</span></div>
+    <div class="proof__item"><span class="proof__num">12</span><span class="proof__label">owned vehicles, plus 20+ subcontracted trucks</span></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section" id="services" aria-labelledby="services-title">
+  <div class="wrap">
+    <div class="section-head section-head--split">
+      <div style="display:grid;gap:18px">
+        <span class="eyebrow">What we do</span>
+        <h2 class="display" id="services-title">One partner for<br>every leg of the trip</h2>
+      </div>
+      <p class="lede">Most freight changes hands four or five times between the port and the customer. We can handle all of it, or just the part you need, so there are fewer handovers and one team who knows the whole story.</p>
+    </div>
+
+    <div class="services">
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 12h24v22H4zM28 19h8l7 7v8H28z"/><circle cx="12" cy="36" r="4" fill="#fff"/><circle cx="36" cy="36" r="4" fill="#fff"/></svg></div>
+        <h3>Transport &amp; road freight</h3>
+        <p>Local runs, interstate freight, national linehaul and contracted transport on our own trucks and a trusted operator network.</p>
+        <ul><li>Metro</li><li>Interstate</li><li>Linehaul</li></ul>
+      </article>
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 18L24 6l20 12v24H4z"/><path d="M12 42V24h24v18M12 30h24M12 36h24"/></svg></div>
+        <h3>Warehousing &amp; 3PL</h3>
+        <p>Receiving, storage, sorting, inventory handling and distribution from our depots, scanned in and out at every move.</p>
+        <ul><li>Storage</li><li>Pick &amp; pack</li><li>Distribution</li></ul>
+      </article>
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M6 14l18-8 18 8v20l-18 8-18-8z"/><path d="M6 14l18 8 18-8M24 22v20"/><path d="M14 33c6 4 14 4 20 0"/><path d="M31 31l3 2-2 3"/></svg></div>
+        <h3>Amazon FBA logistics</h3>
+        <p>High-volume shipments prepared to Amazon’s inbound rules: received, sorted, processed and delivered to fulfilment centres.</p>
+        <ul><li>Prep</li><li>Labelling checks</li><li>FC delivery</li></ul>
+      </article>
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M6 24h36M24 6c6 6 6 30 0 36M24 6c-6 6-6 30 0 36"/></svg></div>
+        <h3>International freight</h3>
+        <p>Import and export by air and sea, with partners in China and worldwide coordinating the shipment door to door.</p>
+        <ul><li>Air</li><li>Sea FCL / LCL</li><li>Import / export</li></ul>
+      </article>
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 4h18l8 8v32H12z"/><path d="M30 4v8h8M18 22h14M18 29h14M18 36h8"/></svg></div>
+        <h3>Customs clearance</h3>
+        <p>We help coordinate clearance paperwork for your international shipments so freight isn’t left waiting at the border.</p>
+        <ul><li>Documents</li><li>Coordination</li></ul>
+      </article>
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44s14-12 14-24a14 14 0 10-28 0c0 12 14 24 14 24z"/><path d="M18 18l6-3 6 3v7l-6 3-6-3z"/></svg></div>
+        <h3>Parcel &amp; last-mile delivery</h3>
+        <p>From our depot to the final address, with a signature captured on delivery as proof.</p>
+        <ul><li>Signature on delivery</li><li>Tracking</li></ul>
+      </article>
+      <article class="service">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 10h40v28H4z"/><path d="M12 10v28M20 10v28M28 10v28M36 10v28"/></svg></div>
+        <h3>Container unloading</h3>
+        <p>Containers unloaded, cartons and pallets handled, freight checked against the manifest and readied for the next leg.</p>
+        <ul><li>20ft / 40ft</li><li>Loose &amp; palletised</li></ul>
+      </article>
+      <article class="service service--dg">
+        <div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M24 3l21 21-21 21L3 24z"/><path d="M26 14l-6 11h8l-6 11"/></svg></div>
+        <h3>Dangerous goods</h3>
+        <p>We can move certain dangerous goods, mainly battery-related products. Tell us what you’re shipping and we’ll confirm what’s needed.</p>
+        <ul><li>Lithium batteries</li><li>Case by case</li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section section--stone" id="process" aria-labelledby="process-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2 class="display" id="process-title">From the container<br>to the doorstep</h2>
+      <p class="lede">Every shipment follows the same steps, and each one leaves a record you can check.</p>
+    </div>
+    <ol class="process">
+      <li class="step">
+        <div class="step__marker"><span class="step__num">01</span><span class="step__line"></span></div>
+        <span class="step__scan">Office</span>
+        <h3>Documents in</h3>
+        <p>Our admin team receives your import documents and plans for the arrival.</p>
+      </li>
+      <li class="step">
+        <div class="step__marker"><span class="step__num">02</span><span class="step__line"></span></div>
+        <span class="step__scan">Collection</span>
+        <h3>We collect it</h3>
+        <p>When the container or air freight lands, we bring it into the right depot.</p>
+      </li>
+      <li class="step">
+        <div class="step__marker"><span class="step__num">03</span><span class="step__line"></span></div>
+        <span class="step__scan">Unload &amp; check</span>
+        <h3>Unloaded and checked</h3>
+        <p>Cartons, loose cargo and pallets are sorted and checked against the manifest.</p>
+      </li>
+      <li class="step">
+        <div class="step__marker"><span class="step__num">04</span><span class="step__line"></span></div>
+        <span class="step__scan">Consignment</span>
+        <h3>Booked into the system</h3>
+        <p>Each shipment gets its own consignment number and tracking link.</p>
+      </li>
+      <li class="step">
+        <div class="step__marker"><span class="step__num">05</span><span class="step__line"></span></div>
+        <span class="step__scan">Depot in · Depot out</span>
+        <h3>Scanned at every move</h3>
+        <p>Warehouse scans record each movement before drivers load for delivery.</p>
+      </li>
+      <li class="step">
+        <div class="step__marker"><span class="step__num">06</span><span class="step__line"></span></div>
+        <span class="step__scan">POD</span>
+        <h3>Signed for</h3>
+        <p>The receiver signs on delivery, and that proof is attached to your consignment.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- TRACKING -->
+<section class="section" id="track" aria-labelledby="track-title">
+  <div class="wrap track-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">Tracking</span>
+        <h2 class="display" id="track-title">Know where your<br>freight is, any time</h2>
+        <p class="lede">Every consignment is tracked in Transvirtual, our transport management system, so you can check progress yourself instead of waiting on a reply.</p>
+      </div>
+      <ol class="track-steps">
+        <li><span class="n">1</span><div><h3>Get your consignment number</h3><p>We send it with your booking confirmation, or as a tracking link by email.</p></div></li>
+        <li><span class="n">2</span><div><h3>Enter it here or open your link</h3><p>You’ll see each scan as your freight moves through our depots and onto the truck.</p></div></li>
+        <li><span class="n">3</span><div><h3>See proof of delivery</h3><p>Once it’s delivered, the receiver’s signature is available on the same record.</p></div></li>
+      </ol>
+      <p style="margin-top:28px;color:var(--muted);font-size:.97rem">Prefer to talk to someone? We still work over email and WeChat for jobs that need it.</p>
+    </div>
+
+    <div class="track-panel">
+      <form class="track-panel__form" data-track-form novalidate>
+        <div class="field">
+          <label for="track-con">Consignment number</label>
+          <div class="input-row">
+            <input class="input input--mono" id="track-con" name="consignment" type="text" autocomplete="off" spellcheck="false" placeholder="e.g. PGL000123456">
+            <button class="btn" type="submit">Track</button>
+          </div>
+        </div>
+        <div class="track-msg" aria-live="polite"></div>
+      </form>
+      <div class="track-panel__result" aria-label="Example of a tracking record">
+        <span class="example-tag">Example of what you’ll see</span>
+        <div class="consignment">
+          <span class="consignment__id">PGL000123456</span>
+          <span class="status-pill">Delivered</span>
+        </div>
+        <ol class="events">
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">Delivered · signed by J. Chen</div><div class="event__where">Dandenong South VIC</div></div><span class="event__when">Thu 10:42</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">Out for delivery</div><div class="event__where">Melbourne depot</div></div><span class="event__when">Thu 06:15</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">Depot in scan</div><div class="event__where">Melbourne depot</div></div><span class="event__when">Wed 19:30</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">Depot out scan · linehaul</div><div class="event__where">Wetherill Park NSW</div></div><span class="event__when">Tue 21:05</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">Checked and consigned · 12 cartons</div><div class="event__where">Wetherill Park NSW</div></div><span class="event__when">Tue 14:20</span></li>
+        </ol>
+        <div class="pod">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z"/><path d="M14 3v5h5M8 16c1.5-2 2.5-2 3 0s1.5 1 2.5-.5 2 .5 2.5.5"/></svg>
+          <span>Proof of delivery: signature and time stamp on the consignment record.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AMAZON -->
+<section class="section section--ink" id="amazon" aria-labelledby="amazon-title">
+  <div class="wrap amazon-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">Amazon FBA</span>
+        <h2 class="display" id="amazon-title">Built for <span class="accent">high&#8209;volume</span> FBA work</h2>
+        <p class="lede">Amazon stopped accepting self-delivered small-parcel shipments at its Australian fulfilment centres from 1 September 2025. Phoenix is one of the third-party carriers Amazon lists for those deliveries, alongside StarTrack and DHL Supply Chain.</p>
+      </div>
+      <div class="amazon-figures">
+        <div><strong>~50</strong><span>containers a month</span></div>
+        <div><strong>~1,100</strong><span>boxes per container</span></div>
+        <div><strong>55,000</strong><span>boxes processed a month</span></div>
+        <div><strong>660,000</strong><span>boxes a year at current volumes</span></div>
+      </div>
+      <p class="fineprint">Approximate figures for our Amazon work only, not the whole business. Amazon does not endorse any carrier.</p>
+      <div style="margin-top:28px"><a class="btn btn--light" href="#quote" data-quote-type="Amazon FBA shipment">Quote an FBA shipment</a></div>
+    </div>
+    <figure class="carrier-sheet" style="margin:0">
+      <img class="carrier-sheet__photo" src="assets/img/fba-pallets.jpg" alt="Rows of wrapped pallets of cartons ready for Amazon fulfilment centres" width="683" height="512" loading="lazy">
+      <figcaption class="carrier-sheet__body">
+        <h3>Third-party carriers for small-parcel deliveries</h3>
+        <p class="src">From Amazon Seller Central (AU), as published</p>
+        <div style="overflow-x:auto">
+          <table class="carrier-table">
+            <thead><tr><th scope="col">Carrier</th><th scope="col">Destination state</th></tr></thead>
+            <tbody>
+              <tr class="us"><td>Phoenix Global Logistics</td><td>NSW, QLD &amp; VIC</td></tr>
+              <tr><td>StarTrack</td><td>QLD, VIC &amp; WA</td></tr>
+              <tr><td>DHL Supply Chain</td><td>QLD, VIC &amp; WA</td></tr>
+              <tr><td>Innovative Logistics Services</td><td>NSW &amp; VIC</td></tr>
+              <tr><td>Border Express</td><td>NSW only</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- QUALITY -->
+<section class="section" id="quality" aria-labelledby="quality-title">
+  <div class="wrap quality-grid">
+    <figure class="quality-photo" style="margin:0">
+      <img src="assets/img/qc-pallets.jpg" alt="Pallets of cartons stretch-wrapped and sealed with red Phoenix tape" width="692" height="920" loading="lazy">
+      <figcaption>Wrapped, taped and checked before it leaves our floor.</figcaption>
+    </figure>
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">Quality control</span>
+        <h2 class="display" id="quality-title">We check it,<br>so it isn’t rejected</h2>
+        <p class="lede">Behind every shipment is a business that has put money and effort into its product. We treat it that way.</p>
+      </div>
+      <ul class="checks">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/></svg><div><h3>The Phoenix red QC table</h3><p>Freight is inspected on our quality-control table so damaged or mislabelled cartons are caught before they ship, not after.</p></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v10H4z"/><path d="M4 10h16M4 14h16"/></svg><div><h3>Machine wrapping</h3><p>Pallets are stretch-wrapped by machine for consistent, stable loads that survive the trip.</p></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6M12 4v4M5 12a7 7 0 1014 0 7 7 0 00-14 0z"/><path d="M12 12l3-2"/></svg><div><h3>Checked against the paperwork</h3><p>Counts and labels are checked against the manifest so fewer shipments bounce back with avoidable rejections.</p></div></li>
+      </ul>
+      <p class="quote-callout">“We know how frustrating logistics can be when answers are slow and you don’t know what’s happening with your freight. We want to make that easier.”</p>
+    </div>
+  </div>
+</section>
+
+<!-- CAPACITY -->
+<section class="section section--stone" id="capacity" aria-labelledby="capacity-title">
+  <div class="wrap">
+    <div class="section-head section-head--split">
+      <div style="display:grid;gap:18px">
+        <span class="eyebrow">Capacity</span>
+        <h2 class="display" id="capacity-title">Our own trucks,<br>our own team</h2>
+      </div>
+      <p class="lede">We run our own fleet and depots, with a wider network of operators we can call on when volumes spike. Big contracts and one-off jobs get the same people.</p>
+    </div>
+    <div class="capacity">
+      <div class="cap-photo cap-a"><img src="assets/img/transport-curtainsider.jpg" alt="Phoenix curtainsider truck loaded with wrapped pallets at a loading dock" width="1600" height="1200" loading="lazy"></div>
+      <div class="cap-photo cap-b"><img src="assets/img/fleet-vans.jpg" alt="Two white Phoenix-branded delivery vans" width="1024" height="768" loading="lazy"></div>
+      <div class="cap-photo cap-c"><img src="assets/img/warehouse-racking.jpg" alt="Warehouse racking stacked high with cartons" width="683" height="512" loading="lazy"></div>
+    </div>
+    <div class="fleet-list">
+      <div class="fleet-item"><strong>7</strong><span>heavy vehicles</span></div>
+      <div class="fleet-item"><strong>5</strong><span>vans and small trucks</span></div>
+      <div class="fleet-item"><strong>20+</strong><span>subcontracted truck operators on call</span></div>
+      <div class="fleet-item"><strong>18</strong><span>staff across office, warehouse and road</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="section" aria-labelledby="industries-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Who we work with</span>
+      <h2 class="display" id="industries-title">Trusted by retailers,<br>importers and sellers</h2>
+      <p class="lede">We move freight for retail and grocery suppliers, online sellers, importers and distributors, from a single pallet to a container a day.</p>
+    </div>
+    <ul class="industries">
+      <li>Retail &amp; supermarkets</li>
+      <li>E-commerce &amp; Amazon sellers</li>
+      <li>Food &amp; beverage</li>
+      <li>Cosmetics &amp; beauty</li>
+      <li>Solar &amp; batteries</li>
+      <li>Importers &amp; distributors</li>
+      <li>Wholesale</li>
+      <li>International trade</li>
+    </ul>
+    <!-- Client logos go here once each relationship is approved for public use. -->
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section section--stone" id="about" aria-labelledby="about-title">
+  <div class="wrap about-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:24px">
+        <span class="eyebrow">About us</span>
+        <h2 class="display" id="about-title">A family business,<br>20 years in the making</h2>
+      </div>
+      <div class="prose">
+        <p>Phoenix Global Logistics is run by a family that has spent more than two decades in freight. Before Phoenix, they ran Phoenix International Cargo for around 15 years and learned the industry the hard way: the mistakes, the lessons and what customers actually need.</p>
+        <p>We started Phoenix Global Logistics in 2021 to do it better and bigger. Today we have depots in Sydney and Melbourne, our own vehicles, a dedicated team and partners in China and around the world.</p>
+        <p>We’re growing, and we want to grow with businesses that value straight answers and freight that arrives in one piece.</p>
+      </div>
+      <ol class="timeline">
+        <li><span class="yr">Before 2021</span><div><h3>Phoenix International Cargo</h3><p>Around 15 years in freight forwarding and import logistics.</p></div></li>
+        <li><span class="yr">2021</span><div><h3>Phoenix Global Logistics founded</h3><p>A new business built on that experience, with a bigger vision.</p></div></li>
+        <li><span class="yr">2025</span><div><h3>Amazon third-party carrier</h3><p>Listed by Amazon for small-parcel deliveries into NSW, QLD and VIC fulfilment centres.</p></div></li>
+      </ol>
+    </div>
+    <figure class="about-photo" style="margin:0">
+      <img src="assets/img/depot-wetherill-park.jpg" alt="The Phoenix Global Logistics depot in Wetherill Park, Sydney" width="1600" height="1200" loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<!-- CHINA BRIDGE -->
+<section class="section section--red" id="china" aria-labelledby="china-title" lang="en-AU">
+  <div class="wrap bridge">
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">China ⇄ Australia</span>
+        <h2 class="display" id="china-title">Your Australian logistics partner</h2>
+        <p class="zh-title" lang="zh-Hans">您在澳大利亚值得信赖的物流伙伴</p>
+        <p class="lede">For manufacturers, exporters and forwarders in China, we’re the team on the ground in Australia: coordinating clearance, then unloading, storing and delivering your goods, with updates by WeChat and email.</p>
+      </div>
+      <div class="bridge-route" aria-hidden="true">
+        <span class="city"><b>CHINA</b>Origin</span>
+        <span class="path"></span>
+        <span class="city"><b>SYD · MEL</b>Delivered</span>
+      </div>
+      <div style="margin-top:32px;display:flex;flex-wrap:wrap;gap:12px">
+        <a class="btn btn--light" href="zh/index.html" lang="zh-Hans">查看中文页面</a>
+        <a class="btn btn--light" href="#contact" style="background:transparent;color:#fff">Talk to our team</a>
+      </div>
+    </div>
+    <ul class="bridge-list">
+      <li><b>Easy to reach</b><span>Updates by WeChat and email, so you’re never chasing your freight.</span><span class="zh" lang="zh-Hans">微信、邮件随时沟通</span></li>
+      <li><b>Air and sea import into Australia</b><span>We coordinate arrival, customs clearance and collection.</span><span class="zh" lang="zh-Hans">空运、海运进口及清关协调</span></li>
+      <li><b>Amazon FBA inbound</b><span>Your stock prepared and delivered to Amazon AU fulfilment centres.</span><span class="zh" lang="zh-Hans">亚马逊 FBA 头程入仓</span></li>
+      <li><b>Warehousing and national delivery</b><span>Stored in our depots and delivered anywhere in Australia.</span><span class="zh" lang="zh-Hans">仓储及澳洲全境派送</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- QUOTE + CONTACT -->
+<section class="section" id="quote" aria-labelledby="quote-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Get a quote</span>
+      <h2 class="display" id="quote-title">Tell us what’s moving</h2>
+      <p class="lede">A few details are enough for us to price it. The more you tell us, the sharper the quote.</p>
+    </div>
+    <div class="quote-grid">
+      <form class="quote-form" id="quote-form" novalidate>
+        <fieldset class="fieldset">
+          <legend>1 · The service</legend>
+          <div class="chips" role="group" aria-label="Services needed">
+            <label class="chip"><input type="checkbox" name="service" value="Road freight" checked><span>Road freight</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Warehousing / 3PL"><span>Warehousing / 3PL</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Amazon FBA"><span>Amazon FBA</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="International freight"><span>International freight</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Customs clearance"><span>Customs clearance</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Container unloading"><span>Container unloading</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Last-mile delivery"><span>Last-mile delivery</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Dangerous goods"><span>Dangerous goods</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend>2 · The freight</legend>
+          <div class="form-grid">
+            <div class="field"><label for="q-from">Pick-up location</label><input class="input" id="q-from" name="from" type="text" placeholder="Suburb, state or port" autocomplete="off"></div>
+            <div class="field"><label for="q-to">Delivery location</label><input class="input" id="q-to" name="to" type="text" placeholder="Suburb, state or Amazon FC" autocomplete="off"></div>
+            <div class="field"><label for="q-type">Freight type</label>
+              <select class="input" id="q-type" name="type">
+                <option>Pallets</option>
+                <option>Cartons</option>
+                <option>Full container (20ft / 40ft)</option>
+                <option>Amazon FBA shipment</option>
+                <option>Something else</option>
+              </select>
+            </div>
+            <div class="field"><label for="q-qty">Quantity</label><input class="input" id="q-qty" name="qty" type="text" placeholder="e.g. 8 pallets, 1 × 40ft"></div>
+            <div class="field"><label for="q-weight">Total weight (kg) <span class="hint">optional</span></label><input class="input" id="q-weight" name="weight" type="text" inputmode="decimal" placeholder="e.g. 4,200"></div>
+            <div class="field"><label for="q-when">Ready date <span class="hint">optional</span></label><input class="input" id="q-when" name="when" type="date"></div>
+            <div class="field span-2"><label for="q-notes">Anything else? <span class="hint">optional</span></label><textarea class="input" id="q-notes" name="notes" placeholder="Regular or one-off, tailgate needed, battery products, delivery windows…"></textarea></div>
+          </div>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend>3 · Your details</legend>
+          <div class="form-grid">
+            <div class="field"><label for="q-name">Name</label><input class="input" id="q-name" name="name" type="text" autocomplete="name" required></div>
+            <div class="field"><label for="q-company">Company</label><input class="input" id="q-company" name="company" type="text" autocomplete="organization"></div>
+            <div class="field"><label for="q-email">Email</label><input class="input" id="q-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="q-phone">Phone or WeChat <span class="hint">optional</span></label><input class="input" id="q-phone" name="phone" type="text" autocomplete="tel"></div>
+          </div>
+        </fieldset>
+        <div class="form-actions">
+          <p>We only use your details to reply to this request.</p>
+          <button class="btn" type="submit">Request my quote</button>
+        </div>
+        <div class="quote-result" aria-live="polite"></div>
+      </form>
+
+      <aside class="contact-card" id="contact" aria-labelledby="contact-title">
+        <h3 id="contact-title" class="display" style="font-size:2rem">Talk to us</h3>
+        <div class="contact-block">
+          <span class="k">Email</span>
+          <a class="v" href="mailto:import@phoenixgloballogistics.com.au" data-copy-text>import@phoenixgloballogistics.com.au</a>
+          <button class="copy-btn" type="button" data-copy="import@phoenixgloballogistics.com.au">Copy email</button>
+        </div>
+        <div class="contact-block">
+          <span class="k">Sydney depot</span>
+          <span class="v">1–7 Cavasinni Place<br>Wetherill Park NSW 2164</span>
+          <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&amp;query=1-7+Cavasinni+Place+Wetherill+Park+NSW+2164" target="_blank" rel="noopener">Open in Maps →</a>
+        </div>
+        <div class="contact-block">
+          <span class="k">Melbourne</span>
+          <span class="v">Servicing Victoria from our Melbourne operation</span>
+        </div>
+        <div class="contact-block">
+          <span class="k">WeChat · 微信</span>
+          <span class="v">Ask us for our WeChat ID by email, or add your WeChat to the quote form.</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section--red cta-band" aria-label="Get started">
+  <div class="wrap">
+    <h2 class="display">Ready when your freight is.</h2>
+    <div class="btns">
+      <a class="btn btn--light" href="#quote">Get a quote</a>
+      <a class="btn btn--light" href="#track" style="background:transparent;color:#fff">Track a shipment</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img src="assets/img/logo-white.png" alt="Phoenix Global Logistics" width="560" height="475" loading="lazy">
+        <p style="max-width:36ch">Australian family-owned freight and logistics. Sydney, Melbourne and an Australia-wide network.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Road freight</a></li>
+          <li><a href="#services">Warehousing &amp; 3PL</a></li>
+          <li><a href="#amazon">Amazon FBA</a></li>
+          <li><a href="#services">International freight</a></li>
+          <li><a href="#services">Customs clearance</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Customers</h4>
+        <ul>
+          <li><a href="#track">Track a shipment</a></li>
+          <li><a href="#quote">Get a quote</a></li>
+          <li><a href="#process">How it works</a></li>
+          <li><a href="zh/index.html" lang="zh-Hans">中文</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:import@phoenixgloballogistics.com.au">import@phoenixgloballogistics.com.au</a></li>
+          <li>1–7 Cavasinni Place, Wetherill Park NSW 2164</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>© <span data-year>2026</span> Phoenix Global Logistics Pty Ltd</span>
+      <span>phoenixgloballogistics.com.au</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>

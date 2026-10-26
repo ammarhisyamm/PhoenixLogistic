@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>凤凰环球物流</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="凤凰环球物流（Phoenix Global Logistics）：澳大利亚家族经营的货运与物流公司，提供国内运输、仓储与3PL、亚马逊FBA头程、国际货运、清关协调及末端派送。">
+<meta name="theme-color" content="#e31b24">
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="icon" href="../assets/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="alternate" hreflang="en-AU" href="../index.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+
+<header class="site-header" id="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="凤凰环球物流，返回顶部">
+      <img src="../assets/img/logo.png" alt="Phoenix Global Logistics 凤凰环球物流" width="560" height="475">
+    </a>
+    <nav class="nav" id="site-nav" aria-label="主导航">
+      <a href="#services">服务</a>
+      <a href="#process">操作流程</a>
+      <a href="#amazon">亚马逊 FBA</a>
+      <a href="#quality">质量把控</a>
+      <a href="#about">关于我们</a>
+      <a href="#contact">联系我们</a>
+      <div class="nav-mobile-extra">
+        <a class="btn btn--sm" href="#quote">获取报价</a>
+        <a class="btn btn--sm btn--ghost" href="#track">货物追踪</a>
+        <a class="lang" href="../index.html" lang="en">English</a>
+      </div>
+    </nav>
+    <div class="header-actions">
+      <a class="lang" href="../index.html" lang="en" hreflang="en-AU">English</a>
+      <a class="btn btn--sm btn--ghost" href="#track">货物追踪</a>
+      <a class="btn btn--sm" href="#quote">获取报价</a>
+    </div>
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="打开菜单"><span></span></button>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__media"><img src="../assets/img/hero-dock.jpg" alt="" width="1366" height="1024" fetchpriority="high"></div>
+  <div class="wrap">
+    <div class="hero__copy">
+      <span class="eyebrow">澳洲本地 · 家族经营 · 成立于 2021 年</span>
+      <h1 class="zh-display" id="hero-title">中澳之间，<br>您<span class="accent">值得信赖</span>的<br>物流桥梁</h1>
+      <p class="lede">从集装箱到客户门口：拆柜、查验、仓储、发货、派送，我们在澳大利亚为您一站式处理，并随时通过微信与邮件同步货物动态。</p>
+      <div class="hero__ctas">
+        <a class="btn" href="#quote">获取报价</a>
+        <a class="btn btn--ghost" href="#services">查看服务</a>
+      </div>
+      <div class="hero__meta">
+        <span>悉尼 · 墨尔本</span>
+        <span>覆盖澳洲全境</span>
+        <span>深厚的中国合作网络</span>
+      </div>
+    </div>
+    <div class="label-card" id="quick">
+      <div class="label-card__top"><span>Phoenix · 快捷服务</span><span aria-hidden="true">PGL</span></div>
+      <div class="tabs" role="tablist" aria-label="快捷服务">
+        <button class="tab" role="tab" id="tab-track" aria-selected="true" aria-controls="panel-track" type="button">货物追踪</button>
+        <button class="tab" role="tab" id="tab-quote" aria-selected="false" aria-controls="panel-quote" type="button" tabindex="-1">快速询价</button>
+      </div>
+      <form class="tab-panel" role="tabpanel" id="panel-track" aria-labelledby="tab-track" data-track-form novalidate>
+        <div class="field">
+          <label for="hero-con">运单号</label>
+          <input class="input input--mono" id="hero-con" name="consignment" type="text" autocomplete="off" spellcheck="false" placeholder="例如 PGL000123456">
+          <span class="hint">运单号见订舱确认或我们发送的追踪邮件。</span>
+        </div>
+        <button class="btn" type="submit">查询</button>
+        <div class="track-msg" aria-live="polite"></div>
+      </form>
+      <form class="tab-panel" role="tabpanel" id="panel-quote" aria-labelledby="tab-quote" hidden data-quick-quote novalidate>
+        <div class="form-grid">
+          <div class="field"><label for="qq-from">提货地</label><input class="input" id="qq-from" name="from" type="text" placeholder="港口 / 城市"></div>
+          <div class="field"><label for="qq-to">送货地</label><input class="input" id="qq-to" name="to" type="text" placeholder="城市 / 亚马逊仓"></div>
+          <div class="field span-2"><label for="qq-type">货物类型</label>
+            <select class="input" id="qq-type" name="type">
+              <option value="Pallets">托盘</option>
+              <option value="Cartons">纸箱</option>
+              <option value="Full container (20ft / 40ft)">整柜（20尺 / 40尺）</option>
+              <option value="Amazon FBA shipment">亚马逊 FBA 货物</option>
+              <option value="Something else">其他</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" type="submit">继续询价</button>
+      </form>
+      <div class="barcode" aria-hidden="true"></div>
+      <div class="label-card__foot" aria-hidden="true"><span>SYD · MEL · AUS</span><span>小心轻放</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="proof" aria-label="凤凰物流概况">
+  <div class="wrap">
+    <div class="proof__item proof__item--badge">
+      <div class="proof__badge">
+        <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 2.2 3.4-.4.9 3.3 3 1.7-1.3 3.2 1.3 3.2-3 1.7-.9 3.3-3.4-.4L12 22l-2.6-2.2-3.4.4-.9-3.3-3-1.7L3.4 12 2.1 8.8l3-1.7.9-3.3 3.4.4z"/><path d="M8.5 12.2l2.4 2.4 4.8-5"/></svg></span>
+        <div><strong>亚马逊澳洲列出的第三方承运商</strong><span>承接新州、昆州、维州运营中心的小包裹入仓</span></div>
+      </div>
+    </div>
+    <div class="proof__item"><span class="proof__num">55,000</span><span class="proof__label">每月处理箱数（仅亚马逊业务）</span></div>
+    <div class="proof__item"><span class="proof__num">600</span><span class="proof__label">每年拆柜数量，约每月 50 柜</span></div>
+    <div class="proof__item"><span class="proof__num">20<small>+</small></span><span class="proof__label">年物流行业经验</span></div>
+    <div class="proof__item"><span class="proof__num">12</span><span class="proof__label">辆自有车辆，另有 20+ 合作卡车</span></div>
+  </div>
+</section>
+
+<section class="section" id="services" aria-labelledby="services-title">
+  <div class="wrap">
+    <div class="section-head section-head--split">
+      <div style="display:grid;gap:18px">
+        <span class="eyebrow">服务范围</span>
+        <h2 class="zh-display" id="services-title">一个伙伴，<br>覆盖每一段运输</h2>
+      </div>
+      <p class="lede">货物从港口到客户手中往往要经过四五次交接。我们可以承接全部环节，也可以只做您需要的部分：交接更少，责任更清晰。</p>
+    </div>
+    <div class="services">
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 12h24v22H4zM28 19h8l7 7v8H28z"/><circle cx="12" cy="36" r="4" fill="#fff"/><circle cx="36" cy="36" r="4" fill="#fff"/></svg></div><h3>国内陆运</h3><p>本地、州际及全国干线运输，自有车队加可靠的合作承运网络。</p><ul><li>市区</li><li>州际</li><li>干线</li></ul></article>
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 18L24 6l20 12v24H4z"/><path d="M12 42V24h24v18M12 30h24M12 36h24"/></svg></div><h3>仓储与 3PL</h3><p>收货、存储、分拣、库存管理与配送，每次出入库均扫描记录。</p><ul><li>仓储</li><li>分拣打包</li><li>配送</li></ul></article>
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M6 14l18-8 18 8v20l-18 8-18-8z"/><path d="M6 14l18 8 18-8M24 22v20"/><path d="M14 33c6 4 14 4 20 0"/><path d="M31 31l3 2-2 3"/></svg></div><h3>亚马逊 FBA 头程</h3><p>按亚马逊入仓要求收货、分拣、处理并送达运营中心，适合大批量货物。</p><ul><li>入仓准备</li><li>标签核查</li><li>送仓</li></ul></article>
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M6 24h36M24 6c6 6 6 30 0 36M24 6c-6 6-6 30 0 36"/></svg></div><h3>国际货运</h3><p>空运、海运进出口，与中国及全球合作伙伴协同，门到门操作。</p><ul><li>空运</li><li>海运整柜 / 拼箱</li></ul></article>
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M12 4h18l8 8v32H12z"/><path d="M30 4v8h8M18 22h14M18 29h14M18 36h8"/></svg></div><h3>清关协调</h3><p>协助协调进口清关文件与流程，减少货物滞留。</p><ul><li>文件</li><li>流程协调</li></ul></article>
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M24 44s14-12 14-24a14 14 0 10-28 0c0 12 14 24 14 24z"/><path d="M18 18l6-3 6 3v7l-6 3-6-3z"/></svg></div><h3>小包裹及末端派送</h3><p>从仓库直送最终地址，签收即留存签收证明。</p><ul><li>签收证明</li><li>全程追踪</li></ul></article>
+      <article class="service"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 10h40v28H4z"/><path d="M12 10v28M20 10v28M28 10v28M36 10v28"/></svg></div><h3>拆柜与货物处理</h3><p>拆柜、纸箱与托盘处理、对照舱单核查，为下一段运输做好准备。</p><ul><li>20尺 / 40尺</li><li>散货与托盘</li></ul></article>
+      <article class="service service--dg"><div class="service__icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M24 3l21 21-21 21L3 24z"/><path d="M26 14l-6 11h8l-6 11"/></svg></div><h3>危险品</h3><p>可承运部分危险品，主要为电池类产品。请告知货物详情，我们确认具体要求。</p><ul><li>锂电池</li><li>逐票评估</li></ul></article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--stone" id="process" aria-labelledby="process-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">操作流程</span>
+      <h2 class="zh-display" id="process-title">从集装箱到客户门口</h2>
+      <p class="lede">每票货都按同样的步骤操作，每一步都有记录可查。</p>
+    </div>
+    <ol class="process">
+      <li class="step"><div class="step__marker"><span class="step__num">01</span><span class="step__line"></span></div><span class="step__scan">Office</span><h3>接收单证</h3><p>办公室团队接收进口文件，提前安排到货计划。</p></li>
+      <li class="step"><div class="step__marker"><span class="step__num">02</span><span class="step__line"></span></div><span class="step__scan">Collection</span><h3>提货</h3><p>集装箱或空运货物到港后，安排提货入仓。</p></li>
+      <li class="step"><div class="step__marker"><span class="step__num">03</span><span class="step__line"></span></div><span class="step__scan">Unload &amp; check</span><h3>拆柜查验</h3><p>纸箱、散货和托盘分拣，并对照舱单核查。</p></li>
+      <li class="step"><div class="step__marker"><span class="step__num">04</span><span class="step__line"></span></div><span class="step__scan">Consignment</span><h3>系统建单</h3><p>每票货生成独立运单号和追踪链接。</p></li>
+      <li class="step"><div class="step__marker"><span class="step__num">05</span><span class="step__line"></span></div><span class="step__scan">Depot in · Depot out</span><h3>出入库扫描</h3><p>仓库扫描记录每次移动，司机装车派送。</p></li>
+      <li class="step"><div class="step__marker"><span class="step__num">06</span><span class="step__line"></span></div><span class="step__scan">POD</span><h3>签收</h3><p>收货人签字确认，签收证明同步至运单记录。</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="section" id="track" aria-labelledby="track-title">
+  <div class="wrap track-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">货物追踪</span>
+        <h2 class="zh-display" id="track-title">货物在哪里，<br>随时可查</h2>
+        <p class="lede">所有运单均在 Transvirtual 运输管理系统中追踪，您可以自行查询进度，无需等待回复。</p>
+      </div>
+      <ol class="track-steps">
+        <li><span class="n">1</span><div><h3>获取运单号</h3><p>随订舱确认发送，或以追踪链接形式发到您的邮箱。</p></div></li>
+        <li><span class="n">2</span><div><h3>在此输入或打开链接</h3><p>查看货物在仓库与运输途中的每一次扫描记录。</p></div></li>
+        <li><span class="n">3</span><div><h3>查看签收证明</h3><p>送达后，收货人签名可在同一记录中查看。</p></div></li>
+      </ol>
+      <p style="margin-top:28px;color:var(--muted);font-size:.97rem">需要人工沟通？我们同样通过微信和邮件跟进。</p>
+    </div>
+    <div class="track-panel">
+      <form class="track-panel__form" data-track-form novalidate>
+        <div class="field">
+          <label for="track-con">运单号</label>
+          <div class="input-row">
+            <input class="input input--mono" id="track-con" name="consignment" type="text" autocomplete="off" spellcheck="false" placeholder="例如 PGL000123456">
+            <button class="btn" type="submit">查询</button>
+          </div>
+        </div>
+        <div class="track-msg" aria-live="polite"></div>
+      </form>
+      <div class="track-panel__result" aria-label="追踪记录示例">
+        <span class="example-tag">示例</span>
+        <div class="consignment"><span class="consignment__id">PGL000123456</span><span class="status-pill">已签收</span></div>
+        <ol class="events">
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">已签收 · 签收人 J. Chen</div><div class="event__where">Dandenong South VIC</div></div><span class="event__when">周四 10:42</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">派送中</div><div class="event__where">墨尔本仓</div></div><span class="event__when">周四 06:15</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">入库扫描</div><div class="event__where">墨尔本仓</div></div><span class="event__when">周三 19:30</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">出库扫描 · 干线运输</div><div class="event__where">Wetherill Park NSW</div></div><span class="event__when">周二 21:05</span></li>
+          <li class="event event--done"><span class="event__dot"></span><div><div class="event__what">查验建单 · 12 箱</div><div class="event__where">Wetherill Park NSW</div></div><span class="event__when">周二 14:20</span></li>
+        </ol>
+        <div class="pod"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 00-1 1v16a1 1 0 001 1h12a1 1 0 001-1V8z"/><path d="M14 3v5h5M8 16c1.5-2 2.5-2 3 0s1.5 1 2.5-.5 2 .5 2.5.5"/></svg><span>签收证明：签名与时间记录在运单中。</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--ink" id="amazon" aria-labelledby="amazon-title">
+  <div class="wrap amazon-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">亚马逊 FBA</span>
+        <h2 class="zh-display" id="amazon-title">专为<span class="accent">大批量</span> FBA 而建</h2>
+        <p class="lede">自 2025 年 9 月 1 日起，亚马逊澳洲运营中心不再接受卖家自行送仓的小包裹。凤凰环球物流是亚马逊列出的第三方承运商之一，与 StarTrack、DHL Supply Chain 同列。</p>
+      </div>
+      <div class="amazon-figures">
+        <div><strong>~50</strong><span>每月集装箱</span></div>
+        <div><strong>~1,100</strong><span>每柜箱数</span></div>
+        <div><strong>55,000</strong><span>每月处理箱数</span></div>
+        <div><strong>660,000</strong><span>按当前量计每年箱数</span></div>
+      </div>
+      <p class="fineprint">以上为亚马逊业务的大致数据，不含其他业务。亚马逊不为任何承运商背书。</p>
+      <div style="margin-top:28px"><a class="btn btn--light" href="#quote" data-quote-type="Amazon FBA shipment">FBA 询价</a></div>
+    </div>
+    <figure class="carrier-sheet" style="margin:0">
+      <img class="carrier-sheet__photo" src="../assets/img/fba-pallets.jpg" alt="整齐排列、已缠膜的托盘货物，准备送往亚马逊运营中心" width="683" height="512" loading="lazy">
+      <figcaption class="carrier-sheet__body">
+        <h3>小包裹第三方承运商</h3>
+        <p class="src">来源：亚马逊卖家平台（澳洲）公告</p>
+        <div style="overflow-x:auto">
+          <table class="carrier-table">
+            <thead><tr><th scope="col">承运商</th><th scope="col">目的州</th></tr></thead>
+            <tbody>
+              <tr class="us"><td>Phoenix Global Logistics</td><td>NSW、QLD、VIC</td></tr>
+              <tr><td>StarTrack</td><td>QLD、VIC、WA</td></tr>
+              <tr><td>DHL Supply Chain</td><td>QLD、VIC、WA</td></tr>
+              <tr><td>Innovative Logistics Services</td><td>NSW、VIC</td></tr>
+              <tr><td>Border Express</td><td>仅 NSW</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section" id="quality" aria-labelledby="quality-title">
+  <div class="wrap quality-grid">
+    <figure class="quality-photo" style="margin:0">
+      <img src="../assets/img/qc-pallets.jpg" alt="缠膜并贴有凤凰红色封箱带的托盘货物" width="692" height="920" loading="lazy">
+      <figcaption>出库前：缠膜、封带、查验。</figcaption>
+    </figure>
+    <div>
+      <div class="section-head" style="margin-bottom:0">
+        <span class="eyebrow">质量把控</span>
+        <h2 class="zh-display" id="quality-title">我们先查好，<br>减少拒收</h2>
+        <p class="lede">每一票货背后，都是客户投入的时间与成本。我们认真对待。</p>
+      </div>
+      <ul class="checks">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/></svg><div><h3>凤凰红色质检台</h3><p>货物在质检台上检查，破损或标签错误在发货前发现。</p></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v10H4z"/><path d="M4 10h16M4 14h16"/></svg><div><h3>机器缠膜</h3><p>托盘统一机器缠膜，装载稳固，运输更安全。</p></div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6M12 4v4M5 12a7 7 0 1014 0 7 7 0 00-14 0z"/><path d="M12 12l3-2"/></svg><div><h3>对照单证核查</h3><p>数量与标签对照舱单核查，减少可避免的退回与拒收。</p></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section--stone" id="capacity" aria-labelledby="capacity-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">运力</span>
+      <h2 class="zh-display" id="capacity-title">自有车队，自有团队</h2>
+      <p class="lede">我们运营自有车队与仓库，旺季可调动更广的合作承运网络。大客户与单票业务，同一支团队服务。</p>
+    </div>
+    <div class="capacity">
+      <div class="cap-photo cap-a"><img src="../assets/img/transport-curtainsider.jpg" alt="装满托盘货物的凤凰侧帘卡车" width="1600" height="1200" loading="lazy"></div>
+      <div class="cap-photo cap-b"><img src="../assets/img/fleet-vans.jpg" alt="两辆凤凰品牌白色货车" width="1024" height="768" loading="lazy"></div>
+      <div class="cap-photo cap-c"><img src="../assets/img/warehouse-racking.jpg" alt="堆满纸箱的仓库货架" width="683" height="512" loading="lazy"></div>
+    </div>
+    <div class="fleet-list">
+      <div class="fleet-item"><strong>7</strong><span>辆重型卡车</span></div>
+      <div class="fleet-item"><strong>5</strong><span>辆厢式货车与小型卡车</span></div>
+      <div class="fleet-item"><strong>20+</strong><span>家合作卡车承运商</span></div>
+      <div class="fleet-item"><strong>18</strong><span>名员工，覆盖办公室、仓库与运输</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="about" aria-labelledby="about-title">
+  <div class="wrap about-grid">
+    <div>
+      <div class="section-head" style="margin-bottom:24px">
+        <span class="eyebrow">关于我们</span>
+        <h2 class="zh-display" id="about-title">家族企业，<br>二十余年行业积累</h2>
+      </div>
+      <div class="prose">
+        <p>凤凰环球物流由一个在货运行业深耕二十多年的家族经营。在此之前，创始人经营 Phoenix International Cargo 约 15 年，对行业的挑战与客户的真实需求有深刻理解。</p>
+        <p>2021 年，我们以更大的愿景创立凤凰环球物流。如今我们在悉尼和墨尔本运营，拥有自有车辆、专业团队，以及中国与全球的合作伙伴。</p>
+        <p>我们正在成长，希望与重视可靠服务和清晰沟通的企业长期合作。</p>
+      </div>
+    </div>
+    <figure class="about-photo" style="margin:0">
+      <img src="../assets/img/depot-wetherill-park.jpg" alt="位于悉尼 Wetherill Park 的凤凰环球物流仓库" width="1600" height="1200" loading="lazy">
+    </figure>
+  </div>
+</section>
+
+<section class="section section--stone" id="quote" aria-labelledby="quote-title">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">获取报价</span>
+      <h2 class="zh-display" id="quote-title">告诉我们您要运什么</h2>
+      <p class="lede">填写几项基本信息即可报价，信息越详细，报价越准确。</p>
+    </div>
+    <div class="quote-grid">
+      <form class="quote-form" id="quote-form" novalidate>
+        <fieldset class="fieldset">
+          <legend>1 · 所需服务</legend>
+          <div class="chips" role="group" aria-label="所需服务">
+            <label class="chip"><input type="checkbox" name="service" value="International freight" checked><span>国际货运</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Customs clearance"><span>清关协调</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Amazon FBA"><span>亚马逊 FBA</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Warehousing / 3PL"><span>仓储 / 3PL</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Container unloading"><span>拆柜</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Road freight"><span>国内陆运</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Last-mile delivery"><span>末端派送</span></label>
+            <label class="chip"><input type="checkbox" name="service" value="Dangerous goods"><span>危险品</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend>2 · 货物信息</legend>
+          <div class="form-grid">
+            <div class="field"><label for="q-from">起运地</label><input class="input" id="q-from" name="from" type="text" placeholder="城市 / 港口" autocomplete="off"></div>
+            <div class="field"><label for="q-to">目的地</label><input class="input" id="q-to" name="to" type="text" placeholder="澳洲城市 / 亚马逊仓" autocomplete="off"></div>
+            <div class="field"><label for="q-type">货物类型</label>
+              <select class="input" id="q-type" name="type">
+                <option value="Pallets">托盘</option>
+                <option value="Cartons">纸箱</option>
+                <option value="Full container (20ft / 40ft)">整柜（20尺 / 40尺）</option>
+                <option value="Amazon FBA shipment">亚马逊 FBA 货物</option>
+                <option value="Something else">其他</option>
+              </select>
+            </div>
+            <div class="field"><label for="q-qty">数量</label><input class="input" id="q-qty" name="qty" type="text" placeholder="例如 8 托 / 1 × 40尺"></div>
+            <div class="field"><label for="q-weight">总重量（公斤）<span class="hint">选填</span></label><input class="input" id="q-weight" name="weight" type="text" inputmode="decimal"></div>
+            <div class="field"><label for="q-when">预计发货日期 <span class="hint">选填</span></label><input class="input" id="q-when" name="when" type="date"></div>
+            <div class="field span-2"><label for="q-notes">其他说明 <span class="hint">选填</span></label><textarea class="input" id="q-notes" name="notes" placeholder="长期或单票、是否含电池、送货时间要求等"></textarea></div>
+          </div>
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend>3 · 联系方式</legend>
+          <div class="form-grid">
+            <div class="field"><label for="q-name">姓名</label><input class="input" id="q-name" name="name" type="text" autocomplete="name" required></div>
+            <div class="field"><label for="q-company">公司</label><input class="input" id="q-company" name="company" type="text" autocomplete="organization"></div>
+            <div class="field"><label for="q-email">邮箱</label><input class="input" id="q-email" name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="q-phone">电话或微信号 <span class="hint">选填</span></label><input class="input" id="q-phone" name="phone" type="text"></div>
+          </div>
+        </fieldset>
+        <div class="form-actions">
+          <p>您的信息仅用于回复本次询价。</p>
+          <button class="btn" type="submit">提交询价</button>
+        </div>
+        <div class="quote-result" aria-live="polite"></div>
+      </form>
+      <aside class="contact-card" id="contact" aria-labelledby="contact-title">
+        <h3 id="contact-title" class="zh-display" style="font-size:2rem">联系我们</h3>
+        <div class="contact-block">
+          <span class="k">邮箱</span>
+          <a class="v" href="mailto:import@phoenixgloballogistics.com.au">import@phoenixgloballogistics.com.au</a>
+          <button class="copy-btn" type="button" data-copy="import@phoenixgloballogistics.com.au">复制邮箱</button>
+        </div>
+        <div class="contact-block">
+          <span class="k">悉尼仓库</span>
+          <span class="v">1–7 Cavasinni Place<br>Wetherill Park NSW 2164, Australia</span>
+        </div>
+        <div class="contact-block">
+          <span class="k">微信</span>
+          <span class="v">请通过邮件索取我们的微信号，或在询价表中留下您的微信。</span>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <img src="../assets/img/logo-white.png" alt="Phoenix Global Logistics 凤凰环球物流" width="560" height="475" loading="lazy">
+        <p style="max-width:36ch">澳大利亚家族经营的货运与物流公司。悉尼、墨尔本，服务澳洲全境。</p>
+      </div>
+      <div><h4>服务</h4><ul><li><a href="#services">国内陆运</a></li><li><a href="#services">仓储与 3PL</a></li><li><a href="#amazon">亚马逊 FBA</a></li><li><a href="#services">国际货运</a></li></ul></div>
+      <div><h4>客户</h4><ul><li><a href="#track">货物追踪</a></li><li><a href="#quote">获取报价</a></li><li><a href="../index.html" lang="en">English</a></li></ul></div>
+      <div><h4>联系</h4><ul><li><a href="mailto:import@phoenixgloballogistics.com.au">import@phoenixgloballogistics.com.au</a></li><li>1–7 Cavasinni Place, Wetherill Park NSW 2164</li></ul></div>
+    </div>
+    <div class="footer-base">
+      <span>© <span data-year>2026</span> Phoenix Global Logistics Pty Ltd</span>
+      <span>phoenixgloballogistics.com.au</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js" defer></script>
+</body>
+</html>
