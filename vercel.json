@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/services/amazon-fba", "destination": "/services/amazon-fba-logistics", "permanent": false },
+    { "source": "/services/warehousing-3pl", "destination": "/services/warehousing-and-3pl", "permanent": false },
+    { "source": "/services/road-freight", "destination": "/services/road-freight-and-transport", "permanent": false },
+    { "source": "/services/container-handling", "destination": "/services/warehousing-and-3pl", "permanent": false },
+    { "source": "/services/last-mile-delivery", "destination": "/services/road-freight-and-transport", "permanent": false }
+  ]
+}
