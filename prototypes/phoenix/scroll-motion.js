@@ -54,7 +54,7 @@ export function connectScrollMotion(viewport) {
     const heroCopy = hero?.querySelector(':scope > .fig-node:not(.fig-header)');
     if (heroPaint && heroCopy && conditions.desktop) {
       const handoff = gsap.timeline({
-        scrollTrigger: { trigger: hero, start: 'bottom 92%', end: 'bottom 20%', scrub: true },
+        scrollTrigger: { trigger: hero, start: 'clamp(bottom 92%)', end: 'bottom 20%', scrub: true },
         defaults: { ease: 'none' },
       });
       handoff.to(heroPaint, { y: 38, scale: 1.055 }, 0);
