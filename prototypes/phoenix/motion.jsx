@@ -43,30 +43,6 @@ export function usePageMotion(viewport) {
     let active = true;
     let disconnect;
     const preference = matchMedia(reduceMotion);
-    const targets = element.querySelectorAll('[data-motion-section], [data-motion-card]');
-    const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
-      for (const { target, isIntersecting } of entries) {
-        if (!isIntersecting) continue;
-        target.setAttribute('data-arrived', '');
-        observer.unobserve(target);
-      }
-    }, { rootMargin: '0px 0px -8% 0px' }) : null;
-
-    // Stagger siblings so each section's content arrives in reading order.
-    for (const section of element.querySelectorAll('[data-motion-section]')) {
-      [...section.children].filter(child => child.classList.contains('fig-node')).forEach((child, i) => child.style.setProperty('--i', Math.min(i, 6)));
-    }
-    const groups = new Map();
-    for (const card of element.querySelectorAll('[data-motion-card]')) {
-      const siblings = groups.get(card.parentElement) ?? [];
-      siblings.push(card);
-      groups.set(card.parentElement, siblings);
-    }
-    for (const siblings of groups.values()) siblings.forEach((card, i) => card.style.setProperty('--i', Math.min(i, 6)));
-
-    targets.forEach(target => observer?.observe(target));
-    if (observer) element.classList.add('motion-ready');
-
     const root = document.documentElement;
     const onScroll = () => root.toggleAttribute('data-scrolled', scrollY > 24);
     onScroll();
@@ -78,16 +54,14 @@ export function usePageMotion(viewport) {
         const { connectScrollMotion } = await import('./scroll-motion');
         if (active && !preference.matches && !disconnect) disconnect = connectScrollMotion(element);
       } catch {
-        // Section and card entrances also work without the scroll enhancement.
+        // Content remains visible if the scroll module fails to load.
       }
     }
     enhance();
     preference.addEventListener('change', enhance);
     return () => {
       active = false;
-      observer?.disconnect();
       removeEventListener('scroll', onScroll);
-      element.classList.remove('motion-ready');
       disconnect?.();
       preference.removeEventListener('change', enhance);
     };

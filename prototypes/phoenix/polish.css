@@ -57,17 +57,8 @@
 @media (hover: hover) and (pointer: fine) {
   :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover::before { clip-path: inset(0 0 0 0); }
   :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]) .fig-text { transition: color 260ms var(--ease-out) 60ms; }
-  [data-name^="Sector / "]:not(.fig-text) [data-name="Sector / Title"] { transition: color 260ms var(--ease-out) 60ms, translate 420ms var(--ease-out); }
-  [data-name^="Sector / "]:not(.fig-text):hover [data-name="Sector / Title"] { translate: 0 -6px; }
-  [data-name^="Sector / "]:not(.fig-text) .fig-vector { transition: scale 420ms var(--ease-out); }
-  [data-name^="Sector / "]:not(.fig-text):hover > .fig-node:first-of-type .fig-vector { scale: 1.12; }
 }
 
-/* ---------- Service cards lift instead of a hard outline ---------- */
-a[data-name^="Service row"] { transition: translate 320ms var(--ease-out), box-shadow 320ms var(--ease-out); }
-@media (hover: hover) and (pointer: fine) {
-  a[data-name^="Service row"]:hover { translate: 0 -4px; box-shadow: 0 18px 40px -22px #23202266; z-index: 2; }
-}
 
 /* ---------- Footer & inline links: underline grows from the left ---------- */
 @media (hover: hover) and (pointer: fine) {
@@ -80,32 +71,7 @@ a[data-name^="Service row"] { transition: translate 320ms var(--ease-out), box-s
   .fig-footer a.fig-text:hover { color: #fff !important; }
 }
 
-/* ---------- Section reveals: every section and card arrives on scroll ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .motion-ready [data-motion-section]:not([data-arrived]) > .fig-node:not(.fig-blur,.fig-heading,[data-motion-card],[data-layer="198:556"]),
-  .motion-ready [data-motion-card]:not([data-arrived]) { opacity: 0; }
-  .fig-section[data-arrived] > .fig-node:not(.fig-blur,.fig-heading,[data-layer="198:556"],[data-motion-card]) {
-    animation: section-rise 760ms var(--ease-out) backwards;
-    animation-delay: calc(var(--i, 0) * 70ms);
-  }
-  [data-motion-card][data-arrived] {
-    animation: card-rise 700ms var(--ease-out) backwards;
-    animation-delay: calc(var(--i, 0) * 80ms + 60ms);
-  }
-  [data-motion-card][data-arrived]:nth-of-type(n) { animation-delay: calc(var(--i, 0) * 80ms + 60ms); }
-
-  /* Photos open like a roller door as their section arrives. */
-  .fig-section[data-arrived] .fig-photo:not([data-layer="198:556"]) > .paint-group {
-    animation: roller-door 900ms var(--ease-out) backwards;
-    animation-delay: calc(var(--i, 0) * 70ms + 120ms);
-  }
-
-  /* Final CTA: background fades in from black and settles from a slight zoom. */
-  .fig-cta > .paint-group { background: #000; }
-  .fig-cta:not([data-arrived]) > .paint-group > .image-paint img { opacity: 0; }
-  .fig-cta[data-arrived] > .paint-group > .image-paint img { animation: fleet-arrival 1200ms var(--ease-out) both; }
-  .fig-cta[data-arrived] > .fig-node:not(.fig-blur) { animation: section-rise 800ms 260ms var(--ease-out) backwards; }
-
   /* Page hero: slower fade from black and a gentler settle. */
   .fig-hero > .paint-group { background: #000; }
   .fig-hero > .paint-group img[data-loaded] { animation: hero-settle 1400ms var(--ease-out) both; }
@@ -117,9 +83,6 @@ a[data-name^="Service row"] { transition: translate 320ms var(--ease-out), box-s
   [data-route-current] { transition: outline-color 240ms var(--ease-out); }
 }
 
-@keyframes section-rise { from { opacity: 0; translate: 0 28px; } }
-@keyframes card-rise { from { opacity: 0; translate: 0 36px; scale: .985; } }
-@keyframes roller-door { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
 @keyframes hero-settle { from { opacity: 0; scale: 1.08; } to { opacity: 1; scale: 1; } }
 @keyframes headline-arrival { from { opacity: 0; translate: 0 .9em; } to { opacity: 1; translate: 0 0; } }
 

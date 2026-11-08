@@ -36,11 +36,7 @@ function App({ tree }) {
   }, []);
   useEffect(() => {
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
-    // Lift the loading screen once the hero photograph and fonts are ready.
-    const heroImage = document.querySelector('.fig-hero > .paint-group img');
-    const image = heroImage && !heroImage.complete ? new Promise(done => { heroImage.addEventListener('load', done, { once: true }); heroImage.addEventListener('error', done, { once: true }); }) : null;
-    const timeout = new Promise(done => setTimeout(done, 2500));
-    Promise.race([Promise.all([image, document.fonts?.ready]), timeout]).then(() => window.__phoenixReady?.());
+    window.__phoenixReady?.();
   }, []);
 
   return <div className="prototype-shell" style={{ '--desktop-scale': scale }}>

@@ -167,7 +167,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
    onKeyDown={tab?ctx.tabKeys:carousel?ctx.carouselKeys:undefined}
    onTouchStart={carousel?ctx.touchStart:undefined} onTouchEnd={carousel?ctx.touchEnd:undefined}
    type={tag==='button'?submit?'submit':'button':undefined}
-   onClick={tab?()=>ctx.setQuickQuote(id==='187:440'):previous?()=>ctx.step(-1):next?()=>ctx.step(1):undefined}
+   onClick={tab?()=>ctx.setQuickQuote(id==='187:440'):previous?event=>ctx.step(-1,event.detail!==0):next?event=>ctx.step(1,event.detail!==0):undefined}
    onSubmit={form?trackForms.has(id)?ctx.track:ctx.quoteSubmit:undefined}>
    {motionSection&&<span className="motion-seam" aria-hidden="true"/>}
    {id==='62:893'&&<span className="delivery-route" aria-hidden="true"><span className="delivery-route-fill"/></span>}
@@ -236,7 +236,7 @@ export function Design({tree,page}){
  function carouselKeys(e){
    if(!['ArrowLeft','ArrowRight'].includes(e.key)||e.altKey||e.metaKey||e.ctrlKey)return;
    e.preventDefault();e.stopPropagation();
-   step(e.key==='ArrowLeft'?-1:1);
+   step(e.key==='ArrowLeft'?-1:1,false);
  }
  function touchStart(e){ const t=e.changedTouches[0];start.current=[t.clientX,t.clientY]; }
  function touchEnd(e){
@@ -246,7 +246,7 @@ export function Design({tree,page}){
    const dx=t.clientX-x,dy=t.clientY-y;
    if(Math.abs(dx)>54&&Math.abs(dx)>1.4*Math.abs(dy))step(dx>0?-1:1);
  }
- const step=delta=>{setDirection(delta);setIndex(i=>(i+delta+6)%6)};
+ const step=(delta, animate=true)=>{setDirection(animate?delta:0);setIndex(i=>(i+delta+6)%6)};
  function track(e){
    e.preventDefault();
    const data=new FormData(e.currentTarget);

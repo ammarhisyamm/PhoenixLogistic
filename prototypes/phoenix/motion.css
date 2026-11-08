@@ -23,7 +23,6 @@
   transform-origin: left;
 }
 .motion-metric { font-variant-numeric: tabular-nums; white-space: nowrap; }
-[data-motion-card] { --card-arrival: 15px; }
 .process-index {
   position: absolute;
   top: 50%;
@@ -39,7 +38,6 @@
 .delivery-route-fill { display: block; height: 100%; background: var(--red); transform: scaleX(0); transform-origin: left; }
 [data-route-current] { outline: 2px solid #e31b24; outline-offset: -2px; }
 @media (max-width: 999px) {
-  [data-motion-card] { --card-arrival: 9px; }
   .process-index { position: static; translate: none; align-self: center; }
   .delivery-route { inset: -8px 0 auto; }
 }
@@ -60,12 +58,6 @@
   .fig-hero .hero-line:nth-child(2) > span { animation-delay: 185ms; }
   .fig-hero > [data-name="Quick tools card"] { animation-delay: 230ms; }
   .fig-header,.mobile-header { animation: nav-arrival 420ms var(--ease-out) both; }
-  .fig-section[data-arrived] > .fig-node:not(.fig-blur,.fig-heading,[data-layer="198:556"],[data-motion-card]) {
-    animation: route-arrival 500ms var(--ease-out) backwards;
-  }
-  [data-motion-card][data-arrived] { animation: card-arrival 480ms var(--ease-out) backwards; }
-  [data-motion-card][data-arrived]:nth-of-type(3n) { animation-delay: 55ms; }
-  [data-motion-card][data-arrived]:nth-of-type(3n + 1) { animation-delay: 105ms; }
   .quote-review[open] { animation: quote-arrival 220ms var(--ease-out) both; }
   .track-result { animation: route-arrival 220ms var(--ease-out) backwards; }
 
@@ -83,7 +75,6 @@
 @keyframes headline-arrival { from { opacity: .36; translate: 0 .8em; } to { opacity: 1; translate: 0 0; } }
 @keyframes nav-arrival { from { opacity: .82; translate: 0 -7px; } to { opacity: 1; translate: 0 0; } }
 @keyframes route-arrival { from { opacity: .72; translate: 0 12px; } }
-@keyframes card-arrival { from { opacity: .64; translate: 0 var(--card-arrival); } }
 @keyframes quote-arrival { from { opacity: .45; scale: .98; } to { opacity: 1; scale: 1; } }
 @keyframes dispatch-route { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
