@@ -20,6 +20,9 @@
   .fig-section[data-arrived] > .fig-node:not(.fig-blur,[data-layer="198:556"]) {
     animation: route-arrival 500ms var(--ease-out) both;
   }
+  .fig-root > .fig-section[data-arrived]:not(.fig-hero,.fig-header) {
+    animation: section-arrival 560ms var(--ease-out) both;
+  }
   .fig-section[data-arrived] > .fig-node:nth-of-type(2) { animation-delay: 55ms; }
   .fig-section[data-arrived] > .fig-node:nth-of-type(3) { animation-delay: 110ms; }
   .fig-section[data-arrived] :is([data-layer="187:609"], [data-layer="62:893"]) > .fig-node {
@@ -44,6 +47,7 @@
 
 @keyframes fleet-arrival { from { opacity: 0; transform: scale(1.065); } to { opacity: 1; transform: none; } }
 @keyframes route-arrival { from { opacity: .28; translate: 0 17px; } to { opacity: 1; translate: none; } }
+@keyframes section-arrival { from { opacity: .72; translate: 0 12px; } to { opacity: 1; translate: none; } }
 @keyframes quote-arrival { from { opacity: .45; scale: .98; } to { opacity: 1; scale: 1; } }
 @keyframes dispatch-route { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes fleet-parallax { from { transform: translateY(28px); } to { transform: translateY(-28px); } }
