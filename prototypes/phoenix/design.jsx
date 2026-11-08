@@ -180,7 +180,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
      {field?<Field name={field} node={n} parent={parent}/>:
      id==='187:441'&&ctx.quickQuote?<QuoteStarter/>:
      id==='67:1289'?<div className="fig-radios"><label><input name="frequency" type="radio" value="One-off shipment" defaultChecked/> One-off shipment</label><label><input name="frequency" type="radio" value="Regular contract"/> Regular contract</label></div>:
-     id==='119:677'&&(ctx.index!==0||ctx.direction)?<ProcessCards n={n}/>:
+     id==='119:677'?<ProcessCards n={n}/>:
      <State.Provider value={scope}>{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
    </>}
    {id==='119:727'&&<span className="process-index" aria-live="polite" aria-label={'Step '+(ctx.index+1)+' of 6'}>{String(ctx.index+1).padStart(2,'0')} <span>/ 06</span></span>}
@@ -197,8 +197,14 @@ function ProcessCards({n}){
  const ctx=useContext(State);
  return <>{[(ctx.index+5)%6,ctx.index,(ctx.index+1)%6].map((v,i)=>{
    const card=processCards[v], slot=kids(n)[i].bounds;
-   return <div className={'process-spot '+(i===1?'process-center':'')} key={i} style={{'--x':px(slot.x),'--y':px(slot.y),'--w':px(slot.width),'--h':px(slot.height),'--direction':ctx.direction}}>
-     <div className="process-swap directional" key={v}><Node n={{...card,bounds:{...card.bounds,x:0,y:0}}} parent={n} inactive/></div>
+   const [photo, copy] = kids(card);
+   const photoHeight = i===1 ? 437 : 325;
+   return <div className={'process-spot '+(i===1?'process-center':'')} key={i} aria-hidden={i!==1||undefined}
+     style={{'--x':px(slot.x),'--y':px(slot.y),'--w':px(slot.width),'--h':px(slot.height),'--direction':ctx.direction}}>
+     <div className="process-swap" data-direction={ctx.direction||undefined} key={v}>
+       <Node n={{...photo,bounds:{...photo.bounds,width:slot.width,height:photoHeight}}} parent={card} inactive/>
+       <Node n={{...copy,bounds:{...copy.bounds,x:(slot.width-copy.bounds.width)/2,y:photoHeight+20}}} parent={card} inactive/>
+     </div>
    </div>;
  })}</>;
 }

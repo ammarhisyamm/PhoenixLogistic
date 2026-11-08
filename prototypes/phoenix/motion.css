@@ -104,13 +104,16 @@
   transition: transform 260ms var(--ease-out), opacity 180ms var(--ease-out);
 }
 [data-layer="62:903"]::before { background: #861017; }
-[data-layer="187:610"]::before { background: #c5131e; }
+[data-layer="187:610"] > .paint-group > .paint { background: #fff !important; }
+[data-layer="187:610"] [data-name="Sector / Title"] { color: #232022 !important; }
+[data-layer="190:463"] { display: none; }
 @media (hover: hover) and (pointer: fine) {
   :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover::before {
     transform: none;
     opacity: 1;
   }
   :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover .fig-text { color: #fff !important; }
+  [data-layer="187:610"]:hover [data-name="Sector / Title"] { color: #fff !important; }
   [data-name="Type-Card"]:hover [data-name="Icon"] .fig-text { color: #232022 !important; }
   [data-name="Type-Card"]:hover [data-name="Icon"] > .paint-group { background: #fff; }
   .fig-photo:not([data-layer="198:556"]) .image-paint img { transition: transform 280ms var(--ease-out); }
@@ -155,23 +158,24 @@ a[data-name^="Service row"]:focus-visible::before { transform: translate(3px,-3p
   a[data-name^="Service row"]::before { top: 12px; right: 14px; }
 }
 .fig-field:focus-within { box-shadow: 0 0 0 2px #e31b2444; }
-.fig-header [aria-current="page"] { text-decoration: underline; text-underline-offset: .36em; text-decoration-color: var(--red); }
+.fig-header a.fig-text { text-decoration: none !important; }
+.fig-header a.fig-text::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -4px;
+  height: 1px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.fig-header a.fig-text[aria-current="page"]::after { transform: scaleX(1); }
 @media (hover: hover) and (pointer: fine) {
   a[data-motion-card]::after,a[data-name^="Service row"]::before { transition: transform 240ms var(--ease-out); }
   a[data-name^="Service row"]:hover::before { transform: translate(3px,-3px); }
   a[data-motion-card]:hover::after { transform: scaleX(1); }
   [data-motion-card] .fig-photo .image-paint img { transition: transform 280ms var(--ease-out); }
   [data-motion-card]:hover .fig-photo .image-paint img { transform: scale(1.045); }
-  .fig-header a.fig-text::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 -4px;
-    height: 1px;
-    background: var(--red);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 160ms var(--ease-out);
-  }
+  .fig-header a.fig-text::after { transition: transform 160ms var(--ease-out); }
   .fig-header a.fig-text:hover::after { transform: scaleX(1); }
 }
 @media (prefers-reduced-motion: reduce) {

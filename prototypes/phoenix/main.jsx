@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/oswald';
@@ -27,10 +27,12 @@ if (url.searchParams.has('page') || url.searchParams.has('compare')) {
 function App({ tree }) {
   const getScale = () => document.documentElement.clientWidth / 1440;
   const [scale, setScale] = useState(getScale);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const resize = () => setScale(getScale());
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    const observer = new ResizeObserver(resize);
+    observer.observe(document.documentElement);
+    resize();
+    return () => observer.disconnect();
   }, []);
   useEffect(() => {
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();

@@ -62,7 +62,7 @@ export function connectScrollMotion(viewport) {
         scrollTrigger: { trigger: hero, start: 'clamp(bottom 92%)', end: 'bottom 20%', scrub: true },
         defaults: { ease: 'none' },
       });
-      handoff.to(heroPaint, { y: 38, scale: 1.055 }, 0);
+      handoff.to(heroPaint, { yPercent: 1.8, scale: 1.055 }, 0);
       handoff.to(heroCopy, { y: -38 }, 0);
     }
 
