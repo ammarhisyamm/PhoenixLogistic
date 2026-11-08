@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ArrowUpRight, CaretDown, CheckCircle, Crosshair, EnvelopeSimple, SealCheck } from '@phosphor-icons/react';
+import { ArrowUpRight, ArrowsOut, CaretDown, CheckCircle, Crosshair, EnvelopeSimple, SealCheck } from '@phosphor-icons/react';
 import '@fontsource-variable/inter';
 import '@fontsource/sawarabi-mincho/latin-400.css';
 import { company, faqs, importEmail, qualitySteps, sectors, services, trackingDestination, transportEmail } from '../../src/data';
 import { photos } from './photos';
+import { MAP } from './mapData';
 import { detailIcons, sectorIcons, serviceIcons, stageIcons, stepIcons, valueIcons } from './icons';
 import { coverThen, isStatic, scrollToEl, useCursor, useHeader, usePageMotion } from './motion';
 import './option2.css';
@@ -83,7 +84,7 @@ function TrackForm({ compact }) {
     <label htmlFor={compact ? 'track-c' : 'track'}>Consignment number</label>
     <div className="track-row">
       <input id={compact ? 'track-c' : 'track'} name="consignment" placeholder="E.g. PGL000123456" autoComplete="off" onChange={() => setNote('')} />
-      <button type="submit">Track<Arrow /></button>
+      <button type="submit" className="track-go"><BtnText>Track</BtnText><Arrow /></button>
     </div>
     <p className="track-note" role="status">{note || 'Use the reference on your booking confirmation.'}</p>
   </form>;
@@ -208,7 +209,6 @@ function Footer() {
       </div>
       <div className="footer-legal"><p>© 2026 Phoenix Global Logistics</p><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Carriage & Conditions</a></div>
     </div>
-    <div className="wordmark-wrap" aria-hidden="true"><p className="wordmark" data-wordmark>PHOENIX</p></div>
   </footer>;
 }
 
@@ -220,7 +220,7 @@ function Drive({ words = ['On the road across', 'NSW, QLD & VIC.'], text, cta })
     <div className="drive-stage">
       <div className="wrap drive-copy">
         <div className="drive-head">
-          <h2 className="display display-xl drive-ghost" aria-hidden="true">{words.map((w, i) => <span key={i}>{w}</span>)}</h2>
+          <h2 className="display display-xl drive-base" aria-hidden="true">{words.map((w, i) => <span key={i}>{w}</span>)}</h2>
           <h2 className="display display-xl drive-words">{words.map((w, i) => <span key={i}>{w}</span>)}</h2>
         </div>
         {text && <p className="drive-after">{text}</p>}
@@ -250,44 +250,68 @@ function StepStack() {
   </ol>;
 }
 
+// Real Asia-Pacific map. Pick a location and the map flies to it; "All locations" pulls back out.
+const DEPOTS = [
+  { city: 'Sydney', place: 'Wetherill Park, NSW', text: 'Head depot. Warehousing, 3PL and Amazon FBA prep, open 06:00–17:30.', photo: photos.depots.Sydney, zoom: 3.4 },
+  { city: 'Melbourne', place: 'Victoria', text: 'Warehousing and distribution for Victorian customers, linked to Sydney by overnight linehaul.', photo: photos.depots.Melbourne, zoom: 3.4 },
+  { city: 'China', place: 'Supply-chain partners', text: 'Consolidation plus air and sea freight into Sydney, cleared and moved on by our team.', photo: photos.depots.China, zoom: 2.6 },
+];
+const ROUTES = {
+  Sydney: [['Sydney', 'Melbourne'], ['Sydney', 'Brisbane'], ['China', 'Sydney']],
+  Melbourne: [['Sydney', 'Melbourne']],
+  China: [['China', 'Sydney']],
+};
+function arc(a, b) {
+  const [x1, y1] = MAP.cities[a]; const [x2, y2] = MAP.cities[b];
+  const mx = (x1 + x2) / 2; const my = (y1 + y2) / 2;
+  const dx = x2 - x1; const dy = y2 - y1; const bend = Math.hypot(dx, dy) * 0.18;
+  const len = Math.hypot(dx, dy) || 1;
+  return `M${x1} ${y1} Q${mx + (dy / len) * bend} ${my - (dx / len) * bend} ${x2} ${y2}`;
+}
+
 function Network() {
-  const depots = [
-    { city: 'Sydney', place: 'Wetherill Park, NSW', text: 'Head depot. Warehousing, 3PL and Amazon FBA prep, open 06:00–17:30.', x: 466, y: 264, photo: photos.depots.Sydney },
-    { city: 'Melbourne', place: 'Victoria', text: 'Warehousing and distribution for Victorian customers, linked by overnight linehaul.', x: 401, y: 305, photo: photos.depots.Melbourne },
-    { city: 'China', place: 'Supply-chain partners', text: 'Consolidation plus air and sea freight into Sydney, cleared and moved on by our team.', x: 236, y: -34, photo: photos.depots.China },
-  ];
-  const [active, setActive] = useState('Sydney');
+  const [active, setActive] = useState(null);
+  const focus = DEPOTS.find(d => d.city === active);
+  const S = MAP.W;
+  // Camera: scale and offset that put the chosen city in the middle of the frame.
+  const cam = focus ? (() => { const [x, y] = MAP.cities[focus.city]; const s = focus.zoom; return { s, tx: S / 2 - x * s, ty: S / 2 - y * s }; })() : { s: 1, tx: 0, ty: 0 };
+  const at = name => { const [x, y] = MAP.cities[name]; return `translate(${x * cam.s + cam.tx}px, ${y * cam.s + cam.ty}px)`; };
+  const routes = (ROUTES[active] || ROUTES.Sydney).map(([a, b]) => a + '-' + b);
+  const pick = city => setActive(a => (a === city ? null : city));
   return <section className="section network">
     <div className="wrap">
       <div className="split-head">
-        <Lines className="display display-l" lines={['Two depots, national', 'linehaul and a trade', 'bridge to China.']} />
-        <div data-fade><p>Hover a depot to see where it sits and what it handles. Coverage runs across NSW, QLD and VIC.</p><Button to="/contact" variant="ghost">Contact our depots</Button></div>
+        <Lines className="display display-l" lines={['Two depots and a', 'trade bridge to China.']} />
+        <div data-fade><p>Select a location to fly to it on the map. Coverage runs across NSW, QLD and VIC.</p><Button to="/contact" variant="ghost">Contact our depots</Button></div>
       </div>
-      <div className={'net-grid is-' + active.toLowerCase()}>
+      <div className={'net-grid' + (active ? ' is-' + active.toLowerCase() : ' is-all')}>
         <div className="net-map">
-          <img src="/assets/australia-relief-cutout.svg" alt="Map of Australia showing Phoenix depots in Sydney and Melbourne" width="650" height="400" loading="lazy" />
-          <svg viewBox="0 0 650 400" data-routes aria-hidden="true">
-            <path className="route-path r-mel" pathLength="1" d="M466 264 Q452 296 401 305" />
-            <path className="route-path r-bne" pathLength="1" d="M466 264 Q492 232 485 197" />
-            <path className="route-path r-chn" pathLength="1" d="M236 -34 C 520 -40, 610 140, 466 264" />
-            <path className="route-flow r-mel" d="M466 264 Q452 296 401 305" />
-            <path className="route-flow r-bne" d="M466 264 Q492 232 485 197" />
-            <path className="route-flow r-chn" d="M236 -34 C 520 -40, 610 140, 466 264" />
-            <g className="pin pin-minor"><circle cx="485" cy="197" r="3" /><text x="497" y="201">Brisbane linehaul</text></g>
-            {depots.map(d => <g key={d.city} className={'pin' + (active === d.city ? ' is-active' : '')} onPointerEnter={() => setActive(d.city)}>
-              <circle className="pin-pulse" cx={d.x} cy={d.y} r="14" />
-              <circle className="pin-dot" cx={d.x} cy={d.y} r="5" />
-              <text x={d.x + (d.city === 'Melbourne' ? -84 : 14)} y={d.y + (d.city === 'Melbourne' ? 26 : 5)}>{d.city === 'China' ? 'China · air & sea' : d.city}</text>
+          <svg viewBox={`0 0 ${S} ${S}`} role="img" aria-label="Map of the Asia-Pacific showing Phoenix depots in Sydney and Melbourne and partners in China">
+            <g className="net-cam" style={{ transform: `translate(${cam.tx}px, ${cam.ty}px) scale(${cam.s})` }}>
+              <rect width={S} height={S} className="net-sea" />
+              <path d={MAP.rest} className="land" />
+              <path d={MAP.cn} className="land land-key" />
+              <path d={MAP.au} className="land land-key" />
+              {Object.entries(ROUTES).flatMap(([, r]) => r).filter((r, i, all) => all.findIndex(o => o.join() === r.join()) === i).map(([a, b]) =>
+                <path key={a + b} d={arc(a, b)} className={'net-route' + (routes.includes(a + '-' + b) ? ' is-on' : '')} pathLength="1" />)}
+            </g>
+            <g className="net-pin net-pin-minor" style={{ transform: at('Brisbane') }}><circle r="5" /><text x="12" y="4">Brisbane</text></g>
+            {DEPOTS.map(d => <g key={d.city} className={'net-pin' + (active === d.city ? ' is-active' : '')} style={{ transform: at(d.city) }} onClick={() => pick(d.city)}>
+              <circle className="net-pulse" r="18" /><circle className="net-dot" r="8" />
+              <text x={d.city === 'Melbourne' ? -16 : 16} y={d.city === 'Melbourne' ? 30 : 5} textAnchor={d.city === 'Melbourne' ? 'end' : 'start'}>{d.city}</text>
             </g>)}
           </svg>
-          <ul className="net-chips"><li><b data-count="2">2</b> depots</li><li><b data-count="3">3</b> states covered</li><li><span><b data-count="20">20</b>+</span> contracted operators</li></ul>
+          <button type="button" className={'net-reset' + (active ? ' is-on' : '')} onClick={() => setActive(null)}><ArrowsOut size={16} aria-hidden="true" />All locations</button>
         </div>
+        <div className="net-side">
+        <ul className="net-chips"><li><b data-count="2">2</b> depots</li><li><b data-count="3">3</b> states covered</li><li><span><b data-count="20">20</b>+</span> contracted operators</li></ul>
         <ul className="net-list">
-          {depots.map(d => <li key={d.city} className={active === d.city ? 'is-active' : undefined} onPointerEnter={() => setActive(d.city)} onFocus={() => setActive(d.city)} tabIndex={0} data-cursor="Depot">
-            <div className="net-head"><h3>{d.city}</h3><p className="net-place">{d.place}</p></div>
+          {DEPOTS.map(d => <li key={d.city} className={active === d.city ? 'is-active' : undefined}>
+            <button type="button" className="net-head" aria-expanded={active === d.city} onClick={() => pick(d.city)}><span className="net-city">{d.city}</span><span className="net-place">{d.place}</span></button>
             <div className="net-more"><div><p>{d.text}</p><figure><img src={d.photo} alt="" loading="lazy" /></figure></div></div>
           </li>)}
         </ul>
+        </div>
       </div>
     </div>
   </section>;
@@ -345,7 +369,7 @@ function Home() {
       </div>
       <div className="hero-shade" aria-hidden="true" />
       <div className="wrap hero-inner">
-        <Lines as="h1" className="display display-hero" lines={['From container', 'to customer,', 'on docket.']} />
+        <Lines as="h1" className="display display-hero" lines={['From container to customer,', 'on docket.']} />
         <p className="hero-text" data-fade="0.4">Warehousing, road freight and approved Amazon FBA deliveries, connected under one team from Sydney and Melbourne.</p>
         <div className="hero-actions" data-fade="0.55"><Button to="/contact">Get a quote</Button><Button to="/tracking" variant="ghost-light">Track a shipment</Button></div>
       </div>
@@ -374,7 +398,6 @@ function Home() {
       <div className="h-track">
         {services.map(s => <Link className="h-card" to={'/services/' + s.slug} key={s.slug} data-cursor="View">
           <figure className="photo"><img src={photos.services[s.slug]} alt={s.imageAlt} loading="lazy" /></figure>
-          <div className="h-meta"><Icon as={serviceIcons[s.slug]} size={30} /><span className="h-tags">{s.tags.join(' · ')}</span></div>
           <h3>{s.title}</h3>
           <p>{s.description}</p>
           <span className="h-more">View service <Arrow /></span>
@@ -478,7 +501,7 @@ function ServicePage() {
 function Why() {
   const blocks = useRef([]);
   return <>
-    <PageHero lines={['Good freight', 'handling starts', 'before dispatch.']} text="Our fleet, operator network and depot processes help keep freight moving from receiving through to delivery." image={photos.why} />
+    <PageHero lines={['Good freight handling', 'starts before dispatch.']} text="Our fleet, operator network and depot processes help keep freight moving from receiving through to delivery." image={photos.why} />
 
     <section className="section">
       <div className="wrap split-head">
@@ -539,7 +562,7 @@ function About() {
   const teams = [['Warehouse', 'Receiving, inspecting, preparing and storing freight.', photos.warehouse], ['Operations', 'Coordinating shipment information, bookings and depot movements.', photos.ops], ['Logistics', 'Connecting collections, transport and delivery with our fleet and operator network.', photos.fleet]];
   const values = [['Our mission', 'Connect international arrivals, warehousing and Australian transport through coordination and careful freight handling.'], ['How we grow', 'Build long-term relationships, strengthen our Australian operation and keep communication at the center of our service.'], ['Our foundations', 'Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.']];
   return <>
-    <PageHero lines={['A family business.', 'An established', 'operation.']} text="Australian-owned logistics with more than 20 years of cargo experience and a hands-on approach to every shipment." image={photos.about} />
+    <PageHero lines={['A family business.', 'An established operation.']} text="Australian-owned logistics with more than 20 years of cargo experience and a hands-on approach to every shipment." image={photos.about} />
 
     <section className="section">
       <div className="wrap story">
@@ -643,7 +666,7 @@ function Tracking() {
       <div className="wrap tk-grid">
         <div className="tk-side">
           <Lines className="display display-l" lines={['From depot', 'to delivery.']} />
-          <div className="tk-copy">{stages.map(([t, d], i) => <div key={t}><Icon as={stageIcons[i]} size={40} /><h3>{t}</h3><p>{d}</p></div>)}</div>
+          <ol className="tk-copy">{stages.map(([t, d], i) => <li key={t}><span className="tk-copy-ico"><Icon as={stageIcons[i]} size={22} /></span><div><h3>{t}</h3><p>{d}</p></div></li>)}</ol>
           <p className="tk-hint">Each scan along the way updates the record linked to your consignment. Example shown.</p>
         </div>
         <div className="tk-card">
@@ -651,7 +674,7 @@ function Tracking() {
             <div><small>Consignment</small><strong>PGL000123456</strong></div>
             <p className="tk-status">{stages.map(([, , s]) => <span key={s}>{s}</span>)}</p>
           </div>
-          <div className="tk-lane"><span>Sydney</span><div className="tk-lane-line"><i className="tk-van"><Icon as={stageIcons[2]} size={22} /></i></div><span>Melbourne</span></div>
+          <div className="tk-lane"><span>Sydney</span><div className="tk-lane-line"><span className="tk-lane-fill" /><i className="tk-van"><Icon as={stageIcons[2]} size={20} /></i></div><span>Melbourne</span></div>
           <ol className="tk-rows">
             <span className="tk-rail" aria-hidden="true"><span className="tk-fill" /></span>
             {stages.map(([t, , , when], i) => <li className="tk-row" key={t}>

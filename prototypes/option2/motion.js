@@ -109,7 +109,7 @@ export function usePageMotion(key) {
       // Hero media settles in, then dims and sinks as the reader leaves it.
       gsap.utils.toArray('[data-hero-media]').forEach(el => {
         gsap.fromTo(el, { scale: 1.15 }, { scale: 1, duration: 2.4, ease, delay: wait });
-        gsap.to(el, { yPercent: 16, filter: 'brightness(0.35)', ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top top', end: 'bottom top', scrub: true } });
+        gsap.to(el, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top top', end: 'bottom top', scrub: true } });
       });
 
       // Numbers count up once.
@@ -191,7 +191,7 @@ export function usePageMotion(key) {
           if (!next) return;
           const inner = card.querySelector('.stack-inner');
           gsap.to(inner, {
-            scale: 0.92, '--dim': 0.3, ease: 'none',
+            '--dim': 0.12, ease: 'none',
             scrollTrigger: { trigger: next, start: 'top 55%', end: 'top 15%', scrub: true },
           });
         });
@@ -222,7 +222,8 @@ export function usePageMotion(key) {
         const fill = section.querySelector('.tk-fill');
         const van = section.querySelector('.tk-van');
         const status = section.querySelectorAll('.tk-status span');
-        const copy = section.querySelectorAll('.tk-copy > div');
+        const copy = section.querySelectorAll('.tk-copy > li');
+        const lane = section.querySelector('.tk-lane-fill');
         const n = rows.length;
         const setStage = i => {
           rows.forEach((r, k) => { r.classList.toggle('is-done', k < i); r.classList.toggle('is-now', k === i); });
@@ -233,15 +234,18 @@ export function usePageMotion(key) {
         const onUpdate = self => setStage(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
         mm.add('(min-width: 1000px)', () => {
           const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: '+=' + n * 70 + '%', scrub: 0.5, pin: true, onUpdate } });
-          tl.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0).fromTo(van, { left: '0%' }, { left: '100%', ease: 'none' }, 0);
+          tl.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0).fromTo(van, { left: '0%' }, { left: '100%', ease: 'none' }, 0).fromTo(lane, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0);
         });
         mm.add('(max-width: 999px)', () => {
           const tl = gsap.timeline({ scrollTrigger: { trigger: section.querySelector('.tk-card'), start: 'top 70%', end: 'bottom 40%', scrub: 0.5, onUpdate } });
-          tl.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0).fromTo(van, { left: '0%' }, { left: '100%', ease: 'none' }, 0);
+          tl.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0).fromTo(van, { left: '0%' }, { left: '100%', ease: 'none' }, 0).fromTo(lane, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0);
         });
       });
 
       // Network routes draw themselves.
+      gsap.utils.toArray('.net-map svg').forEach(svg => {
+        gsap.from(svg.querySelectorAll('.net-pin'), { opacity: 0, duration: 0.8, ease: 'power2.out', stagger: 0.12, scrollTrigger: { trigger: svg, start: 'top 75%' } });
+      });
       gsap.utils.toArray('[data-routes]').forEach(svg => {
         gsap.fromTo(svg.querySelectorAll('.route-path'), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2, ease: 'power2.inOut', stagger: 0.3, scrollTrigger: { trigger: svg, start: 'top 75%' } });
         gsap.from(svg.querySelectorAll('.pin'), { scale: 0, transformOrigin: '50% 50%', duration: 0.8, ease: 'back.out(2)', stagger: 0.15, scrollTrigger: { trigger: svg, start: 'top 75%' } });
@@ -252,10 +256,6 @@ export function usePageMotion(key) {
         ScrollTrigger.create({ trigger: el, start: 'top 60%', end: 'bottom 40%', toggleClass: 'is-active' });
       });
 
-      // Giant footer wordmark slides in.
-      gsap.utils.toArray('[data-wordmark]').forEach(el => {
-        gsap.fromTo(el, { yPercent: 40 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom bottom', scrub: true } });
-      });
     });
     const refresh = () => ScrollTrigger.refresh();
     document.fonts?.ready.then(refresh);
