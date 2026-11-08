@@ -19,6 +19,8 @@ const normalized = (s='') => s.toLowerCase().replace(/[’']/g,'').replace(/\s+/
 const font = f => ({Inter:'Inter Variable',Oswald:'Oswald Variable',mixed:'Inter Variable'})[f] || f || 'Inter Variable';
 const weight = s => /semi/i.test(s)?600:/bold/i.test(s)?700:/medium/i.test(s)?500:400;
 const isVector = n => /^(VECTOR|BOOLEAN_OPERATION|LINE|POLYGON|STAR)$/.test(n.type);
+// Icons drawn from several vectors keep their internal layout at every width.
+const vectorOnly = n => kids(n).length>0 && kids(n).every(c=>isVector(c)||(c.type!=='TEXT'&&vectorOnly(c)));
 
 function gradient(p,w,h){
  const [a,b,c]=p.gradientTransform[0];
@@ -124,7 +126,8 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const effect=extra.effects?.find(e=>e.type==='DROP_SHADOW'&&e.visible);
  const row=s.autoLayout?.direction==='HORIZONTAL'&&!section&&(children.every(k=>k.bounds?.width<250)||b.height<=85);
  const isShape=!children.length&&!isText&&!svg&&!image;
- const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta'].filter(Boolean).join(' ');
+ const icon=!svg&&b.width<=80&&b.height<=80&&vectorOnly(n);
+ const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta',icon&&'fig-icon'].filter(Boolean).join(' ');
  const style={'--x':px(b.x),'--y':px(b.y),'--w':px(b.width),'--h':px(b.height),'--gap':px(s.autoLayout?.gap||10),'--ratio':b.width/Math.max(1,b.height),borderRadius:n.type==='ELLIPSE'?'50%':typeof s.cornerRadius==='number'?s.cornerRadius:undefined,overflow:s.clipsContent?'hidden':undefined,opacity:s.opacity??undefined,boxShadow:effect?[px(effect.offset.x),px(effect.offset.y),px(effect.radius),px(effect.spread||0),rgb(effect.color)].join(' '):undefined};
  if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:weight(s.fontStyle),'--text-size':px(s.fontSize||14),'--leading':s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3',textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
  const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero};

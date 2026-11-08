@@ -8,6 +8,8 @@ import { Design } from './design';
 import { phoenixPaths } from './routes.mjs';
 import './style.css';
 import './motion.css';
+import './experience.css';
+import { startExperience } from './experience.js';
 
 const pages = import.meta.glob('./data/{home,services,tracking,contact,about,why}.json', { import: 'default' });
 const url = new URL(location.href);
@@ -27,16 +29,23 @@ function App({ tree }) {
   const getScale = () => Math.min(1, document.documentElement.clientWidth / 1440);
   const [scale, setScale] = useState(getScale);
   useEffect(() => {
-    const resize = () => setScale(getScale());
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    // Wider than the 1440 artboard: section backgrounds run edge to edge (--bleed) while content stays centred.
+    const measure = () => {
+      const width = document.documentElement.clientWidth, next = getScale();
+      document.documentElement.style.setProperty('--bleed', Math.max(0, (width - 1440) / 2) + 'px');
+      document.documentElement.style.setProperty('--vw', width / next + 'px');
+      setScale(next);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
+  useEffect(() => startExperience(), []);
   useEffect(() => {
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
   }, []);
 
   return <div className="prototype-shell" style={{ '--desktop-scale': scale }}>
-    <div className="dispatch-progress" aria-hidden="true" />
     <Design tree={tree} page={page} />
   </div>;
 }

@@ -12,16 +12,70 @@
     <link rel="icon" type="image/png" href="/assets/phoenix-logo.png" />
     <title>Phoenix Global Logistics</title>
     <style>
-      .dispatch-loader { display: grid; min-height: 100svh; place-content: center; justify-items: center; gap: 20px; color: #232022; font: 13px system-ui, sans-serif; }
-      .dispatch-track { width: 118px; height: 2px; overflow: hidden; background: #f0dfdf; }
-      .dispatch-track::after { content: ''; display: block; height: 100%; width: 40%; background: #e31b24; animation: dispatch-loading 850ms linear infinite; }
-      @keyframes dispatch-loading { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-      @media (prefers-reduced-motion: reduce) { .dispatch-track::after { animation: none; } }
+      /* First-visit loader: a Phoenix truck runs Sydney to Melbourne while the page loads. */
+      html.pgl-loading { overflow: hidden; }
+      .route-loader { position: fixed; inset: 0; z-index: 100; display: grid; place-content: center; justify-items: center; gap: 28px; background: #fff; color: #232022; font: 500 12px/1.4 system-ui, -apple-system, sans-serif; letter-spacing: .14em; text-transform: uppercase; transition: clip-path .9s cubic-bezier(.77,0,.175,1), visibility 0s .9s; clip-path: inset(0 0 0 0); }
+      .route-loader.is-done { clip-path: inset(0 0 100% 0); visibility: hidden; }
+      .route-loader img { width: 72px; height: auto; animation: loader-pop .7s cubic-bezier(.23,1,.32,1) both; }
+      .route-loader__route { position: relative; width: min(320px, 72vw); height: 46px; }
+      .route-loader__road { position: absolute; left: 0; right: 0; bottom: 8px; height: 2px; background: repeating-linear-gradient(90deg, #e6dfdd 0 10px, transparent 10px 18px); }
+      .route-loader__road::after { content: ''; position: absolute; inset: 0; background: #e31b24; transform-origin: left; animation: loader-route 2.2s cubic-bezier(.65,0,.35,1) infinite; }
+      .route-loader__truck { position: absolute; bottom: 10px; left: 0; width: 38px; height: 24px; animation: loader-drive 2.2s cubic-bezier(.65,0,.35,1) infinite; }
+      .route-loader__truck svg { display: block; width: 100%; height: 100%; animation: loader-bump .32s ease-in-out infinite alternate; }
+      .route-loader__stop { position: absolute; bottom: 0; width: 18px; height: 18px; border-radius: 50%; border: 3px solid #e31b24; background: #fff; }
+      .route-loader__stop--from { left: -9px; } .route-loader__stop--to { right: -9px; animation: loader-ping 2.2s ease-out infinite; }
+      .route-loader__cities { display: flex; justify-content: space-between; width: min(320px, 72vw); color: #6c6466; }
+      .route-loader__cities b { color: #232022; font-weight: 600; }
+      .route-loader__status { color: #6c6466; font-size: 11px; }
+      .route-loader__status span::after { content: '…'; display: inline-block; width: 1.2em; text-align: left; animation: loader-dots 1.2s steps(4) infinite; overflow: hidden; vertical-align: bottom; }
+      /* Returning in the same visit: no show, just a quick lift. */
+      html.pgl-returning .route-loader > *:not(img) { display: none; }
+      html.pgl-returning .route-loader img { animation: none; opacity: .9; }
+      @keyframes loader-pop { from { opacity: 0; transform: translateY(10px) scale(.92); } }
+      @keyframes loader-drive { 0% { transform: translateX(-19px); } 85%, 100% { transform: translateX(calc(min(320px, 72vw) - 19px)); } }
+      @keyframes loader-route { 0% { transform: scaleX(0); } 85%, 100% { transform: scaleX(1); } }
+      @keyframes loader-bump { to { transform: translateY(-1.5px); } }
+      @keyframes loader-ping { 0%, 80% { box-shadow: 0 0 0 0 rgba(227,27,36,.45); } 100% { box-shadow: 0 0 0 12px rgba(227,27,36,0); } }
+      @keyframes loader-dots { from { width: 0; } to { width: 1.2em; } }
+      @media (prefers-reduced-motion: reduce) {
+        .route-loader, .route-loader * { animation: none !important; }
+        .route-loader { transition: opacity .3s ease, visibility 0s .3s; clip-path: none; }
+        .route-loader.is-done { opacity: 0; }
+        .route-loader__truck { left: auto; right: 0; }
+        .route-loader__road::after { transform: none; }
+      }
     </style>
+    <script>
+      (function () {
+        var c = document.documentElement.classList;
+        c.add('pgl-loading');
+        var back = false;
+        try { back = !!sessionStorage.getItem('pgl-arrived'); } catch (e) {}
+        if (back) c.add('pgl-returning');
+        // First visit: let the truck finish one full run before the curtain lifts.
+        document.documentElement.dataset.loaderMin = back || matchMedia('(prefers-reduced-motion: reduce)').matches ? '0' : '2000';
+        // Safety net: never trap the page behind the loader.
+        setTimeout(function () {
+          var l = document.getElementById('route-loader');
+          if (l) { l.classList.add('is-done'); c.remove('pgl-loading'); c.add('is-ready'); }
+        }, 8000);
+      })();
+    </script>
   </head>
   <body>
-    <div id="root"><div class="dispatch-loader" role="status" aria-label="Loading Phoenix Global Logistics"><img src="/assets/phoenix-logo.png" width="61" height="52" alt="" /><span class="dispatch-track" aria-hidden="true"></span></div></div>
-    <noscript>This site requires JavaScript. Contact Phoenix for freight, warehouse and delivery enquiries.</noscript>
+    <div id="route-loader" class="route-loader" role="status" aria-busy="true" aria-label="Loading Phoenix Global Logistics">
+      <img src="/assets/phoenix-logo.png" width="61" height="52" alt="" />
+      <div class="route-loader__route" aria-hidden="true">
+        <span class="route-loader__road"></span>
+        <span class="route-loader__stop route-loader__stop--from"></span>
+        <span class="route-loader__stop route-loader__stop--to"></span>
+        <span class="route-loader__truck"><svg viewBox="0 0 38 24" fill="none"><path d="M1 3h22v15H1z" fill="#e31b24"/><path d="M23 8h8l6 6v4H23z" fill="#232022"/><path d="M26 10h4l3 3h-7z" fill="#cfe2f3"/><circle cx="8" cy="19.5" r="3.2" fill="#232022" stroke="#fff" stroke-width="1.4"/><circle cx="30" cy="19.5" r="3.2" fill="#232022" stroke="#fff" stroke-width="1.4"/></svg></span>
+      </div>
+      <div class="route-loader__cities" aria-hidden="true"><span><b>SYD</b> depot</span><span><b>MEL</b> depot</span></div>
+      <p class="route-loader__status"><span>Preparing your shipment tools</span></p>
+    </div>
+    <div id="root" class="app-root"></div>
+    <noscript><style>.route-loader { display: none; } html.pgl-loading { overflow: auto; }</style>This site requires JavaScript. Contact Phoenix for freight, warehouse and delivery enquiries.</noscript>
     <script type="module" src="/prototypes/phoenix/main.jsx"></script>
   </body>
 </html>
