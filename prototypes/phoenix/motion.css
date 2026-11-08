@@ -116,23 +116,11 @@
   .fig-photo:not([data-layer="198:556"]) .image-paint img { transition: transform 280ms var(--ease-out); }
   .fig-photo:not([data-layer="198:556"]):hover .image-paint img,
   a[data-name^="Service row"]:hover .image-paint img { transform: scale(1.035); }
-  .fig-button:is(a,button)::after {
-    content: '';
-    position: absolute;
-    inset: auto 10px 4px;
-    height: 1px;
-    background: var(--red);
-    opacity: 0;
-    transform: scaleX(.25);
-    transition: opacity 140ms ease, transform 160ms var(--ease-out);
-    pointer-events: none;
-  }
-  .fig-button:is(a,button):hover::after { opacity: 1; transform: scaleX(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .process-swap,.quick-quote,.mobile-header details[open] nav,
-  .fig-button:is(a,button),.fig-button:is(a,button)::after,
+  .fig-button:is(a,button),
   .fig-photo .image-paint img,
   :is([data-name^="Sector / "], [data-name="Type-Card"])::before { transition: none; }
   .fig-photo .image-paint img { transform: none !important; }

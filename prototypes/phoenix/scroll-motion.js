@@ -37,8 +37,13 @@ export function connectScrollMotion(viewport) {
         const paint = photo.querySelector(':scope > .paint-group > .image-paint');
         if (!paint) continue;
         if (photo.dataset.layer === '198:556') {
-          gsap.fromTo(paint, { y: 24 }, { y: -24, ease: 'none',
-            scrollTrigger: { trigger: photo, start: 'top bottom', end: 'bottom top', scrub: true },
+          // Parallax truck: it rises against the copy and rolls in a short way as the section passes.
+          gsap.fromTo(paint, { y: 36, x: -80 }, { y: -36, x: 24, ease: 'none',
+            scrollTrigger: { trigger: photo, start: 'top bottom', end: 'bottom top', scrub: .6 },
+          });
+          const copy = [...section.children].filter(child => child !== photo && !child.matches('.fig-blur, .motion-seam, .paint-group'));
+          if (copy.length) gsap.fromTo(copy, { y: -30 }, { y: 30, ease: 'none',
+            scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: .6 },
           });
           continue;
         }
