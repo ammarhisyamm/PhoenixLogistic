@@ -177,8 +177,8 @@ html:not(.motion) .curtain { display: none; }
 .hero-inner { position: relative; padding-top: 140px; padding-bottom: clamp(64px, 11vh, 128px); }
 .hero-text { max-width: 500px; margin-top: 28px; font-size: clamp(17px, 1.3vw, 19px); color: #ffffffe6; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
-.hero-badge { position: absolute; right: var(--gutter); bottom: clamp(64px, 11vh, 128px); display: flex; align-items: center; gap: 14px; padding: 16px 20px; border: 1px solid #ffffff3d; background: #1210114d; backdrop-filter: blur(10px); font-size: 14px; font-weight: 500; }
-.hero-badge svg { color: var(--white); }
+.hero-badge { position: absolute; right: var(--gutter); bottom: clamp(64px, 11vh, 128px); display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: #12101166; backdrop-filter: blur(10px); font-size: 14px; font-weight: 500; }
+.hero-badge svg { flex: none; color: var(--white); }
 .hero-badge small { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: #ffffffb3; }
 
 /* ---------- Page hero ---------- */
