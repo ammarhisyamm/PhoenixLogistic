@@ -235,42 +235,58 @@ export function usePageMotion(key) {
         });
       });
 
-      // Home tracking band: the truck drives along the lane and lights each stop it passes.
-      gsap.utils.toArray('[data-tband]').forEach(section => {
-        const road = section.querySelector('.tband-road');
-        const truck = section.querySelector('.tband-truck');
-        const trail = section.querySelector('.tband-trail');
-        const stops = section.querySelectorAll('.tband-stops li');
-        const update = () => {
-          const r = road.getBoundingClientRect();
-          const t = truck.getBoundingClientRect();
-          const head = (t.right - r.left) / r.width;
-          trail.style.transform = `scaleX(${Math.max(0, Math.min(1, head))})`;
-          stops.forEach(li => li.classList.toggle('is-on', head >= Number(li.style.getPropertyValue('--x'))));
-        };
-        gsap.fromTo(truck, { x: () => -truck.offsetWidth }, {
-          x: () => road.clientWidth, ease: 'none', onUpdate: update,
-          scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom 35%', scrub: 0.8, invalidateOnRefresh: true },
-        });
-        update();
-      });
-
-      // Tracking page: the truck stays mid-screen while the road scrolls under it;
-      // the trail fills behind it and each milestone switches on as it is reached.
+      // Tracking page: the stage stays in view while the milestone cards scroll past.
+      // The truck drives across the stage and each card switches on as it reaches the middle.
       gsap.utils.toArray('[data-route]').forEach(section => {
-        const body = section.querySelector('.route-body');
+        const list = section.querySelector('.route-stops');
         const stops = gsap.utils.toArray(section.querySelectorAll('[data-stop]'));
         const states = section.querySelectorAll('.route-state span');
         const sync = () => {
           const n = stops.filter(s => s.classList.contains('is-on')).length;
           states.forEach((s, k) => s.classList.toggle('is-on', k === Math.max(0, n - 1)));
         };
-        gsap.fromTo(section.querySelector('.route-trail'), { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: body, start: 'top 50%', end: 'bottom 50%', scrub: true } });
+        const scrub = { trigger: list, start: 'top 60%', end: 'bottom 60%', scrub: 0.6 };
+        gsap.timeline({ scrollTrigger: scrub })
+          .fromTo(section.querySelector('.route-truck'), { xPercent: 55 }, { xPercent: -20, ease: 'none' }, 0)
+          .fromTo(section.querySelector('.route-trail'), { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0)
+          .fromTo(section.querySelector('.route-lane'), { backgroundPositionX: '0px' }, { backgroundPositionX: '600px', ease: 'none' }, 0);
+        gsap.to(section.querySelector('.route-truck'), { y: -1.5, duration: 0.16, ease: 'sine.inOut', yoyo: true, repeat: -1 });
         stops.forEach(stop => {
-          ScrollTrigger.create({ trigger: stop, start: 'top 55%', onEnter: () => { stop.classList.add('is-on'); sync(); }, onLeaveBack: () => { stop.classList.remove('is-on'); sync(); } });
-          gsap.from(stop.querySelector('.route-card'), { y: 60, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: stop, start: 'top 80%' } });
+          ScrollTrigger.create({ trigger: stop, start: 'top 60%', onEnter: () => { stop.classList.add('is-on'); sync(); }, onLeaveBack: () => { stop.classList.remove('is-on'); sync(); } });
         });
         sync();
+      });
+
+      // Story road: the truck drives left, the giant word slides, and the chapters scroll sideways.
+      gsap.utils.toArray('[data-sroad]').forEach(section => {
+        const truck = section.querySelector('.sroad-truck');
+        const ghost = section.querySelector('.sroad-ghost');
+        const track = section.querySelector('.sroad-track');
+        gsap.to(truck.querySelector('img'), { y: -2, duration: 0.18, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+        mm.add('(min-width: 1000px)', () => {
+          const distance = () => Math.max(0, track.scrollWidth - (window.innerWidth - track.getBoundingClientRect().left + gsap.getProperty(track, 'x')) + 40);
+          const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: () => '+=' + (distance() + window.innerHeight * 0.6), scrub: 0.6, pin: true, invalidateOnRefresh: true } });
+          tl.fromTo(truck, { x: () => window.innerWidth * 0.1 }, { x: () => -window.innerWidth * 0.62, ease: 'none', duration: 1 }, 0)
+            .fromTo(ghost, { xPercent: 0 }, { xPercent: -30, ease: 'none', duration: 1 }, 0)
+            .fromTo(track, { x: 0 }, { x: () => -distance(), ease: 'none', duration: 1 }, 0)
+            .from(track.children, { opacity: 0.25, stagger: 0.12, duration: 0.2, ease: 'none' }, 0);
+        });
+        mm.add('(max-width: 999px)', () => {
+          gsap.fromTo(truck, { x: () => window.innerWidth * 0.2 }, { x: () => -window.innerWidth * 0.3, ease: 'none', scrollTrigger: { trigger: section, start: 'top bottom', end: 'top 20%', scrub: 0.6 } });
+        });
+      });
+
+      // Orbit: the photo opens to full screen, the title gives way, and the points appear in turn.
+      gsap.utils.toArray('[data-orbit]').forEach(section => {
+        mm.add('(min-width: 1000px)', () => {
+          const items = section.querySelectorAll('.orbit-col li');
+          const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: '+=' + (120 + items.length * 40) + '%', scrub: 0.6, pin: true } });
+          tl.fromTo(section.querySelector('.orbit-media'), { clipPath: 'inset(16% 32% 16% 32%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none', duration: 1 })
+            .fromTo(section.querySelector('.orbit-media img'), { scale: 1.3 }, { scale: 1, ease: 'none', duration: 1 }, 0)
+            .fromTo(section.querySelector('.orbit-shade'), { opacity: 0 }, { opacity: 0.62, ease: 'none', duration: 0.8 }, 0.5)
+            .to(section.querySelector('.orbit-title'), { opacity: 0, scale: 0.92, filter: 'blur(8px)', ease: 'none', duration: 0.5 }, 1)
+            .fromTo(items, { opacity: 0, y: 40, filter: 'blur(10px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', ease: 'power1.out', duration: 0.5, stagger: 0.35 }, 1.2);
+        });
       });
 
       // Network routes draw themselves.
