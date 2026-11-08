@@ -26,13 +26,12 @@ if (url.searchParams.has('page') || url.searchParams.has('compare')) {
 }
 
 function App({ tree }) {
-  const getScale = () => Math.min(1, document.documentElement.clientWidth / 1440);
+  const getScale = () => document.documentElement.clientWidth / 1440;
   const [scale, setScale] = useState(getScale);
   useEffect(() => {
-    // Wider than the 1440 artboard: section backgrounds run edge to edge (--bleed) while content stays centred.
+    // The artboard scales to the window width; --vw is the layout width in artboard pixels (used by the fixed header).
     const measure = () => {
       const width = document.documentElement.clientWidth, next = getScale();
-      document.documentElement.style.setProperty('--bleed', Math.max(0, (width - 1440) / 2) + 'px');
       document.documentElement.style.setProperty('--vw', width / next + 'px');
       setScale(next);
     };

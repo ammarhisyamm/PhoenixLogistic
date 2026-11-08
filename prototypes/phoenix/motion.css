@@ -1,12 +1,72 @@
 /* Motion follows a freight route: departure, hand-offs, arrival. */
-.fig-hero > .paint-group { background: #171416; }
+
+/* The base layout remains readable even before the motion module loads. */
+.hero-line { display: block; overflow: clip; overflow-clip-margin: .12em; }
+.hero-line > span { display: block; }
+.motion-seam {
+  position: absolute;
+  inset: 0 clamp(18px,5.55%,80px) auto;
+  height: 2px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(90deg, #e31b24b0, #e31b2418 75%, transparent);
+  transform-origin: left;
+}
+.motion-metric { font-variant-numeric: tabular-nums; white-space: nowrap; }
+[data-motion-card] { --card-arrival: 15px; }
+.process-index {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 16px);
+  translate: 0 -50%;
+  white-space: nowrap;
+  font: 600 13px/1 'Inter Variable', sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: #ad1018;
+}
+.process-index span { color: #686164; }
+.delivery-route { position: absolute; inset: -14px 0 auto; height: 2px; background: #e7dedc; pointer-events: none; }
+.delivery-route-fill { display: block; height: 100%; background: var(--red); transform: scaleX(0); transform-origin: left; }
+[data-route-current] { outline: 2px solid #e31b24; outline-offset: -2px; }
+@media (max-width: 999px) {
+  [data-motion-card] { --card-arrival: 9px; }
+  .process-index { position: static; translate: none; align-self: center; }
+  .delivery-route { inset: -8px 0 auto; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
-  /* Hero and scroll reveals live in experience.css */
+  .fig-hero > .paint-group { background: #171416; }
+  .fig-hero > .paint-group img[data-loaded] { animation: fleet-arrival 820ms var(--ease-out) both; }
+  .fig-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: #171416;
+    animation: hero-curtain 700ms var(--ease-out) both;
+  }
+  .fig-hero > .fig-node:not(.fig-header) { z-index: 1; animation: route-arrival 550ms 130ms var(--ease-out) both; }
+  .fig-hero .hero-line > span { animation: headline-arrival 680ms 100ms var(--ease-out) both; }
+  .fig-hero .hero-line:nth-child(2) > span { animation-delay: 185ms; }
+  .fig-hero > [data-name="Quick tools card"] { animation-delay: 230ms; }
+  .fig-header,.mobile-header { animation: nav-arrival 420ms var(--ease-out) both; }
+  .fig-section[data-arrived] > .fig-node:not(.fig-blur,.fig-heading,[data-layer="198:556"],[data-motion-card]) {
+    animation: route-arrival 500ms var(--ease-out) backwards;
+  }
+  [data-motion-card][data-arrived] { animation: card-arrival 480ms var(--ease-out) backwards; }
+  [data-motion-card][data-arrived]:nth-of-type(3n) { animation-delay: 55ms; }
+  [data-motion-card][data-arrived]:nth-of-type(3n + 1) { animation-delay: 105ms; }
   .quote-review[open] { animation: quote-arrival 220ms var(--ease-out) both; }
+  .track-result { animation: route-arrival 220ms var(--ease-out) backwards; }
 
 }
 
+@keyframes fleet-arrival { from { opacity: 0; scale: 1.06; } to { opacity: 1; scale: 1; } }
+@keyframes hero-curtain { from { opacity: .88; } to { opacity: 0; } }
+@keyframes headline-arrival { from { opacity: .36; translate: 0 .8em; } to { opacity: 1; translate: 0 0; } }
+@keyframes nav-arrival { from { opacity: .82; translate: 0 -7px; } to { opacity: 1; translate: 0 0; } }
+@keyframes route-arrival { from { opacity: .72; translate: 0 12px; } }
+@keyframes card-arrival { from { opacity: .64; translate: 0 var(--card-arrival); } }
 @keyframes quote-arrival { from { opacity: .45; scale: .98; } to { opacity: 1; scale: 1; } }
 
 /* The red block opens from the icon corner on the industry and delivery cards. */
@@ -46,4 +106,57 @@
   .fig-photo .image-paint img,
   :is([data-name^="Sector / "], [data-name="Type-Card"])::before { transition: none; }
   .fig-photo .image-paint img { transform: none !important; }
+}
+
+/* Fine-pointer polish and equivalent focus feedback for links. */
+a[data-motion-card]::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+a[data-motion-card]:focus-visible::after { transform: scaleX(1); }
+a[data-name^="Service row"]::before {
+  content: '';
+  position: absolute;
+  top: 26px;
+  right: 26px;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  background: var(--red);
+  clip-path: polygon(25% 10%,90% 10%,90% 75%,74% 75%,74% 37%,21% 90%,10% 79%,63% 26%,25% 26%);
+}
+a[data-name^="Service row"]:focus-visible::before { transform: translate(3px,-3px); }
+@media (max-width: 999px) {
+  a[data-name^="Service row"]::before { top: 12px; right: 14px; }
+}
+.fig-field:focus-within { box-shadow: 0 0 0 2px #e31b2444; }
+.fig-header [aria-current="page"] { text-decoration: underline; text-underline-offset: .36em; text-decoration-color: var(--red); }
+@media (hover: hover) and (pointer: fine) {
+  a[data-motion-card]::after,a[data-name^="Service row"]::before { transition: transform 240ms var(--ease-out); }
+  a[data-name^="Service row"]:hover::before { transform: translate(3px,-3px); }
+  a[data-motion-card]:hover::after { transform: scaleX(1); }
+  [data-motion-card] .fig-photo .image-paint img { transition: transform 280ms var(--ease-out); }
+  [data-motion-card]:hover .fig-photo .image-paint img { transform: scale(1.045); }
+  .fig-header a.fig-text::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 -4px;
+    height: 1px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 160ms var(--ease-out);
+  }
+  .fig-header a.fig-text:hover::after { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  a[data-motion-card]::after,a[data-name^="Service row"]::before,.fig-header a.fig-text::after { transition: none; }
 }

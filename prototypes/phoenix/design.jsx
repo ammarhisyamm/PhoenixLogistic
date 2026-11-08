@@ -4,6 +4,7 @@ import assets from './data/assets.json';
 import paints from './data/paints.json';
 import process from './data/process.json';
 import { phoenixPaths } from './routes.mjs';
+import { isMetric, Metric, usePageMotion } from './motion';
 
 const link = (page, params = {}) => {
  const query = new URLSearchParams(params).toString();
@@ -57,6 +58,7 @@ function hrefFor(value,name,page){
  if(/^(track|track shipment|track a shipment)$/.test(v))return link('tracking');
  if(v==='why phoenix')return link('why');
  if(/^(about|about us|about phoenix)$/.test(v))return link('about');
+ if(v==='view services')return '/#services';
  if(/^(services|explore our services)$/.test(v))return page==='home'&&name!=='Services'?'#services':link('services');
  if(v==='privacy policy')return '/privacy';
  if(v.startsWith('terms of carriage'))return '/terms';
@@ -87,9 +89,16 @@ function Field({name,node,parent}){
  const label=words(kids(parent).find(n=>n.name==='Label'));
  const attr={name,'aria-label':label || (name==='consignment'?'Consignment number':name),required:label.includes('*')||name==='consignment'};
  const value=new URLSearchParams(location.search).get(name)||undefined;
+ const placeholder=({
+   from:'Origin suburb or postcode',
+   to:'Destination suburb or postcode',
+   quantity:'Number of pallets or boxes',
+   weight:'E.g. palletised freight or cartons',
+   details:'Include dimensions, total weight and any handling requirements.',
+ })[name]||words(node);
  if(name==='service')return <select {...attr} defaultValue=""><option value="" disabled>Choose a service</option>{services.map(s=><option key={s.slug} value={s.slug}>{s.title}</option>)}</select>;
- if(name==='details')return <textarea {...attr} placeholder={words(node)}/>;
- return <input {...attr} type={({email:'email',phone:'tel',date:'date'})[name]||'text'} placeholder={words(node)} defaultValue={value} maxLength={name==='consignment'?80:undefined}/>;
+ if(name==='details')return <textarea {...attr} placeholder={placeholder}/>;
+ return <input {...attr} type={({email:'email',phone:'tel',date:'date'})[name]||'text'} placeholder={placeholder} defaultValue={value} maxLength={name==='consignment'?80:undefined}/>;
 }
 
 function Node({n,parent,root=false,section=false,inactive=false}){
@@ -111,7 +120,10 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const submit=trackButtons.has(id)||id==='67:1065';
  const previous=id==='119:728',next=id==='119:731';
  const form=trackForms.has(id)||children.some(c=>c.id==='69:1497');
- const cardLink = /^Service row \//.test(name) ? findServiceLink(n,ctx.page) : undefined;
+ const serviceCard = /^Service row \//.test(name);
+ const motionCard = serviceCard || /^(Sector \/|Type-Card$|Depot \/|Trade bridge \/|Proof \/|Quality standard \/|Footer \/ (Company|Services|Operations|Contact))/.test(name) && !isText
+   || ['61:530','209:473','209:479','209:446','209:450','209:452'].includes(id);
+ const cardLink = serviceCard ? findServiceLink(n,ctx.page) : undefined;
  const field=name==='Box'?fieldNames[parent?.id]:undefined;
  const heading=isText&&(s.fontSize??0)>=45&&!/^\d/.test(value);
  const activeTab=tab&&ctx.quickQuote===(id==='187:440');
@@ -133,7 +145,9 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero};
  const oneLine=isText && s.lineHeight?.unit==="PIXELS" && b.height<=s.lineHeight.value+1 && !/[\n\u2028]/.test(value);
  const text=extra.segments?.length?extra.segments.map((q,j)=><span key={j} style={{fontFamily:font(q.fontName?.family),fontWeight:weight(q.fontName?.style),color:q.fills?.[0]?.color?rgb(q.fills[0].color):undefined}}>{q.characters}</span>):(id==='187:418' ? value?.replace('\u2028to ','\u2028To ') : value)?.replaceAll('\u2028','\n');
- return <Tag className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
+ const motionSection = section && !header && !hero && name!=='smooth fade';
+ const heroTitle = heading && ctx.hero && typeof text==='string';
+ return <Tag data-motion-section={motionSection?'':undefined} data-motion-card={motionCard?'':undefined} className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
    aria-label={previous?'Previous process step':next?'Next process step':name==='Logo'&&href?'Phoenix Global Logistics home':undefined}
    role={tab?'tab':id==='187:438'?'tablist':carousel?'region':undefined}
    aria-roledescription={carousel?'carousel':undefined}
@@ -145,7 +159,9 @@ function Node({n,parent,root=false,section=false,inactive=false}){
    type={tag==='button'?submit?'submit':'button':undefined}
    onClick={tab?()=>ctx.setQuickQuote(id==='187:440'):previous?()=>ctx.step(-1):next?()=>ctx.step(1):undefined}
    onSubmit={form?trackForms.has(id)?ctx.track:ctx.quoteSubmit:undefined}>
-   {isText?text:svg?<img src={assetURL(svg.file)} alt="" width={b.width} height={b.height} className="fig-svg"/>:<>
+   {motionSection&&<span className="motion-seam" aria-hidden="true"/>}
+   {id==='62:893'&&<span className="delivery-route" aria-hidden="true"><span className="delivery-route-fill"/></span>}
+   {isText?(isMetric(value)?<Metric value={value}/>:heroTitle?text.split('\n').map((line,i,lines)=><span className="hero-line" key={i}><span>{line}{i<lines.length-1?' ':''}</span></span>):text):svg?<img src={assetURL(svg.file)} alt="" width={b.width} height={b.height} className="fig-svg"/>:<>
      <span className="paint-group" aria-hidden="true">
        {fills.map((p,i)=><Paint key={i} p={p} b={b} eager={hero||header||name==='Logo'}/>)}
        {tab&&ctx.quickQuote&&<span className={'paint '+(activeTab?'tab-selected':'tab-deselected')}/>}
@@ -157,7 +173,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
      id==='119:677'&&(ctx.index!==0||ctx.direction)?<ProcessCards n={n}/>:
      <State.Provider value={scope}>{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
    </>}
-   {carousel&&<span className="sr-only" aria-live="polite">Step {ctx.index+1} of 6</span>}
+   {id==='119:727'&&<span className="process-index" aria-live="polite" aria-label={'Step '+(ctx.index+1)+' of 6'}>{String(ctx.index+1).padStart(2,'0')} <span>/ 06</span></span>}
    {id==='61:858'&&ctx.reference&&<div className="track-result" role="status">For {ctx.reference}, use the link on your booking confirmation or <a href={'mailto:'+transportEmail+'?subject='+encodeURIComponent('Tracking '+ctx.reference)}>email operations</a>.</div>}
  </Tag>;
 }
@@ -185,19 +201,7 @@ export function Design({tree,page}){
  const trigger=useRef(null);
  const modal=useRef(null);
  const viewport=useRef(null);
- useEffect(()=>{
-   if (!('IntersectionObserver' in window)) return;
-   const observer = new IntersectionObserver(entries => {
-     for (const { target, isIntersecting } of entries) {
-       if (!isIntersecting) continue;
-       target.dataset.arrived = '';
-       observer.unobserve(target);
-     }
-   }, { rootMargin: '0px 0px -24px', threshold: 0 });
-   const sections = viewport.current.querySelectorAll('.fig-root > .fig-section:not(.fig-hero,.fig-header):not([data-name="smooth fade"])');
-   sections.forEach(section => observer.observe(section));
-   return () => observer.disconnect();
- }, []);
+ usePageMotion(viewport);
 
  useEffect(()=>{
    if(review&&!modal.current?.open)modal.current?.showModal();

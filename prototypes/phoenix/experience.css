@@ -1,20 +1,11 @@
-/* Layout fixes and motion layered over the Figma render.
-   Motion vocabulary: freight arrives (rise + fade), photos unload (bottom-up unveil),
-   cards respond to the hand (lift, red edge, image push). Only transform, opacity
-   and clip-path animate. */
+/* Layered over style.css and motion.css: floating header, loader hand-off,
+   truck route line, role-aware hovers and the mobile layout fixes.
+   Only transform, opacity, clip-path and colour change. */
 
-:root { --ease-in-out: cubic-bezier(.77,0,.175,1); --bleed: 0px; }
+:root { --ease-in-out: cubic-bezier(.77,0,.175,1); }
 
-/* ---------- Full-bleed desktop ---------- */
+/* ---------- Header (dev note: almost full width, small margin left, right and top) ---------- */
 @media (min-width: 1000px) {
-  .fig-viewport { width: 100%; overflow-x: clip; }
-  .fig-root { margin-left: var(--bleed); overflow: visible !important; }
-  /* Section backgrounds run to the window edge, content stays on the 1440 grid. */
-  .fig-root > .fig-section:not(.fig-header) { left: calc(-1 * var(--bleed)); width: calc(var(--w) + 2 * var(--bleed)); }
-  .fig-root > .fig-section:not(.fig-header) > .fig-node { margin-left: var(--bleed); }
-  .fig-root > .fig-section > .paint-group .image-paint img { object-fit: cover !important; inset: 0 !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; }
-
-  /* Header floats with the page: fixed, hides on the way down, returns on the way up. */
   .fig-root > .fig-header {
     position: fixed; top: 16px; left: 24px; width: calc(var(--vw, 1440px) - 48px); z-index: 20;
     transition: transform .45s var(--ease-out), box-shadow .3s ease;
@@ -22,15 +13,17 @@
   .is-scrolled .fig-root > .fig-header { box-shadow: 0 10px 30px -18px rgba(35,32,34,.45); }
   .header-hidden .fig-root > .fig-header { transform: translateY(calc(-100% - 24px)); }
 }
-
-/* ---------- Mobile header ---------- */
 @media (max-width: 999px) {
   .mobile-header { position: sticky; top: 8px; transition: transform .4s var(--ease-out), box-shadow .3s ease; background: rgba(255,255,255,.96); backdrop-filter: saturate(1.4) blur(8px); }
   .is-scrolled .mobile-header { box-shadow: 0 10px 24px -16px rgba(35,32,34,.4); }
   .header-hidden .mobile-header:not(:has(details[open])) { transform: translateY(calc(-100% - 16px)); }
 }
 
-/* ---------- Route progress: a truck drives along the top as you read ---------- */
+/* The hero choreography in motion.css waits until the loader curtain lifts. */
+html:not(.is-ready) :is(.fig-hero, .fig-hero *, .fig-header, .mobile-header),
+html:not(.is-ready) .fig-hero::before { animation-play-state: paused !important; }
+
+/* ---------- Route line: a truck drives along the top as you read ---------- */
 .route-progress { position: fixed; z-index: 40; inset: 0 0 auto; height: 3px; pointer-events: none; }
 .route-progress__line { position: absolute; inset: 0; background: var(--red); transform: scaleX(0); transform-origin: left; }
 .route-progress__truck { position: absolute; left: 0; top: 3px; width: 30px; height: 19px; opacity: 0; transition: opacity .3s ease; }
@@ -38,80 +31,70 @@
 .route-progress__truck svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
 @media (max-width: 999px) { .route-progress__truck { display: none; } }
 
-@media (prefers-reduced-motion: no-preference) {
-  /* ---------- Hero: waits for the loader, then pulls in ---------- */
-  .fig-hero > .paint-group img { animation: fleet-settle 2.2s var(--ease-out) both; }
-  .fig-hero [data-name="Hero / Heading"] { animation: headline-unload 1.1s var(--ease-in-out) .1s both; }
-  .fig-hero [data-name="Hero / Description"] { animation: route-rise .9s var(--ease-out) .35s both; }
-  .fig-hero [data-name="Frame 1"], .fig-hero [data-name^="Banner / "], .fig-hero .fig-button { animation: route-rise .9s var(--ease-out) .45s both; }
-  .fig-hero [data-name^="Credential"] { animation: route-rise .9s var(--ease-out) .55s both; }
-  .fig-hero [data-name="Quick tools card"] { animation: dock-in 1s var(--ease-out) .5s both; }
-  .fig-hero > .fig-node:not(.fig-header):not([data-name="Quick tools card"]) { animation: route-rise .9s var(--ease-out) .2s both; }
-  html:not(.is-ready) .fig-hero *, html:not(.is-ready) .fig-hero > .paint-group img { animation-play-state: paused; }
+/* ---------- Buttons: hover follows the button's role ----------
+   primary (red) deepens, light/outline flip to charcoal, dark flips to red,
+   text-only buttons draw an underline. The wash slides in from the left on
+   ::after (z -1 keeps it under the label and over the Figma fill). */
+.fig-button:is(a,button) { overflow: hidden; }
+.fig-button:is(a,button)::after {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
+  transform: scaleX(0); transform-origin: left; transition: transform .45s var(--ease-out);
+}
+.btn-primary::after { background: #b8121b; }
+.btn-light::after, .btn-outline::after { background: #232022; }
+.btn-dark::after { background: var(--red); }
+.btn-on-dark.btn-outline::after { background: #fff; }
+.btn-tab::after { display: none; }
+/* Text-only buttons: the underline sits on the label itself */
+.btn-text { overflow: visible; }
+.btn-text::after { display: none; }
+.btn-text .fig-text { background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 2px; transition: background-size .4s var(--ease-out); }
+.btn-text:is(:hover, :focus-visible) .fig-text { background-size: 100% 2px; }
+.fig-button .fig-text { transition: color .3s ease; }
+.fig-button .fig-vector { transition: translate .35s var(--ease-out); }
+.fig-button:is(a,button):focus-visible::after { transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .fig-button:is(a,button):hover::after { transform: none; }
+  .fig-button:is(a,button):hover .fig-vector { translate: 3px 0; }
+}
+:is(.btn-light, .btn-outline, .btn-dark):is(:hover, :focus-visible) .fig-text { color: #fff !important; }
+.btn-on-dark.btn-outline:is(:hover, :focus-visible) .fig-text { color: #232022 !important; }
+.fig-button:is(a,button):active { scale: .97; }
 
-  /* ---------- Scroll arrivals ---------- */
-  .motion-on .fig-section:not(.fig-hero,.fig-header) > .fig-node:not(.fig-blur,[data-layer="198:556"]) { opacity: 0; transform: translateY(32px); transition: opacity .9s var(--ease-out), transform .9s var(--ease-out); }
-  .motion-on .fig-section:not(.fig-hero,.fig-header)[data-arrived] > .fig-node { opacity: 1; transform: none; }
-  .motion-on .fig-section[data-arrived] > .fig-node:nth-of-type(2) { transition-delay: .08s; }
-  .motion-on .fig-section[data-arrived] > .fig-node:nth-of-type(3) { transition-delay: .16s; }
-
-  .motion-on .fig-section:not(.fig-hero) .rv-item { opacity: 0; transform: translateY(28px) scale(.985); transition: opacity .8s var(--ease-out), transform .8s var(--ease-out), box-shadow .35s ease; transition-delay: calc(var(--i, 0) * 80ms + 150ms); }
-  .motion-on .fig-section[data-arrived] .rv-item { opacity: 1; transform: none; }
-
-  .motion-on .fig-section:not(.fig-hero) .rv-photo .image-paint img,
-  .motion-on .fig-section:not(.fig-hero) .rv-photo > .paint-group { clip-path: inset(100% 0 0 0); transition: clip-path 1.2s var(--ease-in-out) .25s; }
-  .motion-on .fig-section:not(.fig-hero) .rv-photo .image-paint img { transform: scale(1.15); transition: clip-path 1.2s var(--ease-in-out) .25s, transform 1.8s var(--ease-out) .25s; }
-  .motion-on .fig-section[data-arrived] .rv-photo .image-paint img,
-  .motion-on .fig-section[data-arrived] .rv-photo > .paint-group { clip-path: inset(0 0 0 0); }
-  .motion-on .fig-section[data-arrived] .rv-photo .image-paint img { transform: none; }
-
-  .motion-on .fig-section:not(.fig-hero) .rv-heading { clip-path: inset(0 0 100% 0); transform: translateY(18px); transition: clip-path 1s var(--ease-in-out) .1s, transform 1s var(--ease-out) .1s; }
-  .motion-on .fig-section[data-arrived] .rv-heading { clip-path: inset(-10% -2% -20% -2%); transform: none; }
-
-  /* Depot rows draw their divider like a route being plotted. */
-  .motion-on [data-layer="193:863"] > .fig-shape { transform: scaleX(0); transform-origin: left; transition: transform 1.4s var(--ease-in-out) .4s; }
-  .motion-on [data-arrived] [data-layer="193:863"] > .fig-shape { transform: none; }
+/* Footer links draw an underline (header links keep motion.css's red rule). */
+.fig-footer a.fig-text { background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px; transition: background-size .35s var(--ease-out), color .2s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .fig-footer a.fig-text:hover { text-decoration: none; background-size: 100% 1px; color: #fff !important; }
+  .fig-header a.fig-text:hover { color: var(--red) !important; text-decoration: none; }
 }
 
-@keyframes fleet-settle { from { transform: scale(1.12); filter: brightness(.6); } to { transform: none; filter: none; } }
-@keyframes headline-unload { from { clip-path: inset(0 0 100% 0); transform: translateY(40px); } to { clip-path: inset(-10% -2% -20% -2%); transform: none; } }
-@keyframes route-rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-@keyframes dock-in { from { opacity: 0; transform: translateY(48px) scale(.97); } to { opacity: 1; transform: none; } }
-
-/* ---------- Card interactions ---------- */
+/* ---------- Cards ---------- */
 @media (hover: hover) and (pointer: fine) {
-  a[data-name^="Service row"] { transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out); }
-  a[data-name^="Service row"]::after {
-    content: ''; position: absolute; inset: 0 0 auto; height: 3px; background: var(--red);
-    transform: scaleX(0); transform-origin: left; transition: transform .5s var(--ease-out); pointer-events: none;
+  /* Service and quality cards lift toward the hand */
+  :is(a[data-name^="Service row"], [data-name="Card"], [data-name^="Quality standard"]):not(.fig-text) {
+    transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out);
   }
-  a[data-name^="Service row"]:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -24px rgba(35,32,34,.45); outline: none; }
-  a[data-name^="Service row"]:hover::after { transform: none; }
-  a[data-name^="Service row"] .image-paint img { transition: transform .8s var(--ease-out), clip-path 1.2s var(--ease-in-out) .25s !important; }
-  a[data-name^="Service row"]:hover .image-paint img { transform: scale(1.07) !important; }
+  :is(a[data-name^="Service row"], [data-name="Card"], [data-name^="Quality standard"]):not(.fig-text):hover {
+    transform: translateY(-6px); box-shadow: 0 24px 40px -24px rgba(35,32,34,.45); outline: none;
+  }
   a[data-name^="Service row"] .fig-icon { transition: transform .45s var(--ease-out); }
   a[data-name^="Service row"]:hover .fig-icon { transform: translateX(4px) rotate(-4deg); }
 
-  /* Industry cards: soft light follows the pointer under the red fill. */
-  [data-name^="Sector / "]:not(.fig-text)::after, [data-name="Type-Card"]::after {
+  /* Industry cards (dev note: rectangle expands to fill): soft light follows the pointer over the red fill */
+  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"])::after {
     content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
     background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.22), transparent 70%);
     transition: opacity .3s ease;
   }
-  [data-name^="Sector / "]:not(.fig-text):hover::after, [data-name="Type-Card"]:hover::after { opacity: 1; }
+  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover::after { opacity: 1; }
   [data-name^="Sector / "]:not(.fig-text) .fig-icon { transition: transform .5s var(--ease-out); }
   [data-name^="Sector / "]:not(.fig-text):hover .fig-icon { transform: scale(1.08); }
 
-  /* Depot rows slide a touch and pick up a red marker. */
-  [data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"] { transition: background-color .3s ease; }
-  [data-name^="Depot / "]:not(.fig-text):hover, [data-name^="Trade bridge"]:hover { background: #fbf3f3; }
-  [data-name^="Depot / "] [data-name="Depot / City"], [data-name^="Trade bridge"] [data-name="Depot / City"] { transition: transform .45s var(--ease-out), color .3s ease; }
+  /* Depot rows tint and the city name slides forward in red */
+  :is([data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"]) { transition: background-color .3s ease; }
+  :is([data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"]):hover { background: #fbf3f3; }
+  [data-name="Depot / City"] { transition: transform .45s var(--ease-out), color .3s ease; }
   :is([data-name^="Depot / "], [data-name^="Trade bridge"]):hover [data-name="Depot / City"] { transform: translateX(14px); color: var(--red) !important; }
-
-  .fig-button:is(a,button) { transition: scale 140ms var(--ease-out), filter .2s ease; }
-  .fig-button:is(a,button):hover { filter: brightness(1.06); }
-  .fig-footer a.fig-text { transition: color .2s ease, transform .3s var(--ease-out); }
-  .fig-footer a.fig-text:hover { color: #fff !important; transform: translateX(3px); text-decoration: none; }
 }
 
 /* ---------- Mobile and tablet layout ---------- */
@@ -133,33 +116,33 @@
   .fig-hero [data-layer="187:423"] { display: none !important; }
   .fig-hero [data-layer="187:421"] { background: var(--red); padding: 12px 18px !important; }
   .fig-hero [data-layer="187:421"] .fig-text { font-size: 16px !important; }
+  .fig-hero [data-layer="187:421"]::after { display: none; }
   .fig-hero [data-name^="Credential / Amazon"] { flex-direction: row !important; align-items: center !important; gap: 14px !important; }
   .fig-hero [data-name="Quick tools card"] { width: 100%; max-width: 560px; box-shadow: 0 24px 40px -24px rgba(0,0,0,.6); }
 
-  /* Proof numbers: big but not shouting */
+  /* Proof numbers */
   [data-name^="Proof / "]:not(.fig-text) { width: 100% !important; gap: 4px !important; padding-block: 18px; }
-  [data-name="Proof / Label"] { font-size: clamp(14px, 4vw, 18px) !important; }
   [data-name="Proof / Number"] { font-size: clamp(48px, 14vw, 80px) !important; line-height: 1 !important; }
+  [data-name="Proof / Label"] { font-size: clamp(14px, 4vw, 18px) !important; }
 
   /* Industry cards: two up, icon tile stays a tile */
   [data-layer="187:609"] > .fig-node { min-height: 150px !important; justify-content: space-between !important; }
-  [data-name^="Sector / "] [data-name^="Frame 1"]:not(.fig-icon), [data-name^="Sector / "] [data-name^="Frame 2"]:not(.fig-icon) { width: 100% !important; padding: 0 !important; }
+  [data-name^="Sector / "] :is([data-name^="Frame 1"], [data-name^="Frame 2"]):not(.fig-icon) { width: 100% !important; padding: 0 !important; }
   [data-name="Sector / Title"] { padding: 0 !important; }
 
   /* Service cards */
   [data-name^="Service row"] { width: 100% !important; }
   [data-name="Service / Content"] { padding: 20px !important; width: 100% !important; }
-  [data-name^="Service / "].fig-photo, [data-name^="Service row"] > .fig-photo { width: 100% !important; max-height: 220px; }
+  [data-name^="Service row"] > .fig-photo { width: 100% !important; max-height: 220px; }
 
   /* Depots */
-  [data-name^="Depot / "]:not(.fig-text) > .fig-node, [data-name^="Trade bridge"] > .fig-node { width: 100% !important; gap: 6px !important; padding-block: 16px; }
+  :is([data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"]) > .fig-node { width: 100% !important; gap: 6px !important; padding-block: 16px; }
   [data-name="Depot / City"] { font-size: clamp(30px, 8vw, 44px) !important; }
 
   /* Footer */
   .fig-footer [data-name="Brand / Phoenix home link"] { align-self: flex-start !important; width: 112px !important; }
   .fig-footer [data-name^="Footer / "]:not(.fig-text) { width: 100% !important; }
 }
-
 @media (min-width: 640px) and (max-width: 999px) {
   /* Tablet: cards and footer columns sit two across */
   .fig-node:has(> [data-name^="Service row"]) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px !important; width: 100% !important; }
@@ -168,68 +151,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fig-root > .fig-header, .mobile-header { transition: none; }
+  .fig-root > .fig-header, .mobile-header, .fig-button:is(a,button)::after, .fig-footer a.fig-text { transition: none; }
   .header-hidden .fig-root > .fig-header, .header-hidden .mobile-header { transform: none; }
-}
-
-/* ---------- Buttons: hover follows the button's role ----------
-   primary (red) darkens, light flips to charcoal, dark flips to red,
-   outline fills, text-only links grow an underline. A wash slides in from
-   the left on ::after (z -1 keeps it under the label, over the Figma fill). */
-.fig-button:is(a,button) { overflow: hidden; }
-.fig-button:is(a,button)::after {
-  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: inherit;
-  transform: scaleX(0); transform-origin: left; transition: transform .45s var(--ease-out);
-}
-.btn-primary::after { background: #b8121b; }
-.btn-light::after, .btn-outline::after { background: #232022; }
-.btn-dark::after { background: var(--red); }
-.btn-on-dark.btn-outline::after { background: #fff; }
-.btn-tab::after { display: none; }
-.btn-text { overflow: visible; }
-.btn-text::after { inset: auto 16px 10px; height: 2px; background: var(--red); z-index: 0; }
-.btn-text.btn-on-dark:not(:has(+ *)):not([data-layer="187:445"])::after, .fig-hero .btn-text::after { background: #fff; }
-.fig-hero [data-name="Quick tools card"] .btn-text::after { background: var(--red); }
-.btn-text .fig-text { color: inherit; }
-.fig-button .fig-text { transition: color .3s ease, translate .35s var(--ease-out); }
-.fig-button:is(a,button):focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
-@media (hover: hover) and (pointer: fine) {
-  .fig-button:is(a,button):hover::after { transform: none; }
-  .btn-light:hover .fig-text, .btn-outline:hover .fig-text, .btn-dark:hover .fig-text { color: #fff !important; }
-  .btn-on-dark.btn-outline:hover .fig-text { color: #232022 !important; }
-  .fig-button:is(a,button):hover .fig-vector { translate: 3px 0; }
-  .fig-button .fig-vector { transition: translate .35s var(--ease-out); }
-}
-.fig-button:is(a,button):active { scale: .97; }
-
-/* Header and footer links: underline draws in from the left. */
-a.fig-text { background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px; transition: background-size .35s var(--ease-out), color .2s ease; }
-@media (hover: hover) and (pointer: fine) {
-  a.fig-text:hover { text-decoration: none; background-size: 100% 1px; }
-  .fig-header a.fig-text:hover { color: var(--red) !important; }
-}
-.fig-header a.fig-text[aria-current="page"] { background-size: 100% 1px; }
-
-/* Form fields: clear focus state */
-.fig-field { transition: box-shadow .2s ease; }
-.fig-field:focus-within { box-shadow: 0 0 0 2px var(--red), 0 0 0 6px rgba(227,27,36,.14); border-radius: 4px; }
-.fig-field input:focus, .fig-field select:focus, .fig-field textarea:focus { outline: none; }
-
-/* Quick tools tabs */
-[data-layer="187:439"], [data-layer="187:440"] { cursor: pointer; }
-[data-layer="187:439"] .fig-text, [data-layer="187:440"] .fig-text { transition: color .25s ease; }
-.tab-selected, .tab-deselected { transition: opacity .25s ease; }
-@starting-style { .tab-selected { opacity: 0; } }
-
-/* Other cards on Why / About / Tracking lift under the pointer */
-@media (hover: hover) and (pointer: fine) {
-  :is([data-name="Card"], [data-name^="Quality standard"]):not(.fig-text) { transition: transform .45s var(--ease-out), box-shadow .45s var(--ease-out); }
-  :is([data-name="Card"], [data-name^="Quality standard"]):not(.fig-text):hover { transform: translateY(-5px); box-shadow: 0 22px 40px -26px rgba(35,32,34,.45); }
-  .fig-photo .image-paint img { transition: transform .8s var(--ease-out); }
-}
-
-/* ---------- Parallax (driven by experience.js setting --py) ---------- */
-@media (prefers-reduced-motion: no-preference) {
-  .has-parallax.paint-group .image-paint img { scale: 1.16; translate: 0 var(--py, 0px); will-change: translate; }
-  [data-layer="198:556"].has-parallax { translate: 0 var(--py, 0px); }
 }

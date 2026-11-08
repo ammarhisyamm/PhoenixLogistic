@@ -1,18 +1,10 @@
-/* Site motion that sits on top of the rendered Figma layers:
-   loader hand-off, header behaviour, the route progress line, staggered
-   arrivals, photo unveils and count-ups. Everything degrades to a static,
-   readable page when motion is reduced or IntersectionObserver is missing. */
+/* Site behaviour layered over the rendered Figma page and the GSAP scroll
+   system in motion.jsx / scroll-motion.js: loader hand-off, the floating
+   header, the truck route line, role-aware button hovers and the pointer
+   light on cards. Reduced motion keeps everything static. */
 
 const html = document.documentElement;
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-// Sections and groups whose children arrive one after another.
-const groupSelectors = [
-  '[data-name^="Service row"]', '[data-name^="Sector / "]:not(.fig-text)', '[data-name^="Depot / "]:not(.fig-text)',
-  '[data-name^="Trade bridge"]', '[data-name^="Proof / "]:not(.fig-text)', '[data-name^="Footer / "]:not(.fig-text)',
-  '[data-name="Type-Card"]', '[data-name="Card"]', '[data-name^="Quality standard"]', '[data-name^="Checklist"]',
-  '[data-name^="Operations / "]:not(.fig-text)', '[data-name^="Credential / "]:not(.fig-text)', '[data-name="Service"]',
-];
 
 function finishLoader() {
   const loader = document.getElementById('route-loader');
@@ -78,55 +70,11 @@ function routeProgress() {
   update();
 }
 
-function stagger(root) {
-  const items = new Set();
-  root.querySelectorAll(groupSelectors.join(',')).forEach(el => {
-    // Only the outermost match animates, so cards don't fade twice.
-    if (el.parentElement?.closest(groupSelectors.join(','))) return;
-    items.add(el);
-  });
-  const byParent = new Map();
-  items.forEach(el => {
-    const list = byParent.get(el.parentElement) || [];
-    list.push(el); byParent.set(el.parentElement, list);
-  });
-  byParent.forEach(list => list.forEach((el, i) => { el.classList.add('rv-item'); el.style.setProperty('--i', String(Math.min(i, 8))); }));
-  root.querySelectorAll('.fig-section:not(.fig-hero):not(.fig-header) .fig-photo, .fig-section:not(.fig-hero):not(.fig-header) [data-name^="Service / "]:not(.fig-text):not(:has(.fig-text))')
-    .forEach(el => el.classList.add('rv-photo'));
-  root.querySelectorAll('.fig-section:not(.fig-hero) .fig-heading').forEach(el => el.classList.add('rv-heading'));
-}
-
-function countUps(root) {
-  const numbers = [...root.querySelectorAll('.fig-text')].filter(el => /^\s*\d[\d,.]*\s*k?\+?\s*$/i.test(el.textContent) && parseFloat(getComputedStyle(el).fontSize) >= 40);
-  if (!numbers.length) return;
-  const run = el => {
-    const raw = el.textContent, match = raw.match(/[\d,.]+/);
-    if (!match) return;
-    const target = parseFloat(match[0].replace(/,/g, '')), decimals = (match[0].split('.')[1] || '').length;
-    const width = el.getBoundingClientRect().width;
-    el.style.minWidth = width + 'px';
-    let start = null;
-    const tick = t => {
-      if (start === null) start = t;
-      const p = Math.min((t - start) / 1500, 1), eased = 1 - Math.pow(1 - p, 4);
-      const value = (target * eased).toFixed(decimals);
-      el.textContent = raw.replace(match[0], Number(value).toLocaleString('en-AU', { minimumFractionDigits: decimals }));
-      if (p < 1) requestAnimationFrame(tick); else el.textContent = raw;
-    };
-    requestAnimationFrame(tick);
-  };
-  const io = new IntersectionObserver(entries => entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    io.unobserve(e.target); run(e.target);
-  }), { threshold: 0.6 });
-  numbers.forEach(n => io.observe(n));
-}
-
 function pointerGlow(root) {
   // Cards lean toward the pointer a little; skipped on touch screens.
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
   root.addEventListener('pointermove', e => {
-    const card = e.target.closest?.('.rv-item');
+    const card = e.target.closest?.('[data-motion-card]');
     if (!card) return;
     const r = card.getBoundingClientRect();
     card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
@@ -151,32 +99,6 @@ function classifyButtons(root) {
   });
 }
 
-// Dev note: parallax on the truck photo, carried through to the big background photos.
-function parallax(root) {
-  const items = [
-    ...root.querySelectorAll('[data-layer="198:556"]'),
-    ...[...root.querySelectorAll('.fig-hero > .paint-group, .fig-cta > .paint-group')],
-  ].map(el => ({ el, depth: el.matches('.paint-group') ? 0.12 : 0.18 }));
-  if (!items.length) return;
-  items.forEach(({ el }) => el.classList.add('has-parallax'));
-  let ticking = false;
-  const update = () => {
-    const vh = window.innerHeight;
-    items.forEach(({ el, depth }) => {
-      const r = el.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > vh + 200) return;
-      // Capped so the photo never slides past its own overscan (scale 1.16 leaves ~8% each side).
-      const limit = el.matches('.paint-group') ? r.height * 0.07 : 64;
-      const offset = Math.max(-limit, Math.min(limit, (r.top + r.height / 2 - vh / 2) * depth));
-      el.style.setProperty('--py', (-offset).toFixed(1) + 'px');
-    });
-    ticking = false;
-  };
-  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  window.addEventListener('resize', update);
-  update();
-}
-
 export function startExperience() {
   const root = document.getElementById('phoenix-design');
   finishLoader();
@@ -186,8 +108,5 @@ export function startExperience() {
   if (reduced() || !('IntersectionObserver' in window)) { html.classList.add('motion-off'); return; }
   html.classList.add('motion-on');
   routeProgress();
-  stagger(root);
-  countUps(root);
   pointerGlow(root);
-  parallax(root);
 }
