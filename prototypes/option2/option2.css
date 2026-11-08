@@ -355,7 +355,7 @@ a.contact-card:hover .arrow { transform: none; }
 .field :is(input, select, textarea):focus { border-color: var(--red); }
 .radios { display: flex; flex-wrap: wrap; gap: 24px; }
 .radios legend { margin-bottom: 12px; }
-.radios label { display: flex; gap: 10px; align-items: center; }
+.radios label { display: flex; gap: 10px; align-items: center; white-space: nowrap; }
 .radios input { accent-color: var(--red); }
 .fine { margin-top: 20px; font-size: 13px; color: var(--muted); }
 .fine a { text-decoration: underline; }

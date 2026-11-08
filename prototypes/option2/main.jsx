@@ -137,7 +137,7 @@ function Footer() {
     <div className="wrap">
       <div className="footer-top">
         <div>
-          <Lines className="display footer-heading" lines={['Freight behind', 'Australian business.']} />
+          <Lines className="display footer-heading" lines={['From container', 'to customer.']} />
           <p className="footer-summary">Australian family-owned logistics, with more than 20 years of cargo experience. ABN {company.abn}</p>
         </div>
         <TrackForm compact />
