@@ -12,7 +12,7 @@ const ease = 'expo.out';
 export function usePageMotion(key) {
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).has('static');
     if (reduce) return undefined;
     const ctx = gsap.context(() => {
       // Headline lines rise out of a mask.

@@ -35,6 +35,14 @@ try {
   const urls = staticPaths.filter(route => route !== '/privacy' && route !== '/tracking');
   await writeFile('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(route=>`  <url><loc>${siteOrigin}${route}</loc></url>`).join('\n')}\n</urlset>\n`);
   await writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`);
+  // Option 2 is a client-routed preview: give each of its routes a copy of its shell.
+  const option2 = await readFile('dist/option-2/index.html', 'utf8');
+  const option2Routes = ['services', 'why-phoenix', 'about', 'contact', 'tracking', ...['amazon-fba-logistics', 'warehousing-and-3pl', 'road-freight-and-transport', 'international-freight', 'customs-clearance', 'dangerous-goods'].map(slug => `services/${slug}`)];
+  for (const route of option2Routes) {
+    await mkdir(path.join('dist/option-2', route), { recursive: true });
+    await writeFile(path.join('dist/option-2', route, 'index.html'), option2);
+    await writeFile(path.join('dist/option-2', `${route}.html`), option2);
+  }
   console.log(`Prerendered ${staticPaths.length} pages, a 404 page and sitemap.`);
 } finally {
   await server.close();

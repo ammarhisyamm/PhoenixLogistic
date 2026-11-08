@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/option-2/:path*", "destination": "/option-2/index.html" }
+    { "source": "/option-2/:path*", "destination": "/option-2" }
   ],
   "redirects": [
     { "source": "/prototypes/phoenix", "destination": "/", "permanent": true },
