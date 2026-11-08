@@ -364,7 +364,7 @@ a.contact-card:hover .arrow { transform: none; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 999px) {
-  .intro-grid, .tracker-grid, .split-head, .faq-grid, .footer-top, .included, .story, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .intro-grid, .tracker-grid, .split-head, .faq-grid, .footer-top, .included, .story, .contact-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .intro-grid .label { margin-bottom: 0; }
   .intro-copy { grid-template-columns: 1fr; margin-top: 40px; }
   .split-head { margin-bottom: 48px; }
