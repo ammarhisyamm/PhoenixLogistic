@@ -48,6 +48,16 @@ function Paint({p,b,eager}){
  </span>;
 }
 
+function buttonVariant(fills,onDark){
+ const solid=fills.find(p=>p.type==='SOLID');
+ if(!solid||(solid.opacity??1)<.2)return onDark?'ghost-dark':'ghost';
+ const c=typeof solid.color==='string'?solid.color.toLowerCase():'#'+['r','g','b'].map(k=>Math.round(solid.color[k]*255).toString(16).padStart(2,'0')).join('');
+ const [r,g,b]=[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));
+ if(r>180&&g<80&&b<80)return 'primary';
+ if(r+g+b<200)return 'dark';
+ return 'light';
+}
+
 function hrefFor(value,name,page){
  const v=normalized(value);
  if(/^[\w.]+@[\w.]+$/.test(v))return 'mailto:'+v;
@@ -136,15 +146,18 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const effect=extra.effects?.find(e=>e.type==='DROP_SHADOW'&&e.visible);
  const row=s.autoLayout?.direction==='HORIZONTAL'&&!section&&(children.every(k=>k.bounds?.width<250)||b.height<=85);
  const isShape=!children.length&&!isText&&!svg&&!image;
- const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta'].filter(Boolean).join(' ');
+ const icon=!isText&&children.length>0&&b.width<=72&&b.height<=72&&!button;
+ const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta',icon&&'fig-icon'].filter(Boolean).join(' ');
  const style={'--x':px(b.x),'--y':px(b.y),'--w':px(b.width),'--h':px(b.height),'--gap':px(s.autoLayout?.gap||10),'--ratio':b.width/Math.max(1,b.height),borderRadius:n.type==='ELLIPSE'?'50%':typeof s.cornerRadius==='number'?s.cornerRadius:undefined,overflow:s.clipsContent?'hidden':undefined,opacity:s.opacity??undefined,boxShadow:effect?[px(effect.offset.x),px(effect.offset.y),px(effect.radius),px(effect.spread||0),rgb(effect.color)].join(' '):undefined};
  if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:weight(s.fontStyle),'--text-size':px(s.fontSize||14),'--leading':s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3',textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
- const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero};
+ const cta=section&&/cta/i.test(name);
+ const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero,dark:ctx.dark||hero||footer||cta};
+ const variant=(href||actions)&&!tab&&(button||submit||previous||next)?buttonVariant(fills,ctx.dark&&!ctx.header):undefined;
  const oneLine=isText && s.lineHeight?.unit==="PIXELS" && b.height<=s.lineHeight.value+1 && !/[\n\u2028]/.test(value);
  const text=extra.segments?.length?extra.segments.map((q,j)=><span key={j} style={{fontFamily:font(q.fontName?.family),fontWeight:weight(q.fontName?.style),color:q.fills?.[0]?.color?rgb(q.fills[0].color):undefined}}>{q.characters}</span>):(id==='187:418' ? value?.replace('\u2028to ','\u2028To ') : value)?.replaceAll('\u2028','\n');
  const motionSection = section && !header && !hero && name!=='smooth fade';
  const heroTitle = heading && ctx.hero && typeof text==='string';
- return <Tag data-motion-section={motionSection?'':undefined} data-motion-card={motionCard?'':undefined} className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
+ return <Tag data-variant={variant} data-motion-section={motionSection?'':undefined} data-motion-card={motionCard?'':undefined} className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
    aria-label={previous?'Previous process step':next?'Next process step':name==='Logo'&&href?'Phoenix Global Logistics home':undefined}
    role={tab?'tab':id==='187:438'?'tablist':carousel?'region':undefined}
    aria-roledescription={carousel?'carousel':undefined}
@@ -158,7 +171,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
    onSubmit={form?trackForms.has(id)?ctx.track:ctx.quoteSubmit:undefined}>
    {motionSection&&<span className="motion-seam" aria-hidden="true"/>}
    {id==='62:893'&&<span className="delivery-route" aria-hidden="true"><span className="delivery-route-fill"/></span>}
-   {isText?(isMetric(value)?<Metric value={value}/>:heroTitle?text.split('\n').map((line,i)=><span className="hero-line" key={i}><span>{line}</span>{i<text.split('\n').length-1?' ':null}</span>):text):svg?<img src={assetURL(svg.file)} alt="" width={b.width} height={b.height} className="fig-svg"/>:<>
+   {isText?(isMetric(value)?<Metric value={value}/>:heroTitle?text.split('\n').map((line,i,all)=><span className="hero-line" key={i}><span>{line}{i<all.length-1?' ':null}</span></span>):text):svg?<img src={assetURL(svg.file)} alt="" width={b.width} height={b.height} className="fig-svg"/>:<>
      <span className="paint-group" aria-hidden="true">
        {fills.map((p,i)=><Paint key={i} p={p} b={b} eager={hero||header||name==='Logo'}/>)}
        {tab&&ctx.quickQuote&&<span className={'paint '+(activeTab?'tab-selected':'tab-deselected')}/>}

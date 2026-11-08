@@ -127,7 +127,6 @@ a[data-name^="Service row"]:focus-visible { z-index: 2; }
 .quote-review::backdrop { background: #23202280; }
 @media (hover: hover) and (pointer: fine) {
   a.fig-text:hover { text-decoration: underline; text-underline-offset: .2em; }
-  a[data-name^="Service row"]:hover { outline: 1px solid #e31b2466; outline-offset: 3px; }
 }
 
 @media (min-width: 1000px) {

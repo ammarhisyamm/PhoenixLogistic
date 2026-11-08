@@ -13,15 +13,74 @@
     <title>Phoenix Global Logistics</title>
     <style>
       .dispatch-loader { display: grid; min-height: 100svh; background: #faf7f5; place-content: center; justify-items: center; gap: 20px; color: #232022; font: 13px system-ui, sans-serif; }
-      .dispatch-track { position: relative; width: 156px; height: 2px; overflow: hidden; background: #f0dfdf; }
-      .dispatch-track::after { content: ''; display: block; height: 100%; width: 40%; background: #e31b24; animation: dispatch-loading 850ms linear infinite; }
-      @keyframes dispatch-loading { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-      @media (prefers-reduced-motion: reduce) { .dispatch-track::after { animation: none; } }
+      #boot { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 28px; background: #faf7f5; color: #232022; font: 500 13px/1.4 'Inter Variable', system-ui, sans-serif; letter-spacing: .02em; clip-path: inset(0 0 0 0); transition: clip-path 760ms cubic-bezier(.76,0,.24,1); }
+      #boot[hidden] { display: none; }
+      #boot.boot-quick { transition-duration: 420ms; }
+      #boot.boot-done { clip-path: inset(0 0 100% 0); }
+      #boot img.boot-logo { width: 74px; height: auto; opacity: 0; animation: boot-in 500ms cubic-bezier(.23,1,.32,1) forwards; }
+      .boot-route { position: relative; width: min(340px, 78vw); height: 46px; }
+      .boot-road { position: absolute; left: 0; right: 0; bottom: 6px; height: 2px; background: repeating-linear-gradient(90deg, #d9cfcc 0 10px, transparent 10px 18px); animation: boot-lane 600ms linear infinite; }
+      .boot-fill { position: absolute; left: 0; bottom: 6px; height: 2px; width: calc(var(--p, 0) * 100%); background: #e31b24; transition: width 420ms cubic-bezier(.23,1,.32,1); }
+      .boot-stop { position: absolute; bottom: 2px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #faf7f5; border: 2px solid #d9cfcc; transition: border-color 200ms, background 200ms; }
+      .boot-stop.on { border-color: #e31b24; background: #e31b24; }
+      .boot-truck { position: absolute; bottom: 9px; left: calc(var(--p, 0) * 100%); width: 58px; translate: -100% 0; transition: left 420ms cubic-bezier(.23,1,.32,1); animation: boot-bump 420ms ease-in-out infinite alternate; }
+      .boot-status { min-height: 1.4em; color: #686164; display: flex; gap: 10px; align-items: baseline; }
+      .boot-status b { color: #e31b24; font-weight: 600; font-variant-numeric: tabular-nums; }
+      @keyframes boot-in { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+      @keyframes boot-lane { to { background-position: -18px 0; } }
+      @keyframes boot-bump { to { translate: -100% -1px; } }
+      @media (prefers-reduced-motion: reduce) { #boot, .boot-truck, .boot-fill { transition: none; animation: none; } .boot-road { animation: none; } #boot img.boot-logo { opacity: 1; animation: none; } }
     </style>
   </head>
   <body>
-    <div id="root"><div class="dispatch-loader" role="status" aria-label="Loading Phoenix Global Logistics"><img src="/assets/phoenix-logo.png" width="61" height="52" alt="" /><span>Loading Phoenix Global Logistics</span><span class="dispatch-track" aria-hidden="true"></span></div></div>
-    <noscript>This site requires JavaScript. Contact Phoenix for freight, warehouse and delivery enquiries.</noscript>
+    <div id="boot" role="status" aria-live="polite" aria-label="Loading Phoenix Global Logistics">
+      <img class="boot-logo" src="/assets/phoenix-logo.png" width="74" height="63" alt="" />
+      <div class="boot-route" aria-hidden="true">
+        <span class="boot-road"></span><span class="boot-fill"></span>
+        <span class="boot-stop on" style="left:0"></span><span class="boot-stop" style="left:50%"></span><span class="boot-stop" style="left:100%"></span>
+        <svg class="boot-truck" viewBox="0 0 58 28" fill="none"><rect x="0" y="2" width="38" height="19" rx="1.5" fill="#232022"/><circle cx="12" cy="11.5" r="5" fill="#e31b24"/><path d="M38 8h10.5l6.5 7v6H38z" fill="#e31b24"/><path d="M41 10h6.5l4 4.5H41z" fill="#faf7f5"/><circle cx="10" cy="23.5" r="3.5" fill="#232022" stroke="#faf7f5" stroke-width="1.5"/><circle cx="30" cy="23.5" r="3.5" fill="#232022" stroke="#faf7f5" stroke-width="1.5"/><circle cx="48" cy="23.5" r="3.5" fill="#232022" stroke="#faf7f5" stroke-width="1.5"/></svg>
+      </div>
+      <p class="boot-status"><b class="boot-code">PGL-0001</b><span class="boot-text">Collecting your freight</span></p>
+    </div>
+    <div id="root"></div>
+    <script>
+      (function () {
+        var boot = document.getElementById('boot');
+        document.documentElement.classList.add('booting');
+        var seen = false;
+        try { seen = sessionStorage.getItem('phoenix-boot') === '1'; sessionStorage.setItem('phoenix-boot', '1'); } catch (e) {}
+        var started = performance.now(), minimum = seen ? 0 : 1800, ready = false, done = false;
+        var steps = [[.18, 'Collecting your freight'], [.45, 'Sorting at the depot'], [.72, 'Out on the linehaul'], [.88, 'Arriving at destination']];
+        var stops = boot.querySelectorAll('.boot-stop'), text = boot.querySelector('.boot-text'), code = boot.querySelector('.boot-code');
+        code.textContent = 'PGL-' + String(Math.floor(1000 + Math.random() * 9000));
+        if (seen) boot.classList.add('boot-quick');
+        function set(p, label) {
+          boot.style.setProperty('--p', p);
+          if (label) text.textContent = label;
+          stops[1].classList.toggle('on', p >= .5);
+          stops[2].classList.toggle('on', p >= 1);
+        }
+        var i = 0;
+        set(.06);
+        var timer = setInterval(function () { if (i < steps.length) { set(steps[i][0], steps[i][1]); i++; } }, seen ? 120 : 340);
+        function finish() {
+          if (done) return; done = true; clearInterval(timer);
+          set(1, 'Delivered');
+          document.documentElement.classList.remove('booting');
+          setTimeout(function () {
+            boot.classList.add('boot-done');
+            boot.addEventListener('transitionend', function () { boot.hidden = true; }, { once: true });
+            setTimeout(function () { boot.hidden = true; }, 1200);
+          }, seen ? 120 : 380);
+        }
+        window.__phoenixReady = function () {
+          if (ready) return; ready = true;
+          setTimeout(finish, Math.max(0, minimum - (performance.now() - started)));
+        };
+        setTimeout(finish, 6000);
+      })();
+    </script>
+    <noscript><style>#boot{display:none}</style>This site requires JavaScript. Contact Phoenix for freight, warehouse and delivery enquiries.</noscript>
     <script type="module" src="/prototypes/phoenix/main.jsx"></script>
   </body>
 </html>

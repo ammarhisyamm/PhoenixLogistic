@@ -8,6 +8,7 @@ import { Design } from './design';
 import { phoenixPaths } from './routes.mjs';
 import './style.css';
 import './motion.css';
+import './polish.css';
 
 const pages = import.meta.glob('./data/{home,services,tracking,contact,about,why}.json', { import: 'default' });
 const url = new URL(location.href);
@@ -33,6 +34,11 @@ function App({ tree }) {
   }, []);
   useEffect(() => {
     if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    // Lift the loading screen once the hero photograph and fonts are ready.
+    const heroImage = document.querySelector('.fig-hero > .paint-group img');
+    const image = heroImage && !heroImage.complete ? new Promise(done => { heroImage.addEventListener('load', done, { once: true }); heroImage.addEventListener('error', done, { once: true }); }) : null;
+    const timeout = new Promise(done => setTimeout(done, 2500));
+    Promise.race([Promise.all([image, document.fonts?.ready]), timeout]).then(() => window.__phoenixReady?.());
   }, []);
 
   return <div className="prototype-shell" style={{ '--desktop-scale': scale }}>
@@ -46,6 +52,7 @@ let active = true;
 pages['./data/' + page + '.json']().then(tree => {
   if (active) root.render(<App tree={tree} />);
 }).catch(() => {
+  window.__phoenixReady?.();
   if (active) root.render(<p className="dispatch-loader" role="alert">The page could not load. <a href={location.href}>Try again</a></p>);
 });
 if (import.meta.hot) import.meta.hot.dispose(() => { active = false; root.unmount(); });
