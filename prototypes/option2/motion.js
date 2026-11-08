@@ -27,24 +27,43 @@ export function scrollToEl(el, offset = -110) {
   else window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + offset, behavior: 'smooth' });
 }
 
-// Page curtain: covers the screen before a route change and lifts once the new page is in.
-export function coverThen(fn) {
+// Page curtain: a dark panel rises with the logo and the next page's name,
+// a red bar runs along the bottom, and the panel lifts once the new page is in.
+let curtainTl = null;
+let safety = 0;
+export function coverThen(fn, label = '') {
   const el = document.querySelector('.curtain');
   if (!el || isStatic()) { fn(); return; }
-  gsap.timeline()
+  const text = el.querySelector('.curtain-label');
+  if (text) text.textContent = label;
+  curtainTl?.kill();
+  clearTimeout(safety);
+  el.classList.add('is-on');
+  curtainTl = gsap.timeline()
     .set(el, { visibility: 'visible' })
-    .fromTo(el, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.6, ease: 'power3.inOut' })
-    .fromTo(el.querySelector('.curtain-mark'), { yPercent: 60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.4, ease: 'power3.out' }, 0.3)
-    .add(fn);
+    .fromTo(el.querySelector('.curtain-panel'), { yPercent: 100 }, { yPercent: 0, duration: 0.55, ease: 'power3.inOut' })
+    .fromTo(el.querySelectorAll('.curtain-inner > *'), { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.45, ease: 'power3.out', stagger: 0.06 }, 0.25)
+    .fromTo(el.querySelector('.curtain-bar'), { scaleX: 0 }, { scaleX: 0.7, duration: 0.6, ease: 'power2.out' }, 0.1)
+    .add(() => {
+      fn();
+      // If the route does not change (same page), never leave the curtain down.
+      safety = setTimeout(lift, 700);
+    });
 }
 function lift() {
   const el = document.querySelector('.curtain');
-  if (!el || getComputedStyle(el).visibility === 'hidden') return 0;
-  gsap.timeline()
-    .to(el.querySelector('.curtain-mark'), { yPercent: -60, opacity: 0, duration: 0.35, ease: 'power2.in' })
-    .to(el, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.8, ease: 'power3.inOut' }, 0.15)
-    .set(el, { visibility: 'hidden' });
-  return 0.45;
+  clearTimeout(safety);
+  if (!el || !el.classList.contains('is-on')) return 0;
+  el.classList.remove('is-on');
+  curtainTl?.kill();
+  curtainTl = gsap.timeline()
+    .to(el.querySelector('.curtain-bar'), { scaleX: 1, duration: 0.25, ease: 'power2.out' })
+    .to(el.querySelectorAll('.curtain-inner > *'), { yPercent: -80, opacity: 0, duration: 0.3, ease: 'power2.in', stagger: 0.04 }, 0.1)
+    .to(el.querySelector('.curtain-panel'), { yPercent: -100, duration: 0.7, ease: 'power3.inOut' }, 0.2)
+    .to(el.querySelector('.curtain-bar'), { opacity: 0, duration: 0.3 }, 0.3)
+    .set(el, { visibility: 'hidden' })
+    .set(el.querySelector('.curtain-bar'), { opacity: 1, scaleX: 0 });
+  return 0.5;
 }
 
 // Runs once per page render. Every effect is opt-in through a data attribute,
@@ -56,7 +75,7 @@ export function usePageMotion(key) {
     window.scrollTo(0, 0);
     if (isStatic()) {
       const c = document.querySelector('.curtain');
-      if (c) c.style.visibility = 'hidden';
+      if (c) { c.style.visibility = 'hidden'; c.classList.remove('is-on'); }
       return undefined;
     }
     const wait = lift();
@@ -216,30 +235,42 @@ export function usePageMotion(key) {
         });
       });
 
-      // Live consignment: the rail fills and each stage lights up in turn.
-      gsap.utils.toArray('[data-tracker]').forEach(section => {
-        const rows = section.querySelectorAll('.tk-row');
-        const fill = section.querySelector('.tk-fill');
-        const van = section.querySelector('.tk-van');
-        const status = section.querySelectorAll('.tk-status span');
-        const copy = section.querySelectorAll('.tk-copy > li');
-        const lane = section.querySelector('.tk-lane-fill');
-        const n = rows.length;
-        const setStage = i => {
-          rows.forEach((r, k) => { r.classList.toggle('is-done', k < i); r.classList.toggle('is-now', k === i); });
-          status.forEach((s, k) => s.classList.toggle('is-on', k === i));
-          copy.forEach((c, k) => c.classList.toggle('is-on', k === i));
+      // Home tracking band: the truck drives along the lane and lights each stop it passes.
+      gsap.utils.toArray('[data-tband]').forEach(section => {
+        const road = section.querySelector('.tband-road');
+        const truck = section.querySelector('.tband-truck');
+        const trail = section.querySelector('.tband-trail');
+        const stops = section.querySelectorAll('.tband-stops li');
+        const update = () => {
+          const r = road.getBoundingClientRect();
+          const t = truck.getBoundingClientRect();
+          const head = (t.right - r.left) / r.width;
+          trail.style.transform = `scaleX(${Math.max(0, Math.min(1, head))})`;
+          stops.forEach(li => li.classList.toggle('is-on', head >= Number(li.style.getPropertyValue('--x'))));
         };
-        setStage(0);
-        const onUpdate = self => setStage(Math.min(n - 1, Math.floor(self.progress * n * 0.999)));
-        mm.add('(min-width: 1000px)', () => {
-          const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: '+=' + n * 70 + '%', scrub: 0.5, pin: true, onUpdate } });
-          tl.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0).fromTo(van, { left: '0%' }, { left: '100%', ease: 'none' }, 0).fromTo(lane, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0);
+        gsap.fromTo(truck, { x: () => -truck.offsetWidth }, {
+          x: () => road.clientWidth, ease: 'none', onUpdate: update,
+          scrollTrigger: { trigger: section, start: 'top 75%', end: 'bottom 35%', scrub: 0.8, invalidateOnRefresh: true },
         });
-        mm.add('(max-width: 999px)', () => {
-          const tl = gsap.timeline({ scrollTrigger: { trigger: section.querySelector('.tk-card'), start: 'top 70%', end: 'bottom 40%', scrub: 0.5, onUpdate } });
-          tl.fromTo(fill, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0).fromTo(van, { left: '0%' }, { left: '100%', ease: 'none' }, 0).fromTo(lane, { scaleX: 0 }, { scaleX: 1, ease: 'none' }, 0);
+        update();
+      });
+
+      // Tracking page: the truck stays mid-screen while the road scrolls under it;
+      // the trail fills behind it and each milestone switches on as it is reached.
+      gsap.utils.toArray('[data-route]').forEach(section => {
+        const body = section.querySelector('.route-body');
+        const stops = gsap.utils.toArray(section.querySelectorAll('[data-stop]'));
+        const states = section.querySelectorAll('.route-state span');
+        const sync = () => {
+          const n = stops.filter(s => s.classList.contains('is-on')).length;
+          states.forEach((s, k) => s.classList.toggle('is-on', k === Math.max(0, n - 1)));
+        };
+        gsap.fromTo(section.querySelector('.route-trail'), { scaleY: 0 }, { scaleY: 1, ease: 'none', scrollTrigger: { trigger: body, start: 'top 50%', end: 'bottom 50%', scrub: true } });
+        stops.forEach(stop => {
+          ScrollTrigger.create({ trigger: stop, start: 'top 55%', onEnter: () => { stop.classList.add('is-on'); sync(); }, onLeaveBack: () => { stop.classList.remove('is-on'); sync(); } });
+          gsap.from(stop.querySelector('.route-card'), { y: 60, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: stop, start: 'top 80%' } });
         });
+        sync();
       });
 
       // Network routes draw themselves.
@@ -265,19 +296,14 @@ export function usePageMotion(key) {
   }, [key]);
 }
 
-// Header: solid once the hero is behind, hidden while reading down.
-export function useHeader(setState) {
+// Header: floats at the top, docks to the bottom of the screen once the reader scrolls.
+export function useHeader(setDocked) {
   useLayoutEffect(() => {
-    let last = scrollY;
-    const update = () => {
-      const y = scrollY;
-      setState({ solid: y > 80, hidden: y > 480 && y > last + 2 ? true : y < last - 2 || y <= 480 ? false : undefined });
-      last = y;
-    };
+    const update = () => setDocked(scrollY > 160);
     update();
     addEventListener('scroll', update, { passive: true });
     return () => removeEventListener('scroll', update);
-  }, [setState]);
+  }, [setDocked]);
 }
 
 // Small cursor follower: a red dot that becomes a "View" tag over cards.

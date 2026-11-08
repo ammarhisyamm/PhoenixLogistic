@@ -139,85 +139,118 @@ function MegaMenu({ open, onClose }) {
   </div>;
 }
 
+// Floating pill navigation. It sits at the top over the hero and docks to the
+// bottom of the screen, like an app tab bar, once the reader starts scrolling.
 function Header() {
-  const [state, setRaw] = useState({ solid: false, hidden: false });
+  const [docked, setDocked] = useState(false);
   const [open, setOpen] = useState(false);
   const [mega, setMega] = useState(false);
   const timer = useRef(0);
   const { pathname } = useLocation();
-  const set = useCallback(next => setRaw(prev => ({ solid: next.solid, hidden: next.hidden === undefined ? prev.hidden : next.hidden })), []);
-  useHeader(set);
+  useHeader(setDocked);
   useEffect(() => { setOpen(false); setMega(false); }, [pathname]);
   useEffect(() => {
     const esc = e => { if (e.key === 'Escape') { setMega(false); setOpen(false); } };
     addEventListener('keydown', esc);
     return () => removeEventListener('keydown', esc);
   }, []);
-  const hover = on => { clearTimeout(timer.current); timer.current = setTimeout(() => setMega(on), on ? 60 : 180); };
-  const solid = state.solid || open || mega;
+  const hover = on => { clearTimeout(timer.current); timer.current = setTimeout(() => setMega(on), on ? 60 : 200); };
   return <>
-    <div className={'mega-backdrop' + (mega ? ' is-on' : '')} onClick={() => setMega(false)} aria-hidden="true" />
-    <header className={'header' + (solid ? ' is-solid' : '') + (state.hidden && !open && !mega ? ' is-hidden' : '') + (mega ? ' has-mega' : '')}>
+    <div className={'mega-backdrop' + (mega || open ? ' is-on' : '')} onClick={() => { setMega(false); setOpen(false); }} aria-hidden="true" />
+    <header className={'header' + (docked ? ' is-docked' : '') + (mega ? ' has-mega' : '') + (open ? ' has-menu' : '')}>
       <div className="header-bar" onPointerLeave={() => hover(false)}>
         <div className="header-inner">
           <Link to="/" className="brand" aria-label="Phoenix Global Logistics home">
-            <img className="logo-dark" src="/assets/phoenix-logo.png" alt="" width="56" height="48" /><img className="logo-light" src="/assets/phoenix-logo-light.png" alt="" width="56" height="48" />
+            <img src="/assets/phoenix-logo.png" alt="" width="42" height="36" />
             <span>Phoenix<br />Global Logistics</span>
           </Link>
           <nav className="nav" aria-label="Main">
             <button type="button" className={'nav-services' + (pathname.startsWith('/services') ? ' is-current' : '')} aria-expanded={mega} aria-controls="mega" onClick={() => setMega(m => !m)} onPointerEnter={() => hover(true)}>
-              Services<CaretDown size={14} weight="bold" aria-hidden="true" />
+              Services<CaretDown size={12} weight="bold" aria-hidden="true" />
             </button>
             {nav.map(([label, to]) => <NavLink key={to} to={to} onPointerEnter={() => hover(false)} className={({ isActive }) => isActive ? 'is-current' : undefined}>{label}</NavLink>)}
           </nav>
           <div className="header-actions">
-            <Link className="header-link" to="/tracking">Track</Link>
-            <Link className="btn btn-primary btn-small" to="/contact"><BtnText>Get a quote</BtnText></Link>
+            <Link className="header-link" to="/tracking" aria-label="Track a shipment"><Crosshair size={18} weight="regular" aria-hidden="true" /><span>Track</span></Link>
+            <Link className="header-quote" to="/contact"><BtnText>Get a quote</BtnText><ArrowUpRight size={14} weight="bold" aria-hidden="true" /></Link>
             <button className="menu-toggle" aria-expanded={open} aria-controls="menu" onClick={() => setOpen(o => !o)}><span /><span /><span className="sr-only">Menu</span></button>
           </div>
         </div>
         <MegaMenu open={mega} onClose={() => setMega(false)} />
-      </div>
-      <div id="menu" className={'menu' + (open ? ' is-open' : '')} hidden={!open}>
-        <Link to="/" style={{ '--i': 0 }}>Home</Link>
-        <details style={{ '--i': 1 }}>
-          <summary>Services<CaretDown size={18} aria-hidden="true" /></summary>
-          <div className="menu-services">{services.map(s => <Link key={s.slug} to={'/services/' + s.slug}><Icon as={serviceIcons[s.slug]} size={22} />{s.title}</Link>)}</div>
-        </details>
-        {[...nav, ['Track a shipment', '/tracking']].map(([label, to], i) => <Link key={to} to={to} style={{ '--i': i + 2 }}>{label}</Link>)}
+        <div id="menu" className={'menu' + (open ? ' is-open' : '')} hidden={!open}>
+          <Link to="/" style={{ '--i': 0 }}>Home</Link>
+          <details style={{ '--i': 1 }}>
+            <summary>Services<CaretDown size={18} aria-hidden="true" /></summary>
+            <div className="menu-services">{services.map(s => <Link key={s.slug} to={'/services/' + s.slug}><Icon as={serviceIcons[s.slug]} size={22} />{s.title}</Link>)}</div>
+          </details>
+          {[...nav, ['Track a shipment', '/tracking']].map(([label, to], i) => <Link key={to} to={to} style={{ '--i': i + 2 }}>{label}</Link>)}
+        </div>
       </div>
     </header>
   </>;
 }
 
+// Grid footer: every block sits in its own cell of one hairline grid.
 function Footer() {
   return <footer className="footer">
     <div className="wrap">
-      <div className="footer-top">
-        <div>
+      <div className="fgrid">
+        <div className="fcell fcell-lead">
+          <p className="flabel">Phoenix Global Logistics</p>
           <Lines className="display footer-heading" lines={['From container', 'to customer.']} />
-          <p className="footer-summary">Australian family-owned logistics, with more than 20 years of cargo experience. ABN {company.abn}</p>
+          <p className="footer-summary">Australian family-owned logistics, with more than 20 years of cargo experience.</p>
         </div>
-        <TrackForm compact />
-      </div>
-      <div className="footer-cols">
-        <div><h3>Services</h3>{services.map(s => <Link key={s.slug} to={'/services/' + s.slug}>{s.title}</Link>)}</div>
-        <div><h3>Operations & tracking</h3>
-          <Link to="/why-phoenix">Why Phoenix</Link><Link to="/tracking">Track shipment</Link>
-          <a href={company.clientLogin} rel="noopener">Transvirtual client login</a><Link to="/about">About us</Link><Link to="/contact">Sydney & Melbourne depots</Link>
+        <div className="fcell fcell-track"><p className="flabel">Track a shipment</p><TrackForm compact /></div>
+
+        <div className="fcell"><p className="flabel">Services</p>{services.map(s => <Link key={s.slug} to={'/services/' + s.slug}>{s.title}</Link>)}</div>
+        <div className="fcell"><p className="flabel">Company</p>
+          <Link to="/why-phoenix">Why Phoenix</Link><Link to="/about">About us</Link><Link to="/contact">Contact</Link><Link to="/tracking">Track shipment</Link>
+          <a href={company.clientLogin} rel="noopener">Transvirtual client login</a>
         </div>
-        <div><h3>Contact</h3>
+        <div className="fcell"><p className="flabel">Contact</p>
           <a href={'mailto:' + transportEmail}>{transportEmail}</a><a href={'mailto:' + importEmail}>{importEmail}</a>
           <p>Office {company.officeHours}<br />Warehouse {company.warehouseHours}</p>
         </div>
-        <div className="footer-wechat"><img src="/assets/wechat-qr.png" alt="WeChat QR code for Phoenix Global Logistics" loading="lazy" width="96" height="96" /><p>WeChat<br />Scan to connect</p></div>
+        <div className="fcell footer-wechat"><p className="flabel">WeChat</p><img src="/assets/wechat-qr.png" alt="WeChat QR code for Phoenix Global Logistics" loading="lazy" width="96" height="96" /><p>Scan to connect</p></div>
+
+        <div className="fcell fcell-depot"><p className="flabel">Head depot</p><strong>Sydney</strong><span>Wetherill Park, NSW</span></div>
+        <div className="fcell fcell-depot"><p className="flabel">Depot</p><strong>Melbourne</strong><span>Victoria</span></div>
+        <div className="fcell fcell-depot"><p className="flabel">Partners</p><strong>China</strong><span>Air and sea freight</span></div>
+        <div className="fcell fcell-depot fcell-badge"><AmazonLogo size={30} /><span>Amazon Partner Carrier<small>NSW, QLD & VIC</small></span></div>
+
+        <div className="fcell fcell-word" aria-hidden="true"><span>Phoenix</span></div>
+
+        <div className="fcell fcell-legal"><p>© 2026 Phoenix Global Logistics · ABN {company.abn}</p></div>
+        <div className="fcell fcell-legal"><a href="/privacy">Privacy Policy</a></div>
+        <div className="fcell fcell-legal"><a href="/terms">Terms of Carriage</a></div>
+        <div className="fcell fcell-legal"><button type="button" className="to-top" onClick={() => scrollToEl(document.body, 0)}>Back to top <ArrowUpRight size={14} weight="bold" aria-hidden="true" /></button></div>
       </div>
-      <div className="footer-legal"><p>© 2026 Phoenix Global Logistics</p><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Carriage & Conditions</a></div>
     </div>
   </footer>;
 }
 
 /* ---------- Shared scenes ---------- */
+
+// The Phoenix truck seen from above, facing right. Drawn so it can drive along the road scenes.
+function TopTruck({ className = '', vertical }) {
+  return <svg className={'top-truck ' + className} viewBox={vertical ? '0 0 64 250' : '0 0 250 64'} aria-hidden="true"><g transform={vertical ? 'translate(64 0) rotate(90)' : undefined}>
+    <rect x="2" y="4" width="172" height="56" rx="3" fill="#efebe9" stroke="#cfc7c4" />
+    {Array.from({ length: 16 }, (_, i) => <line key={i} x1={12 + i * 10} y1="7" x2={12 + i * 10} y2="57" stroke="#dcd5d2" />)}
+    <rect x="10" y="22" width="40" height="20" fill="#e31b24" />
+    <rect x="174" y="26" width="10" height="12" fill="#3f3c3d" />
+    <rect x="216" y="0" width="7" height="6" rx="1.5" fill="#232022" /><rect x="216" y="58" width="7" height="6" rx="1.5" fill="#232022" />
+    <rect x="184" y="6" width="62" height="52" rx="9" fill="#232022" />
+    <rect x="192" y="14" width="26" height="36" rx="3" fill="#e31b24" />
+    <rect x="232" y="11" width="9" height="42" rx="3" fill="#5c6670" />
+  </g></svg>;
+}
+
+const STAGES = [
+  ['Depot-in', 'Freight received and scanned into the depot.', 'In depot', 'Mon 07:42 · Wetherill Park'],
+  ['Sorting', 'Goods checked on the Red Table, sorted and allocated for their next move.', 'Sorting', 'Mon 09:15 · Red Table'],
+  ['Out for delivery', 'Scanned out at the depot and loaded with a driver for delivery.', 'On the road', 'Tue 06:30 · Linehaul'],
+  ['Signed POD', 'Delivery signature recorded as proof of delivery.', 'Delivered', 'Tue 14:08 · Signed'],
+];
 
 // The Phoenix truck drives across the screen as you scroll; the headline is written in its wake.
 function Drive({ words = ['On the road across', 'NSW, QLD & VIC.'], text, cta }) {
@@ -261,19 +294,6 @@ const DEPOTS = [
   { city: 'Melbourne', place: 'Victoria', text: 'Warehousing and distribution for Victorian customers, linked to Sydney by overnight linehaul.', photo: photos.depots.Melbourne, zoom: 3.4 },
   { city: 'China', place: 'Supply-chain partners', text: 'Consolidation plus air and sea freight into Sydney, cleared and moved on by our team.', photo: photos.depots.China, zoom: 2.6 },
 ];
-const ROUTES = {
-  Sydney: [['Sydney', 'Melbourne'], ['Sydney', 'Brisbane'], ['China', 'Sydney']],
-  Melbourne: [['Sydney', 'Melbourne']],
-  China: [['China', 'Sydney']],
-};
-function arc(a, b) {
-  const [x1, y1] = MAP.cities[a]; const [x2, y2] = MAP.cities[b];
-  const mx = (x1 + x2) / 2; const my = (y1 + y2) / 2;
-  const dx = x2 - x1; const dy = y2 - y1; const bend = Math.hypot(dx, dy) * 0.18;
-  const len = Math.hypot(dx, dy) || 1;
-  return `M${x1} ${y1} Q${mx + (dy / len) * bend} ${my - (dx / len) * bend} ${x2} ${y2}`;
-}
-
 function Network() {
   const [active, setActive] = useState(null);
   const focus = DEPOTS.find(d => d.city === active);
@@ -281,13 +301,12 @@ function Network() {
   // Camera: scale and offset that put the chosen city in the middle of the frame.
   const cam = focus ? (() => { const [x, y] = MAP.cities[focus.city]; const s = focus.zoom; return { s, tx: S / 2 - x * s, ty: S / 2 - y * s }; })() : { s: 1, tx: 0, ty: 0 };
   const at = name => { const [x, y] = MAP.cities[name]; return `translate(${x * cam.s + cam.tx}px, ${y * cam.s + cam.ty}px)`; };
-  const routes = (ROUTES[active] || ROUTES.Sydney).map(([a, b]) => a + '-' + b);
   const pick = city => setActive(a => (a === city ? null : city));
   return <section className="section network">
     <div className="wrap">
       <div className="split-head">
         <Lines className="display display-l" lines={['Two depots and a', 'trade bridge to China.']} />
-        <div data-fade><p>Select a location to fly to it on the map. Coverage runs across NSW, QLD and VIC.</p><Button to="/contact" variant="ghost">Contact our depots</Button></div>
+        <div data-fade><p>Select a location to fly to it on the map. The red area is our road coverage across NSW, QLD and VIC.</p><Button to="/contact" variant="ghost">Contact our depots</Button></div>
       </div>
       <div className={'net-grid' + (active ? ' is-' + active.toLowerCase() : ' is-all')}>
         <div className="net-map">
@@ -297,9 +316,8 @@ function Network() {
               <path d={MAP.rest} className="land" />
               <path d={MAP.cn} className="land land-key" />
               <path d={MAP.au} className="land land-key" />
-              {Object.entries(ROUTES).flatMap(([, r]) => r).filter((r, i, all) => all.findIndex(o => o.join() === r.join()) === i).map(([a, b]) =>
-                <path key={a + b} d={arc(a, b)} className={'net-route' + (routes.includes(a + '-' + b) ? ' is-on' : '')} pathLength="1" />)}
-            </g>
+              <path d={MAP.served} className="land-served" />
+</g>
             <g className="net-pin net-pin-minor" style={{ transform: at('Brisbane') }}><circle r="5" /><text x="12" y="4">Brisbane</text></g>
             {DEPOTS.map(d => <g key={d.city} className={'net-pin' + (active === d.city ? ' is-active' : '')} style={{ transform: at(d.city) }} onClick={() => pick(d.city)}>
               <circle className="net-pulse" r="18" /><circle className="net-dot" r="8" />
@@ -307,13 +325,14 @@ function Network() {
             </g>)}
           </svg>
           <button type="button" className={'net-reset' + (active ? ' is-on' : '')} onClick={() => setActive(null)}><ArrowsOut size={16} aria-hidden="true" />All locations</button>
+          <p className="net-key"><span aria-hidden="true" />Road coverage · NSW, QLD & VIC</p>
         </div>
         <div className="net-side">
         <ul className="net-chips"><li><b data-count="2">2</b> depots</li><li><b data-count="3">3</b> states covered</li><li><span><b data-count="20">20</b>+</span> contracted operators</li></ul>
         <ul className="net-list">
           {DEPOTS.map(d => <li key={d.city} className={active === d.city ? 'is-active' : undefined}>
             <button type="button" className="net-head" aria-expanded={active === d.city} onClick={() => pick(d.city)}><span className="net-city">{d.city}</span><span className="net-place">{d.place}</span></button>
-            <div className="net-more"><div><p>{d.text}</p><figure><img src={d.photo} alt="" loading="lazy" /></figure></div></div>
+            <div className="net-more"><div><p>{d.text}</p></div></div>
           </li>)}
         </ul>
         </div>
@@ -330,18 +349,19 @@ function Sectors() {
     FMCG: 'Regular freight for fast-turning goods between depots, distribution centres and stores.',
     'International imports': 'Container arrivals, customs coordination and onward distribution across Australia.',
   };
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(-1);
   return <section className="section sectors">
     <div className="wrap">
       <div className="split-head">
         <Lines className="display display-l" lines={['Freight behind', 'Australian business.']} />
         <p data-fade>Operational experience across retail, e-commerce, renewable technology, FMCG and international imports.</p>
       </div>
-      <div className="sector-row" data-stagger>
-        {sectors.map((s, i) => <article className={'sector' + (active === i ? ' is-active' : '')} key={s} onPointerEnter={() => setActive(i)} onFocus={() => setActive(i)} tabIndex={0} data-cursor="Explore">
+      <div className={'sector-row' + (active >= 0 ? ' has-active' : '')} data-stagger onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(-1); }}>
+        {sectors.map((s, i) => <article className={'sector' + (active === i ? ' is-active' : '')} key={s} onPointerEnter={e => { if (e.pointerType === 'mouse') setActive(i); }} onClick={() => setActive(a => (a === i ? -1 : i))} onFocus={() => setActive(i)} tabIndex={0}>
           <img src={photos.sectors[s]} alt="" loading="lazy" />
+          <span className="sector-blur" aria-hidden="true" />
           <div className="sector-body">
-            <Icon as={sectorIcons[s]} size={34} />
+            <span className="sector-ico"><Icon as={sectorIcons[s]} size={26} /></span>
             <h3>{s}</h3>
             <div className="sector-more"><div><p>{copy[s]}</p><Link to="/contact" className="text-link">Talk to our team <Arrow /></Link></div></div>
           </div>
@@ -431,10 +451,20 @@ function Home() {
     <Network />
     <Sectors />
 
-    <section className="section-flush tracker-band">
-      <div className="wrap tracker-grid">
-        <Lines className="display display-m" lines={['Where is my', 'freight right now?']} />
-        <div data-fade><TrackForm /><a className="text-link" href={company.clientLogin} rel="noopener">Client login <Arrow /></a></div>
+    <section className="tband" data-tband>
+      <div className="tband-rings" aria-hidden="true">{[0, 1, 2, 3, 4].map(i => <i key={i} style={{ '--r': i }} />)}</div>
+      <div className="wrap tband-grid">
+        <div>
+          <p className="eyebrow" data-fade><span className="live-dot" aria-hidden="true" />Live consignment tracking</p>
+          <Lines className="display display-l" lines={['Where is my', 'freight right now?']} />
+          <p className="tband-text" data-fade>Every scan, from depot-in to signed proof of delivery, updates the record linked to your consignment.</p>
+        </div>
+        <div className="tband-form" data-fade="0.1"><TrackForm /><a className="text-link" href={company.clientLogin} rel="noopener">Transvirtual client login <Arrow /></a></div>
+      </div>
+      <div className="tband-road" aria-hidden="true">
+        <div className="tband-lane"><span className="tband-trail" /></div>
+        <ol className="tband-stops">{STAGES.map(([t, , , when], i) => <li key={t} style={{ '--x': (i + 0.5) / STAGES.length }}><span className="tband-pin" /><b>{t}</b><small>{when}</small></li>)}</ol>
+        <div className="tband-truck"><TopTruck /></div>
       </div>
     </section>
 
@@ -657,38 +687,39 @@ function Field({ label, name, type = 'text', placeholder }) {
 /* ---------- Tracking ---------- */
 
 function Tracking() {
-  const stages = [
-    ['Depot-in', 'Freight received and scanned into the depot.', 'In depot', 'Mon 07:42 · Wetherill Park'],
-    ['Sorting', 'Goods checked, sorted and allocated for their next move.', 'Sorting', 'Mon 09:15 · Red Table'],
-    ['Out for delivery', 'Scanned out at the depot and loaded with a driver for delivery.', 'On the road', 'Tue 06:30 · Linehaul'],
-    ['Signed POD', 'Delivery signature recorded as proof of delivery.', 'Delivered', 'Tue 14:08 · Signed'],
-  ];
   return <>
     <PageHero lines={['Track your', 'shipment.']} text="Use your Transvirtual consignment number or the tracking link issued with your booking confirmation." image={photos.tracking} tall>
       <div className="hero-track" data-fade="0.6"><TrackForm /></div>
     </PageHero>
-    <section className="tracker" data-tracker>
-      <div className="wrap tk-grid">
-        <div className="tk-side">
-          <Lines className="display display-l" lines={['From depot', 'to delivery.']} />
-          <ol className="tk-copy">{stages.map(([t, d], i) => <li key={t}><span className="tk-copy-ico"><Icon as={stageIcons[i]} size={22} /></span><div><h3>{t}</h3><p>{d}</p></div></li>)}</ol>
-          <p className="tk-hint">Each scan along the way updates the record linked to your consignment. Example shown.</p>
-        </div>
-        <div className="tk-card">
-          <div className="tk-top">
+    <section className="route" data-route>
+      <div className="wrap route-head">
+        <Lines className="display display-xl" lines={['From depot', 'to delivery.']} />
+        <div data-fade>
+          <p>Follow one consignment down the road. Each milestone below is a scan that updates the record linked to your consignment number.</p>
+          <div className="route-ticket">
             <div><small>Consignment</small><strong>PGL000123456</strong></div>
-            <p className="tk-status">{stages.map(([, , s]) => <span key={s}>{s}</span>)}</p>
+            <div><small>Lane</small><strong>Sydney → Melbourne</strong></div>
+            <div className="route-state"><small>Status</small><p>{STAGES.map(([, , st], i) => <span key={st} style={{ '--i': i }}>{st}</span>)}</p></div>
           </div>
-          <div className="tk-lane"><span>Sydney</span><div className="tk-lane-line"><span className="tk-lane-fill" /><i className="tk-van"><Icon as={stageIcons[2]} size={20} /></i></div><span>Melbourne</span></div>
-          <ol className="tk-rows">
-            <span className="tk-rail" aria-hidden="true"><span className="tk-fill" /></span>
-            {stages.map(([t, , , when], i) => <li className="tk-row" key={t}>
-              <span className="tk-node"><Icon as={stageIcons[i]} size={24} /></span>
-              <div><h4>{t}</h4><p>{when}</p></div>
-              <CheckCircle className="tk-check" size={24} weight="fill" aria-hidden="true" />
-            </li>)}
-          </ol>
         </div>
+      </div>
+      <div className="route-body">
+        <div className="route-road" aria-hidden="true">
+          <span className="route-trail" />
+          <div className="route-truck"><TopTruck vertical /></div>
+        </div>
+        <ol className="route-stops">
+          {STAGES.map(([t, d, , when], i) => <li className={'route-stop' + (i % 2 ? ' is-right' : ' is-left')} key={t} data-stop>
+            <span className="route-node" aria-hidden="true"><Icon as={stageIcons[i]} size={22} /></span>
+            <article className="route-card">
+              <p className="route-num">{String(i + 1).padStart(2, '0')}<span>/ {String(STAGES.length).padStart(2, '0')}</span></p>
+              <h3>{t}</h3>
+              <p>{d}</p>
+              <p className="route-when"><CheckCircle size={18} weight="fill" aria-hidden="true" />{when}</p>
+            </article>
+          </li>)}
+        </ol>
+        <p className="route-foot">Example shown. Your consignment shows the scans recorded for your freight.</p>
       </div>
     </section>
     <Cta heading={['Need help with', 'a consignment?']} text="For urgent enquiries, include your consignment number and shipment details." />
@@ -700,7 +731,15 @@ function Tracking() {
 function Page({ children }) {
   const { pathname } = useLocation();
   usePageMotion(pathname);
-  return <main id="main">{children}</main>;
+  // Keyed by path so a route change swaps the whole <main>; GSAP pin wrappers inside
+  // the old page then never confuse React when it removes the old sections.
+  return <main id="main" key={pathname}>{children}</main>;
+}
+
+const PAGE_NAMES = { '/': 'Home', '/why-phoenix': 'Why Phoenix', '/about': 'About', '/contact': 'Contact', '/tracking': 'Tracking' };
+function pageName(to) {
+  if (to.startsWith('/services/')) return services.find(s => '/services/' + s.slug === to)?.shortTitle || 'Services';
+  return PAGE_NAMES[to] || 'Phoenix';
 }
 
 // Internal links play the curtain before the route changes.
@@ -718,14 +757,22 @@ function Transitions() {
       const to = url.pathname.slice(BASE.length) || '/';
       e.preventDefault();
       e.stopPropagation();
-      if (to === pathname && !url.hash) return;
-      coverThen(() => navigate(to + url.search + url.hash));
+      if (to === pathname) {
+        if (url.hash) scrollToEl(document.querySelector(url.hash));
+        else scrollToEl(document.body, 0);
+        return;
+      }
+      coverThen(() => navigate(to + url.search + url.hash), pageName(to));
     };
     document.addEventListener('click', click, true);
     return () => document.removeEventListener('click', click, true);
   }, [navigate, pathname]);
   return <>
-    <div className="curtain" aria-hidden="true"><img className="curtain-mark" src="/assets/phoenix-logo-light.png" alt="" width="84" height="72" /></div>
+    <div className="curtain" aria-hidden="true">
+      <div className="curtain-panel" />
+      <div className="curtain-inner"><img className="curtain-mark" src="/assets/phoenix-logo-light.png" alt="" width="64" height="55" /><p className="curtain-label" /></div>
+      <span className="curtain-bar" />
+    </div>
     <div className="cursor" aria-hidden="true" />
   </>;
 }
