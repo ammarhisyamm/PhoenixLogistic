@@ -11,7 +11,7 @@ export function Icon({ name, className = '' }: { name: string; className?: strin
   return <img className={`service-icon ${className}`} src={`/assets/icon-${name}.svg`} width="48" height="48" alt="" aria-hidden="true" />;
 }
 export function Button({ to, children, variant = 'primary', className = '' }: { to: string; children: ReactNode; variant?: 'primary' | 'secondary' | 'light' | 'outline-light'; className?: string }) {
-  return <Link className={`button button--${variant} ${className}`} to={to}>{children}</Link>;
+  return <Link reloadDocument className={`button button--${variant} ${className}`} to={to}>{children}</Link>;
 }
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -27,10 +27,10 @@ export function Header() {
     <a className="skip-link" href="#main">Skip to content</a>
     <header className="site-header pgl-header">
       <div className="container pgl-header-inner">
-        <Link to="/" className="brand" aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo.png" width="94" height="80" alt="Phoenix Global Logistics" /></Link>
+        <Link reloadDocument to="/" className="brand" aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo.png" width="94" height="80" alt="Phoenix Global Logistics" /></Link>
         <nav ref={navRef} id="primary-navigation" className={`pgl-navigation${open ? ' is-open' : ''}`} aria-label="Main navigation">
-          <details className="pgl-service-menu"><summary>Services <CaretDown size={14} aria-hidden="true" /></summary><div className="pgl-service-dropdown">{services.map(service => <Link key={service.slug} to={`/services/${service.slug}`}><Icon name={service.icon} /><span>{service.title}{service.slug === 'dangerous-goods' && <small> Lithium Batteries & Class 9</small>}</span></Link>)}</div></details>
-          <Link to="/why-phoenix">Why Phoenix</Link><Link to="/tracking">Track shipment</Link><Link to="/about">About us</Link><Link to="/contact">Contact</Link>
+          <details className="pgl-service-menu"><summary>Services <CaretDown size={14} aria-hidden="true" /></summary><div className="pgl-service-dropdown">{services.map(service => <Link reloadDocument key={service.slug} to={`/services/${service.slug}`}><Icon name={service.icon} /><span>{service.title}{service.slug === 'dangerous-goods' && <small> Lithium Batteries & Class 9</small>}</span></Link>)}</div></details>
+          <Link reloadDocument to="/why-phoenix">Why Phoenix</Link><Link reloadDocument to="/tracking">Track shipment</Link><Link reloadDocument to="/about">About us</Link><Link reloadDocument to="/contact">Contact</Link>
         </nav>
         <div className="pgl-header-actions"><Button to="/contact#quote-form">Request a quote <Arrow /></Button><button ref={toggleRef} type="button" className="pgl-menu-toggle" aria-expanded={open} aria-controls="primary-navigation" onClick={() => setOpen(!open)}>{open ? 'Close' : 'Menu'}<span aria-hidden="true">{open ? '×' : '☰'}</span></button></div>
       </div>
@@ -68,9 +68,9 @@ export function CtaBand() {
 }
 export function Footer() {
   return <footer className="pgl-footer"><div className="container"><div className="pgl-footer-grid">
-    <div className="pgl-footer-company"><Link to="/" aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo-light.png" width="112" height="96" alt="Phoenix Global Logistics" loading="lazy" /></Link><p>Australian family-owned logistics, with more than 20 years of cargo experience.</p><p>ABN {company.abn}</p></div>
-    <div><h3>Services</h3>{services.map(s => <Link key={s.slug} to={`/services/${s.slug}`}>{s.title}</Link>)}</div>
-    <div><h3>Operations & tracking</h3><Link to="/why-phoenix">Why Phoenix</Link><Link to="/tracking">Track shipment</Link><a href={company.clientLogin} target="_blank" rel="noreferrer">Transvirtual client login</a><Link to="/services/amazon-fba-logistics#carrier-credentials">Amazon carrier credentials</Link><Link to="/about">About us</Link><Link to="/contact#depots">Sydney & Melbourne depots</Link></div>
+    <div className="pgl-footer-company"><Link reloadDocument to="/" aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo-light.png" width="112" height="96" alt="Phoenix Global Logistics" loading="lazy" /></Link><p>Australian family-owned logistics, with more than 20 years of cargo experience.</p><p>ABN {company.abn}</p></div>
+    <div><h3>Services</h3>{services.map(s => <Link reloadDocument key={s.slug} to={`/services/${s.slug}`}>{s.title}</Link>)}</div>
+    <div><h3>Operations & tracking</h3><Link reloadDocument to="/why-phoenix">Why Phoenix</Link><Link reloadDocument to="/tracking">Track shipment</Link><a href={company.clientLogin} target="_blank" rel="noreferrer">Transvirtual client login</a><Link reloadDocument to="/services/amazon-fba-logistics#carrier-credentials">Amazon carrier credentials</Link><Link reloadDocument to="/about">About us</Link><Link reloadDocument to="/contact#depots">Sydney & Melbourne depots</Link></div>
     <div><h3>Contact</h3><a href={`mailto:${transportEmail}`}>{transportEmail}</a><a href={`mailto:${importEmail}`}>{importEmail}</a><p>Office: {company.officeHours}<br />Warehouse: {company.warehouseHours}</p><a className="pgl-wechat-link" href="/assets/wechat-qr.png" target="_blank" rel="noreferrer"><img src="/assets/wechat-qr.png" width="80" height="80" alt="Phoenix WeChat QR code" loading="lazy" /><span>WeChat<br />Scan to connect</span></a></div>
-  </div><div className="pgl-legal"><p>© {new Date().getFullYear()} Phoenix Global Logistics</p><div><Link to="/privacy">Privacy Policy</Link><Link to="/terms">Terms of Carriage & Conditions</Link></div></div></div></footer>;
+  </div><div className="pgl-legal"><p>© {new Date().getFullYear()} Phoenix Global Logistics</p><div><Link reloadDocument to="/privacy">Privacy Policy</Link><Link reloadDocument to="/terms">Terms of Carriage & Conditions</Link></div></div></div></footer>;
 }

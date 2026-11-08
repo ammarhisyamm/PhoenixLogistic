@@ -9,7 +9,7 @@ export function PageCoverHero({ label, title, description, children, service = f
   return <section className={`brand-cover-hero${compact ? ' brand-cover-hero--compact' : ''}${!cover ? ' brand-cover-hero--plain' : ''}`} data-cover-path={pathname}>
     {cover && <img className="brand-cover-image" src={cover.src} width="1600" height="800" style={{objectPosition: cover.position}} alt={cover.alt} fetchPriority="high" />}
     <div className="container brand-cover-content">
-      <nav className="breadcrumb" aria-label="Breadcrumb"><Link to="/">Home</Link><span aria-hidden="true">/</span>{service && <><Link to="/#services">Services</Link><span aria-hidden="true">/</span></>}<span aria-current="page">{label}</span></nav>
+      <nav className="breadcrumb" aria-label="Breadcrumb"><Link reloadDocument to="/">Home</Link><span aria-hidden="true">/</span>{service && <><Link reloadDocument to="/#services">Services</Link><span aria-hidden="true">/</span></>}<span aria-current="page">{label}</span></nav>
       <div className="brand-cover-copy"><h1>{title}</h1><p>{description}</p>{children}</div>
     </div>
   </section>;

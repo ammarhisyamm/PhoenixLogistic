@@ -62,7 +62,7 @@ export function IndustrySectors() {
         </div>
         <div className="industry-panel" role="tabpanel" id="industry-panel" aria-labelledby={`industry-tab-${industry.id}`} tabIndex={0}>
           <img key={industry.image} src={`/assets/${industry.image}.webp`} width="1536" height="1024" alt={industry.alt} loading="lazy" />
-          <div className="industry-panel-copy"><h3>{industry.heading}</h3><p>{industry.description}</p><div className="industry-service-links">{industry.links.map(link => <Link key={link.slug} to={`/services/${link.slug}`}>{link.label}<Arrow /></Link>)}</div></div>
+          <div className="industry-panel-copy"><h3>{industry.heading}</h3><p>{industry.description}</p><div className="industry-service-links">{industry.links.map(link => <Link reloadDocument key={link.slug} to={`/services/${link.slug}`}>{link.label}<Arrow /></Link>)}</div></div>
         </div>
       </div>
     </div>

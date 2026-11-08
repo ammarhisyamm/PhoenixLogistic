@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "redirects": [
+    { "source": "/prototypes/phoenix", "destination": "/", "permanent": true },
+    { "source": "/prototypes/phoenix/index.html", "destination": "/", "permanent": true },
+    { "source": "/services", "destination": "/services/amazon-fba-logistics", "permanent": false },
     { "source": "/services/amazon-fba", "destination": "/services/amazon-fba-logistics", "permanent": false },
     { "source": "/services/warehousing-3pl", "destination": "/services/warehousing-and-3pl", "permanent": false },
     { "source": "/services/road-freight", "destination": "/services/road-freight-and-transport", "permanent": false },

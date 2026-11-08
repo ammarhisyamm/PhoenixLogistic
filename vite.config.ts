@@ -8,7 +8,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         site: resolve('index.html'),
-        prototype: resolve('prototypes/phoenix/index.html'),
+        legacy: resolve('legacy.html'),
       },
     },
   },

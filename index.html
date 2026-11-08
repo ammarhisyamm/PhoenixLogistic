@@ -3,17 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#232022" />
-    <meta name="description" content="Australian family-owned freight forwarding, road transport, warehousing and Amazon FBA logistics. Based in Sydney and Melbourne. Get a quote from Phoenix Global Logistics." />
-    <meta property="og:title" content="Phoenix Global Logistics | National 3PL, road freight &amp; Amazon FBA" />
-    <meta property="og:description" content="Your Australian partner for freight, warehousing and delivery. Sydney, Melbourne and a wider transport network." />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="description" content="Australian family-owned freight forwarding, road transport, warehousing and Amazon FBA logistics." />
+    <meta property="og:title" content="Phoenix Global Logistics" />
+    <meta property="og:description" content="Freight, warehousing and delivery from Sydney and Melbourne." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://phoenix-logistic.vercel.app/assets/phoenix-fleet.webp" />
     <link rel="icon" type="image/png" href="/assets/phoenix-logo.png" />
-    <title>Phoenix Global Logistics | National 3PL, road freight &amp; Amazon FBA</title>
+    <title>Phoenix Global Logistics</title>
+    <style>
+      .dispatch-loader { display: grid; min-height: 100svh; place-content: center; justify-items: center; gap: 20px; color: #232022; font: 13px system-ui, sans-serif; }
+      .dispatch-track { width: 118px; height: 2px; overflow: hidden; background: #f0dfdf; }
+      .dispatch-track::after { content: ''; display: block; height: 100%; width: 40%; background: #e31b24; animation: dispatch-loading 850ms linear infinite; }
+      @keyframes dispatch-loading { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+      @media (prefers-reduced-motion: reduce) { .dispatch-track::after { animation: none; } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="root"><div class="dispatch-loader" role="status" aria-label="Loading Phoenix Global Logistics"><img src="/assets/phoenix-logo.png" width="61" height="52" alt="" /><span class="dispatch-track" aria-hidden="true"></span></div></div>
+    <noscript>This site requires JavaScript. Contact Phoenix for freight, warehouse and delivery enquiries.</noscript>
+    <script type="module" src="/prototypes/phoenix/main.jsx"></script>
   </body>
 </html>

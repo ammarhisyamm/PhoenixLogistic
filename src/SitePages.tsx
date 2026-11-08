@@ -26,7 +26,7 @@ const homeServicePhotography: Record<string, { image: string; alt: string }> = {
 };
 function ServiceCatalogCard({ service, compact = false, photography }: { service: Service; compact?: boolean; photography?: { image: string; alt: string } }) {
   const photo = photography || { image: service.image, alt: service.imageAlt };
-  return <Link className={`service-catalog-card${compact ? ' service-catalog-card--compact' : ''}`} to={`/services/${service.slug}`}>
+  return <Link reloadDocument className={`service-catalog-card${compact ? ' service-catalog-card--compact' : ''}`} to={`/services/${service.slug}`}>
     <div className="service-catalog-photo"><img src={`/assets/${photo.image}.webp`} width="640" height="420" alt={photo.alt} loading="lazy" /></div>
     <div className="service-catalog-copy">
       <h3>{service.title}</h3>
@@ -39,7 +39,7 @@ function FreightQuotePanel({ service, showFaq = false }: { service?: Service; sh
   const destination = service ? `/contact?service=${service.slug}#quote-form` : '/contact#quote-form';
   const email = service?.department === 'import' ? importEmail : transportEmail;
   return <section className="freight-quote-section" id="request-quote" data-home-section={showFaq ? 'contact' : undefined}>
-    {showFaq && <div className="container homepage-quote-questions"><div className="pgl-faq-layout"><div data-reveal><h2>Frequently asked questions</h2><p>Find answers about our services and your shipment.</p><Link to="/contact" className="text-link">Contact us <Arrow /></Link></div><div className="pgl-faq-list" data-reveal>{faqs.map(faq => <details key={faq.question}><summary>{faq.question}<span aria-hidden="true">+</span></summary><p>{faq.answer}</p></details>)}</div></div></div>}
+    {showFaq && <div className="container homepage-quote-questions"><div className="pgl-faq-layout"><div data-reveal><h2>Frequently asked questions</h2><p>Find answers about our services and your shipment.</p><Link reloadDocument to="/contact" className="text-link">Contact us <Arrow /></Link></div><div className="pgl-faq-list" data-reveal>{faqs.map(faq => <details key={faq.question}><summary>{faq.question}<span aria-hidden="true">+</span></summary><p>{faq.answer}</p></details>)}</div></div></div>}
     <div className="container freight-quote-panel">
       <div className="freight-quote-copy" data-reveal>
         <h2>Tell us what you’re moving.</h2>
@@ -64,7 +64,7 @@ export function Home() {
       <div className="container">
         <div className="phoenix-home-intro">
           <h1>Freight, warehousing<br />and Amazon FBA.</h1>
-          <div><p>National 3PL, interstate road freight and approved Amazon FBA inbound logistics. Australian family-owned, with teams in Sydney and Melbourne.</p><div className="phoenix-intro-actions"><Button to="/contact#quote-form">Request a quote <Arrow /></Button><Link to="#services" className="text-link">Explore services <Arrow /></Link></div></div>
+          <div><p>National 3PL, interstate road freight and approved Amazon FBA inbound logistics. Australian family-owned, with teams in Sydney and Melbourne.</p><div className="phoenix-intro-actions"><Button to="/contact#quote-form">Request a quote <Arrow /></Button><Link reloadDocument to="#services" className="text-link">Explore services <Arrow /></Link></div></div>
         </div>
         <figure className="phoenix-home-photo"><img src={pageCovers['/'].src} width="1600" height="800" alt={pageCovers['/'].alt} fetchPriority="high" /></figure>
         <div className="phoenix-shipment-tools" role="group" aria-label="Shipment tools"><QuickTools /></div>
@@ -75,7 +75,7 @@ export function Home() {
       <div className="container">
         <div className="phoenix-home-proof"><CarrierCredential /><div><strong>600+</strong><span>containers / year</span></div><div><strong>660k+</strong><span>boxes processed / year</span></div><div><strong>20+</strong><span>years of logistics experience</span></div></div>
         <p className="phoenix-proof-note">Annual container and box volumes reflect current monthly Amazon throughput. Experience relates to our founders.</p>
-        <div className="phoenix-trust-context"><p>Established in 2021, Phoenix Global Logistics grew from Phoenix International Cargo. Our Australian family-owned business operates from Sydney and Melbourne.</p><div><Link to="/about" className="text-link">About Phoenix <Arrow /></Link><Link to="/services/amazon-fba-logistics#carrier-credentials" className="text-link">View carrier credentials <Arrow /></Link></div></div>
+        <div className="phoenix-trust-context"><p>Established in 2021, Phoenix Global Logistics grew from Phoenix International Cargo. Our Australian family-owned business operates from Sydney and Melbourne.</p><div><Link reloadDocument to="/about" className="text-link">About Phoenix <Arrow /></Link><Link reloadDocument to="/services/amazon-fba-logistics#carrier-credentials" className="text-link">View carrier credentials <Arrow /></Link></div></div>
       </div>
     </section>
 
@@ -97,9 +97,9 @@ export function Home() {
       <div className="container">
         <div className="phoenix-quality-layout">
           <div className="phoenix-quality-visual" data-reveal><img src="/assets/phoenix-quality.webp" width="1536" height="1024" alt="Warehouse team member inspecting a carton at a red quality-control table" loading="lazy" /></div>
-          <div className="phoenix-quality-copy" data-reveal><h2>The Phoenix difference</h2><p>Inspection, secure wrapping and depot scans help prevent transit damage and avoidable Amazon fulfilment-centre rejections.</p><div className="phoenix-quality-points">{[['Phoenix Red Table','Our inspection standard helps identify freight handling and preparation issues.','parcel'],['Automated stretch wrapping','Goods secured for storage and transport.','container'],['Depot-in and depot-out scanning','Consignments recorded as they enter and leave the depot.','document']].map(([title,text,icon]) => <div key={title}><Icon name={icon} /><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><Link to="/why-phoenix" className="text-link">See our quality process <Arrow /></Link></div>
+          <div className="phoenix-quality-copy" data-reveal><h2>The Phoenix difference</h2><p>Inspection, secure wrapping and depot scans help prevent transit damage and avoidable Amazon fulfilment-centre rejections.</p><div className="phoenix-quality-points">{[['Phoenix Red Table','Our inspection standard helps identify freight handling and preparation issues.','parcel'],['Automated stretch wrapping','Goods secured for storage and transport.','container'],['Depot-in and depot-out scanning','Consignments recorded as they enter and leave the depot.','document']].map(([title,text,icon]) => <div key={title}><Icon name={icon} /><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><Link reloadDocument to="/why-phoenix" className="text-link">See our quality process <Arrow /></Link></div>
         </div>
-        <div className="phoenix-process-layout phoenix-quality-process"><div data-reveal><h2>How it works</h2><p>From office intake and depot scans to signed proof of delivery.</p><Link className="text-link" to="/tracking">Track a shipment <Arrow /></Link></div><ol className="phoenix-process-steps">{steps.map(([title,text,icon],index) => <li key={title} data-reveal><div className="phoenix-process-step-heading"><Icon name={icon} /><span aria-hidden="true">{String(index + 1).padStart(2,'0')}</span></div><h3>{title}</h3><p>{text}</p></li>)}</ol></div>
+        <div className="phoenix-process-layout phoenix-quality-process"><div data-reveal><h2>How it works</h2><p>From office intake and depot scans to signed proof of delivery.</p><Link reloadDocument className="text-link" to="/tracking">Track a shipment <Arrow /></Link></div><ol className="phoenix-process-steps">{steps.map(([title,text,icon],index) => <li key={title} data-reveal><div className="phoenix-process-step-heading"><Icon name={icon} /><span aria-hidden="true">{String(index + 1).padStart(2,'0')}</span></div><h3>{title}</h3><p>{text}</p></li>)}</ol></div>
       </div>
     </section>
 
@@ -140,14 +140,14 @@ export function ServicePage() {
 }
 export function WhyPhoenixPage() {
   return <article className="company-page why-page">
-    <PageCoverHero label="Why Phoenix" title="Good freight handling starts before dispatch." description="Our fleet, operator network and depot processes help keep freight moving from receiving through to delivery."><div className="phoenix-intro-actions"><Button to="/contact#quote-form">Talk to our team <Arrow /></Button><Link className="text-link" to="#quality-process">See how we work <Arrow /></Link></div></PageCoverHero>
+    <PageCoverHero label="Why Phoenix" title="Good freight handling starts before dispatch." description="Our fleet, operator network and depot processes help keep freight moving from receiving through to delivery."><div className="phoenix-intro-actions"><Button to="/contact#quote-form">Talk to our team <Arrow /></Button><Link reloadDocument className="text-link" to="#quality-process">See how we work <Arrow /></Link></div></PageCoverHero>
 
     <section className="why-capacity-section" id="fleet" aria-label="Operational scale and fleet">
       <div className="container why-capacity-grid">
         <div className="why-capacity-intro" data-reveal><p className="company-kicker">Operational scale & fleet</p><h2>Owned equipment. A connected transport network.</h2></div>
         <div className="why-capacity-facts">{[['12','owned vehicles','Three vans, two small rigid trucks and seven heavy vehicles.'],['20+','contracted operators','Additional transport capacity through our operator network.'],['18+','internal staff','Warehouse, operations and logistics teams.']].map(([number,label,text]) => <div key={label} data-reveal><strong>{number}</strong><h3>{label}</h3><p>{text}</p></div>)}</div>
       </div>
-      <div className="container why-carrier-context" data-reveal><CarrierCredential /><Link className="text-link" to="/services/amazon-fba-logistics#carrier-credentials">View carrier credentials <Arrow /></Link></div>
+      <div className="container why-carrier-context" data-reveal><CarrierCredential /><Link reloadDocument className="text-link" to="/services/amazon-fba-logistics#carrier-credentials">View carrier credentials <Arrow /></Link></div>
     </section>
 
     <section className="company-section why-quality-section" id="quality-process">
@@ -177,7 +177,7 @@ export function WhyPhoenixPage() {
 }
 export function AboutPage() {
   return <article className="company-page about-page">
-    <PageCoverHero label="About us" title="A family business with an operational foundation." description="Phoenix Global Logistics connects international freight, warehouse processing and Australian road transport."><div className="phoenix-intro-actions"><Button to="/contact#depots">Our depots <Arrow /></Button><Link className="text-link" to="/why-phoenix">Why Phoenix <Arrow /></Link></div></PageCoverHero>
+    <PageCoverHero label="About us" title="A family business with an operational foundation." description="Phoenix Global Logistics connects international freight, warehouse processing and Australian road transport."><div className="phoenix-intro-actions"><Button to="/contact#depots">Our depots <Arrow /></Button><Link reloadDocument className="text-link" to="/why-phoenix">Why Phoenix <Arrow /></Link></div></PageCoverHero>
     <section className="about-history-section" aria-label="Company history"><div className="container about-history-rail"><div data-reveal><strong>2021</strong><span>Phoenix Global Logistics established</span></div><div data-reveal><strong>20+ years</strong><span>Founders’ logistics experience</span></div><div data-reveal><strong>Two cities</strong><span>Operations in Sydney and Melbourne</span></div></div></section>
 
     <section className="company-section about-story-section" id="company-heritage">
@@ -191,14 +191,14 @@ export function AboutPage() {
     <section className="about-people-section" id="leadership-team">
       <div className="container about-people-layout">
         <div className="about-people-photo" data-reveal><img src="/assets/phoenix-fleet.webp" width="1707" height="1280" alt="Phoenix fleet and palletised freight at the depot" loading="lazy" /></div>
-        <div className="about-people-copy" data-reveal><p className="company-kicker">Leadership & team</p><h2>Family-owned. Supported by hands-on teams.</h2><p>Our founders bring more than 20 years of cargo experience to an Australian family-owned business. More than 18 internal staff support our warehouse, operations and logistics work.</p><div className="about-team-roles">{[['warehouse','Warehouse','Receiving, inspecting, preparing and storing freight.'],['document','Operations','Coordinating shipment information, bookings and depot movements.'],['truck','Logistics','Connecting collections, transport and delivery with our fleet and operator network.']].map(([icon,title,text])=><div key={title}><Icon name={icon} /><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><Link to="/why-phoenix" className="text-link">Explore our operation <Arrow /></Link></div>
+        <div className="about-people-copy" data-reveal><p className="company-kicker">Leadership & team</p><h2>Family-owned. Supported by hands-on teams.</h2><p>Our founders bring more than 20 years of cargo experience to an Australian family-owned business. More than 18 internal staff support our warehouse, operations and logistics work.</p><div className="about-team-roles">{[['warehouse','Warehouse','Receiving, inspecting, preparing and storing freight.'],['document','Operations','Coordinating shipment information, bookings and depot movements.'],['truck','Logistics','Connecting collections, transport and delivery with our fleet and operator network.']].map(([icon,title,text])=><div key={title}><Icon name={icon} /><div><h3>{title}</h3><p>{text}</p></div></div>)}</div><Link reloadDocument to="/why-phoenix" className="text-link">Explore our operation <Arrow /></Link></div>
       </div>
     </section>
 
     <section className="company-section about-mission-section" id="mission-growth">
       <div className="container about-mission-layout">
         <div data-reveal><p className="company-kicker">Mission & growth vision</p><h2>Carrier capability with the care of a family business.</h2><p>Our goal is to combine the capacity of a larger carrier with personal, hands-on attention to the businesses and freight we handle.</p><Button to="/contact#quote-form">Talk about your freight <Arrow /></Button></div>
-        <div className="about-growth-priorities">{[['Our mission','Connect international arrivals, warehousing and Australian transport through practical coordination and careful freight handling.'],['How we grow','Build long-term relationships, strengthen our Australian operation and keep direct communication at the centre of our service.'],['Our foundations','Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.']].map(([title,text])=><div key={title} data-reveal><h3>{title}</h3><p>{text}</p></div>)}<Link className="text-link" to="/contact#depots">Find our depots <Arrow /></Link></div>
+        <div className="about-growth-priorities">{[['Our mission','Connect international arrivals, warehousing and Australian transport through practical coordination and careful freight handling.'],['How we grow','Build long-term relationships, strengthen our Australian operation and keep direct communication at the centre of our service.'],['Our foundations','Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.']].map(([title,text])=><div key={title} data-reveal><h3>{title}</h3><p>{text}</p></div>)}<Link reloadDocument className="text-link" to="/contact#depots">Find our depots <Arrow /></Link></div>
       </div>
     </section>
     <CtaBand />
@@ -227,7 +227,7 @@ function QuoteForm() {
       <fieldset className="pgl-frequency"><legend>Frequency *</legend><label><input type="radio" name="frequency" value="One-off" required defaultChecked /> One-off</label><label><input type="radio" name="frequency" value="Regular contract" /> Regular contract</label></fieldset>
       <div><label htmlFor="quote-timing">Preferred timing</label><input id="quote-timing" name="timing" maxLength={160} placeholder="Date or collection schedule" /></div>
       <div><label htmlFor="quote-details">Dimensions, weight and shipment details *</label><textarea id="quote-details" name="details" required rows={4} maxLength={2500} placeholder="Include dimensions, total weight and any handling requirements." /><p className="field-help">For lithium batteries or Class 9 cargo, include the product type and available documentation.</p></div>
-      <p className="form-privacy">We use your details to respond to your enquiry. <Link to="/privacy">Privacy Policy</Link>.</p><button type="submit" className="button button--primary">Prepare quote request <Arrow /></button>
+      <p className="form-privacy">We use your details to respond to your enquiry. <Link reloadDocument to="/privacy">Privacy Policy</Link>.</p><button type="submit" className="button button--primary">Prepare quote request <Arrow /></button>
     </form></div>;
 }
 export function ContactPage() {

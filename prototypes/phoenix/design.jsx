@@ -3,8 +3,12 @@ import { company, importEmail, services, trackingDestination, transportEmail } f
 import assets from './data/assets.json';
 import paints from './data/paints.json';
 import process from './data/process.json';
+import { phoenixPaths } from './routes.mjs';
 
-export const link = (page, params={}) => './?' + new URLSearchParams({...page==='home'?{}:{page},...params});
+const link = (page, params = {}) => {
+ const query = new URLSearchParams(params).toString();
+ return phoenixPaths[page] + (query ? '?' + query : '');
+};
 const assetURL = file => '/phoenix-prototype/' + file;
 const State = createContext(null);
 const px = n => n+'px';
@@ -34,12 +38,12 @@ function Paint({p,b,eager}){
  let style={objectFit:p.scaleMode==='FIT'?'contain':'cover'};
  if(p.scaleMode==='CROP'&&m&&!m[0][1]&&!m[1][0]){
    const [[x,,dx],[,y,dy]]=m;
-   style={width:100/x+'%',height:100/y+'%',left:-100*dx/x+'%',top:-100*dy/y+'%',objectFit:'fill'};
+   style={width:100/x+'%',height:100/y+'%',left:-100*dx/x+'%',top:-100*dy/y+'%',objectFit:'cover'};
  }
  const f=p.filters??{};
  style.filter='brightness('+(1+(f.exposure||0)*.55)+') saturate('+(1+(f.saturation||0)*.7)+') contrast('+(1+(f.contrast||0)*.55)+')';
  return <span className="paint image-paint" style={{opacity:p.opacity??1}}>
-   <img src={assetURL(asset.file)} alt="" width={asset.width} height={asset.height} draggable="false" style={style} loading={eager?'eager':'lazy'}/>
+   <img src={assetURL(asset.file)} alt="" width={asset.width} height={asset.height} draggable="false" style={style} onLoad={e=>{e.currentTarget.dataset.loaded=""}} loading={eager?'eager':'lazy'} fetchPriority={eager&&b.width>1000?'high':undefined}/>
  </span>;
 }
 
@@ -50,13 +54,13 @@ function hrefFor(value,name,page){
  if(/^(get a quote|request a quote|contact|contact us|get started|lets get started|contact our depots)$/.test(v))return link('contact');
  if(/^(track|track shipment|track a shipment)$/.test(v))return link('tracking');
  if(v==='why phoenix')return link('why');
- if(/^(about|about us)$/.test(v))return link('about');
+ if(/^(about|about us|about phoenix)$/.test(v))return link('about');
  if(/^(services|explore our services)$/.test(v))return page==='home'&&name!=='Services'?'#services':link('services');
  if(v==='privacy policy')return '/privacy';
  if(v.startsWith('terms of carriage'))return '/terms';
  if(v.startsWith('customs clearance'))return '/services/customs-clearance';
- if(/carrier credentials/.test(v))return link('services');
- if(/sydney & melbourne depots/.test(v))return link('contact');
+ if(/carrier credentials/.test(v))return link('services')+'#carrier-credentials';
+ if(/sydney & melbourne depots/.test(v))return link('contact')+'#depots';
  if(name==='Logo')return link('home');
  const service=services.find(s=>[normalized(s.title),normalized(s.shortTitle)].includes(v));
  if(service)return service.slug==='amazon-fba-logistics'?link('services'):'/services/'+service.slug;
@@ -69,6 +73,10 @@ function findServiceLink(n,page){
  }
 }
 
+const anchors = {
+ '187:477': 'services', '69:1497': 'quote-form', '187:441': 'shipment-tools-panel',
+ '179:1245': 'carrier-credentials', '66:952': 'depots', '113:434': 'quality-process',
+};
 const trackForms=new Set(['187:441','61:858','127:276']);
 const trackButtons=new Set(['187:444','61:862','127:279']);
 const fieldNames={'187:442':'consignment','61:861':'consignment','127:277':'consignment','67:1063':'name','67:1064':'company','67:1089':'email','67:1090':'phone','67:1133':'service','67:1188':'from','67:1189':'to','67:1202':'quantity','67:1203':'weight','67:1321':'date','67:1343':'details'};
@@ -116,13 +124,13 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const effect=extra.effects?.find(e=>e.type==='DROP_SHADOW'&&e.visible);
  const row=s.autoLayout?.direction==='HORIZONTAL'&&!section&&(children.every(k=>k.bounds?.width<250)||b.height<=85);
  const isShape=!children.length&&!isText&&!svg&&!image;
- const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',id==='119:669'&&ctx.replay>0&&'process-swap '+ctx.motion,section&&/cta/i.test(name)&&'fig-cta'].filter(Boolean).join(' ');
+ const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta'].filter(Boolean).join(' ');
  const style={'--x':px(b.x),'--y':px(b.y),'--w':px(b.width),'--h':px(b.height),'--gap':px(s.autoLayout?.gap||10),'--ratio':b.width/Math.max(1,b.height),borderRadius:n.type==='ELLIPSE'?'50%':typeof s.cornerRadius==='number'?s.cornerRadius:undefined,overflow:s.clipsContent?'hidden':undefined,opacity:s.opacity??undefined,boxShadow:effect?[px(effect.offset.x),px(effect.offset.y),px(effect.radius),px(effect.spread||0),rgb(effect.color)].join(' '):undefined};
  if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:weight(s.fontStyle),'--text-size':px(s.fontSize||14),'--leading':s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3',textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
  const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero};
  const oneLine=isText && s.lineHeight?.unit==="PIXELS" && b.height<=s.lineHeight.value+1 && !/[\n\u2028]/.test(value);
  const text=extra.segments?.length?extra.segments.map((q,j)=><span key={j} style={{fontFamily:font(q.fontName?.family),fontWeight:weight(q.fontName?.style),color:q.fills?.[0]?.color?rgb(q.fills[0].color):undefined}}>{q.characters}</span>):(id==='187:418' ? value?.replace('\u2028to ','\u2028To ') : value)?.replaceAll('\u2028','\n');
- return <Tag className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={id==='187:477'?'services':id==='69:1497'?'quote-fields':id==='187:441'?'shipment-tools-panel':undefined} href={href}
+ return <Tag className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
    aria-label={previous?'Previous process step':next?'Next process step':name==='Logo'&&href?'Phoenix Global Logistics home':undefined}
    role={tab?'tab':id==='187:438'?'tablist':carousel?'region':undefined}
    aria-roledescription={carousel?'carousel':undefined}
@@ -144,7 +152,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
      id==='187:441'&&ctx.quickQuote?<QuoteStarter/>:
      id==='67:1289'?<div className="fig-radios"><label><input name="frequency" type="radio" value="One-off shipment" defaultChecked/> One-off shipment</label><label><input name="frequency" type="radio" value="Regular contract"/> Regular contract</label></div>:
      id==='119:677'&&(ctx.index!==0||ctx.direction)?<ProcessCards n={n}/>:
-     <State.Provider value={scope}>{children.map(c=><Node key={c.id==='119:669'?c.id+'-'+ctx.replay:c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
+     <State.Provider value={scope}>{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
    </>}
    {carousel&&<span className="sr-only" aria-live="polite">Step {ctx.index+1} of 6</span>}
    {id==='61:858'&&ctx.reference&&<div className="track-result" role="status">For {ctx.reference}, use the link on your booking confirmation or <a href={'mailto:'+transportEmail+'?subject='+encodeURIComponent('Tracking '+ctx.reference)}>email operations</a>.</div>}
@@ -161,18 +169,33 @@ function ProcessCards({n}){
  return <>{[(ctx.index+5)%6,ctx.index,(ctx.index+1)%6].map((v,i)=>{
    const card=processCards[v], slot=kids(n)[i].bounds;
    return <div className={'process-spot '+(i===1?'process-center':'')} key={i} style={{'--x':px(slot.x),'--y':px(slot.y),'--w':px(slot.width),'--h':px(slot.height),'--direction':ctx.direction}}>
-     <div className={'process-swap '+ctx.motion} key={v+'-'+ctx.replay}><Node n={{...card,bounds:{...card.bounds,x:0,y:0}}} parent={n} inactive/></div>
+     <div className="process-swap directional" key={v}><Node n={{...card,bounds:{...card.bounds,x:0,y:0}}} parent={n} inactive/></div>
    </div>;
  })}</>;
 }
 
-export function Design({tree,page,motion,replay}){
+export function Design({tree,page}){
  const [quickQuote,setQuickQuote]=useState(false),[index,setIndex]=useState(0),[direction,setDirection]=useState(0);
  const [reference,setReference]=useState(new URLSearchParams(location.search).get('consignment')||'');
  const [review,setReview]=useState(null);
  const start=useRef(null);
  const trigger=useRef(null);
  const modal=useRef(null);
+ const viewport=useRef(null);
+ useEffect(()=>{
+   if (!('IntersectionObserver' in window)) return;
+   const observer = new IntersectionObserver(entries => {
+     for (const { target, isIntersecting } of entries) {
+       if (!isIntersecting) continue;
+       target.dataset.arrived = '';
+       observer.unobserve(target);
+     }
+   }, { rootMargin: '0px 0px -24px', threshold: 0 });
+   const sections = viewport.current.querySelectorAll('.fig-root > .fig-section:not(.fig-hero,.fig-header):not([data-name="smooth fade"])');
+   sections.forEach(section => observer.observe(section));
+   return () => observer.disconnect();
+ }, []);
+
  useEffect(()=>{
    if(review&&!modal.current?.open)modal.current?.showModal();
  },[review]);
@@ -204,7 +227,7 @@ export function Design({tree,page,motion,replay}){
  function track(e){
    e.preventDefault();
    const data=new FormData(e.currentTarget);
-   if(quickQuote&&data.has('from')){location.href=link('contact',{from:data.get('from'),to:data.get('to')})+'#quote-fields';return;}
+   if(quickQuote&&data.has('from')){location.href=link('contact',{from:data.get('from'),to:data.get('to')})+'#quote-form';return;}
    const ref=String(data.get('consignment')||'').trim();
    if(!/^[a-zA-Z0-9 _./-]{1,80}$/.test(ref)){const input=e.currentTarget.querySelector('input');input?.setCustomValidity('Enter the consignment reference from your booking confirmation.');input?.reportValidity();input?.addEventListener('input',()=>input.setCustomValidity(''),{once:true});return;}
    const url=trackingDestination(ref);
@@ -220,10 +243,10 @@ export function Design({tree,page,motion,replay}){
    trigger.current=e.nativeEvent.submitter;
    setReview({body,target});
  }
- return <State.Provider value={{page,quickQuote,setQuickQuote,index,step,direction,motion,replay,track,quoteSubmit,reference,tabKeys,carouselKeys,touchStart,touchEnd}}>
+ return <State.Provider value={{page,quickQuote,setQuickQuote,index,step,direction,track,quoteSubmit,reference,tabKeys,carouselKeys,touchStart,touchEnd}}>
    <a className="skip" href="#phoenix-design">Skip to content</a>
-   <MobileHeader/>
-   <main id="phoenix-design" className="fig-viewport"><Node n={tree} root/></main>
+   <MobileHeader page={page}/>
+   <main ref={viewport} id="phoenix-design" tabIndex={-1} className="fig-viewport"><Node n={tree} root/></main>
    {review&&<dialog ref={modal} onClose={closeReview} className="quote-review" aria-labelledby="review-title">
      <h2 id="review-title">Review your quote request</h2><p>Open the draft in your email app to send your enquiry.</p><pre>{review.body}</pre>
      <a href={'mailto:'+review.target+'?subject=Phoenix%20freight%20quote&body='+encodeURIComponent(review.body)}>Open email draft</a>
@@ -232,10 +255,10 @@ export function Design({tree,page,motion,replay}){
  </State.Provider>;
 }
 
-function MobileHeader(){
+function MobileHeader({page: currentPage}){
  return <header className="mobile-header"><a href={link('home')} aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo.png" width="51" height="44" alt="Phoenix"/></a>
- <a href={link('tracking')}>Track</a><a className="mobile-quote" href={link('contact')}>Get a quote</a>
+ <a href={link('tracking')} aria-current={currentPage==='tracking'?'page':undefined}>Track</a><a className="mobile-quote" href={link('contact')}>Get a quote</a>
  <details onKeyDown={e=>{
    if(e.key==='Escape'&&e.currentTarget.open){e.currentTarget.open=false;e.currentTarget.querySelector('summary')?.focus();}
- }}><summary>Menu</summary><nav aria-label="Main navigation">{[['Home','home'],['Services','services'],['Why Phoenix','why'],['About','about'],['Contact','contact']].map(([label,page])=><a key={page} href={link(page)}>{label}</a>)}</nav></details></header>;
+ }}><summary>Menu</summary><nav aria-label="Main navigation">{[['Home','home'],['Services','services'],['Why Phoenix','why'],['About','about'],['Contact','contact']].map(([label,page])=><a key={page} href={link(page)} aria-current={currentPage===page?'page':undefined}>{label}</a>)}</nav></details></header>;
 }
