@@ -1,0 +1,81 @@
+/* Extras merged from the second prototype pass: header that steps aside while
+   reading, a truck on the reading-progress line, pointer light on industry
+   cards, depot row hovers and the mobile/tablet layout fixes. Movement stays
+   small and only follows what the visitor does. */
+
+/* ---------- Header: hides while reading down, returns on scroll up ---------- */
+@media (min-width: 1000px) {
+  .fig-root > .fig-header { transition: transform 360ms var(--ease-out), box-shadow 300ms var(--ease-out); }
+  [data-header-hidden] .fig-root > .fig-header:not(:focus-within) { transform: translateY(calc(-100% - 32px)); }
+}
+@media (max-width: 999px) {
+  .mobile-header { transition: transform 320ms var(--ease-out), box-shadow 300ms var(--ease-out); background: #fffffff5; backdrop-filter: saturate(1.4) blur(8px); }
+  [data-header-hidden] .mobile-header:not(:has(details[open])):not(:focus-within) { transform: translateY(calc(-100% - 16px)); }
+}
+
+/* ---------- Reading progress: a small truck drives along the red line ---------- */
+.dispatch-truck { display: none; position: fixed; z-index: 12; top: 3px; left: 0; width: 30px; height: 19px; pointer-events: none; }
+.dispatch-truck svg { display: block; width: 100%; height: 100%; filter: drop-shadow(0 2px 3px #00000040); }
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .dispatch-truck { display: block; animation: dispatch-truck linear both; animation-timeline: scroll(root); }
+  }
+}
+@keyframes dispatch-truck { from { opacity: 0; translate: 0 0; } 1% { opacity: 1; } to { opacity: 1; translate: calc(100vw - 30px) 0; } }
+
+/* ---------- Industry cards: soft light follows the pointer over the red fill ---------- */
+@media (hover: hover) and (pointer: fine) {
+  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"])::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0;
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), #ffffff38, transparent 70%);
+    transition: opacity 300ms var(--ease-out);
+  }
+  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover::after { opacity: 1; }
+
+  /* Depot rows tint and the city name turns red. */
+  :is([data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"]) { transition: background-color 260ms var(--ease-out); }
+  :is([data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"]):hover { background-color: #fbf3f3; }
+  [data-name="Depot / City"] { transition: color 260ms var(--ease-out); }
+  :is([data-name^="Depot / "], [data-name^="Trade bridge"]):hover [data-name="Depot / City"] { color: var(--red) !important; }
+}
+
+/* ---------- Mobile and tablet layout ---------- */
+@media (max-width: 999px) {
+  .fig-root > .fig-section { padding-inline: clamp(20px, 5vw, 48px); }
+  .fig-heading { text-wrap: balance; }
+  .fig-text:not(.fig-heading) { text-wrap: pretty; }
+
+  /* Hero */
+  .fig-hero [data-name="Frame 1"] { flex-direction: row !important; flex-wrap: wrap; gap: 10px !important; width: 100%; }
+  .fig-hero [data-name^="Credential / Amazon"] { flex-direction: row !important; align-items: center !important; gap: 14px !important; }
+  .fig-hero [data-name="Quick tools card"] { width: 100%; max-width: 560px; box-shadow: 0 24px 40px -24px #00000099; }
+
+  /* Proof numbers */
+  [data-name^="Proof / "]:not(.fig-text) { width: 100% !important; gap: 4px !important; padding-block: 18px; }
+  [data-name="Proof / Number"] { font-size: clamp(48px, 14vw, 80px) !important; line-height: 1 !important; }
+  [data-name="Proof / Label"] { font-size: clamp(14px, 4vw, 18px) !important; }
+
+  /* Service cards */
+  [data-name^="Service row"] { width: 100% !important; }
+  [data-name="Service / Content"] { padding: 20px !important; width: 100% !important; }
+  [data-name^="Service row"] > .fig-photo { width: 100% !important; max-height: 220px; }
+
+  /* Depots */
+  :is([data-name^="Depot / "]:not(.fig-text), [data-name^="Trade bridge"]) > .fig-node { width: 100% !important; gap: 6px !important; padding-block: 16px; }
+  [data-name="Depot / City"] { font-size: clamp(30px, 8vw, 44px) !important; }
+
+  /* Footer */
+  .fig-footer [data-name="Brand / Phoenix home link"] { align-self: flex-start !important; width: 112px !important; }
+  .fig-footer [data-name^="Footer / "]:not(.fig-text) { width: 100% !important; }
+}
+@media (min-width: 640px) and (max-width: 999px) {
+  /* Tablet: cards and footer columns sit two across. */
+  .fig-node:has(> [data-name^="Service row"]) { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px !important; width: 100% !important; }
+  [data-layer="187:645"] { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px !important; width: 100% !important; }
+  [data-layer="187:609"] { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-root > .fig-header, .mobile-header { transition: none; }
+  [data-header-hidden] .fig-root > .fig-header, [data-header-hidden] .mobile-header { transform: none; }
+}

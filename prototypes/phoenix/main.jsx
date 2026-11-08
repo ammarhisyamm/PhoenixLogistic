@@ -9,6 +9,7 @@ import { phoenixPaths } from './routes.mjs';
 import './style.css';
 import './motion.css';
 import './polish.css';
+import './experience.css';
 
 const pages = import.meta.glob('./data/{home,services,tracking,contact,about,why}.json', { import: 'default' });
 const url = new URL(location.href);
@@ -41,6 +42,7 @@ function App({ tree }) {
 
   return <div className="prototype-shell" style={{ '--desktop-scale': scale }}>
     <div className="dispatch-progress" aria-hidden="true" />
+    <div className="dispatch-truck" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M1 4h17v11H1zM18 8h7l5 5v2H18z" fill="#e31b24"/><circle cx="7" cy="16" r="2.6" fill="#232022" stroke="#fff" strokeWidth="1.2"/><circle cx="24" cy="16" r="2.6" fill="#232022" stroke="#fff" strokeWidth="1.2"/></svg></div>
     <Design tree={tree} page={page} />
   </div>;
 }

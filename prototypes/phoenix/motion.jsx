@@ -44,9 +44,28 @@ export function usePageMotion(viewport) {
     let disconnect;
     const preference = matchMedia(reduceMotion);
     const root = document.documentElement;
-    const onScroll = () => root.toggleAttribute('data-scrolled', scrollY > 24);
+    // The header steps aside while reading down and returns on any scroll up.
+    let last = scrollY;
+    const onScroll = () => {
+      const y = scrollY;
+      root.toggleAttribute('data-scrolled', y > 24);
+      if (y > 420 && y > last + 4) root.setAttribute('data-header-hidden', '');
+      else if (y <= 420 || y < last - 4) root.removeAttribute('data-header-hidden');
+      last = y;
+    };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
+
+    // Industry cards carry a soft light that follows a mouse pointer.
+    const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const onPointer = e => {
+      const card = e.target.closest?.('[data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+    };
+    if (fine) element.addEventListener('pointermove', onPointer, { passive: true });
 
     async function enhance() {
       if (preference.matches || disconnect) return;
@@ -62,6 +81,8 @@ export function usePageMotion(viewport) {
     return () => {
       active = false;
       removeEventListener('scroll', onScroll);
+      root.removeAttribute('data-header-hidden');
+      element.removeEventListener('pointermove', onPointer);
       disconnect?.();
       preference.removeEventListener('change', enhance);
     };
