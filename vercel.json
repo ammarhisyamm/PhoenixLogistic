@@ -1,5 +1,6 @@
 {
   "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
     { "source": "/prototypes/phoenix", "destination": "/", "permanent": true },
     { "source": "/prototypes/phoenix/index.html", "destination": "/", "permanent": true },
