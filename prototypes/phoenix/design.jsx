@@ -186,11 +186,9 @@ export function Design({tree,page}){
    if (!('IntersectionObserver' in window)) return;
    const observer = new IntersectionObserver(entries => {
      for (const { target, isIntersecting } of entries) {
-       if (!isIntersecting) continue;
-       target.dataset.arrived = '';
-       observer.unobserve(target);
+       target.toggleAttribute('data-arrived', isIntersecting);
      }
-   }, { rootMargin: '0px 0px -24px', threshold: 0 });
+   }, { rootMargin: '-8% 0px -12%', threshold: 0 });
    const sections = viewport.current.querySelectorAll('.fig-root > .fig-section:not(.fig-hero,.fig-header):not([data-name="smooth fade"])');
    sections.forEach(section => observer.observe(section));
    return () => observer.disconnect();

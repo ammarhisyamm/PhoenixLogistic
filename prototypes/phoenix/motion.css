@@ -17,18 +17,10 @@
   .fig-hero > .paint-group img[data-loaded] { animation: fleet-arrival 850ms var(--ease-out) both; }
   .fig-hero > .fig-node:not(.fig-header) { animation: route-arrival 520ms var(--ease-out) both; }
   .fig-hero > [data-name="Quick tools card"] { animation-delay: 65ms; }
-  .fig-section[data-arrived] > .fig-node:not(.fig-blur,[data-layer="198:556"]) {
-    animation: route-arrival 500ms var(--ease-out) both;
-  }
-  .fig-root > .fig-section[data-arrived]:not(.fig-hero,.fig-header) {
-    animation: section-arrival 560ms var(--ease-out) both;
-  }
-  .fig-section[data-arrived] > .fig-node:nth-of-type(2) { animation-delay: 55ms; }
-  .fig-section[data-arrived] > .fig-node:nth-of-type(3) { animation-delay: 110ms; }
-  .fig-section[data-arrived] :is([data-layer="187:609"], [data-layer="62:893"]) > .fig-node {
-    animation: route-arrival 450ms var(--ease-out) both;
-    animation-delay: calc(45ms * sibling-index());
-  }
+  .fig-section[data-arrived] > .fig-node:not(.fig-blur,[data-layer="198:556"]) { animation: route-arrival 420ms var(--ease-out) both; }
+  .fig-section[data-arrived] > .fig-node:nth-of-type(2) { animation-delay: 45ms; }
+  .fig-section[data-arrived] > .fig-node:nth-of-type(3) { animation-delay: 90ms; }
+  .fig-section[data-arrived] :is([data-layer="187:609"], [data-layer="62:893"]) > .fig-node { animation: route-arrival 420ms var(--ease-out) both; }
   .quote-review[open] { animation: quote-arrival 220ms var(--ease-out) both; }
 
   @supports (animation-timeline: scroll()) {
@@ -43,11 +35,26 @@
       animation-range: entry 0% exit 100%;
     }
   }
+
+  @supports (animation-timeline: view()) {
+    .fig-root > .fig-section:not(.fig-hero,.fig-header) {
+      animation: section-handoff linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+    .fig-hero > .paint-group {
+      animation: hero-scroll linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 75%;
+    }
+  }
 }
 
 @keyframes fleet-arrival { from { opacity: 0; transform: scale(1.065); } to { opacity: 1; transform: none; } }
 @keyframes route-arrival { from { opacity: .28; translate: 0 17px; } to { opacity: 1; translate: none; } }
 @keyframes section-arrival { from { opacity: .72; translate: 0 12px; } to { opacity: 1; translate: none; } }
+@keyframes section-handoff { from { translate: 0 16px; } to { translate: 0 0; } }
+@keyframes hero-scroll { from { translate: 0 0; scale: 1; } to { translate: 0 -4%; scale: 1.035; } }
 @keyframes quote-arrival { from { opacity: .45; scale: .98; } to { opacity: 1; scale: 1; } }
 @keyframes dispatch-route { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes fleet-parallax { from { transform: translateY(28px); } to { transform: translateY(-28px); } }
