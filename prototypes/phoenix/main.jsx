@@ -24,7 +24,7 @@ if (url.searchParams.has('page') || url.searchParams.has('compare')) {
 }
 
 function App({ tree }) {
-  const getScale = () => Math.min(1, document.documentElement.clientWidth / 1440);
+  const getScale = () => document.documentElement.clientWidth / 1440;
   const [scale, setScale] = useState(getScale);
   useEffect(() => {
     const resize = () => setScale(getScale());
