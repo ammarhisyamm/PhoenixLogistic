@@ -9,6 +9,7 @@ export default defineConfig({
       input: {
         site: resolve('index.html'),
         legacy: resolve('legacy.html'),
+        option2: resolve('option-2/index.html'),
       },
     },
   },

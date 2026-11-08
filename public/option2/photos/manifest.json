@@ -1,0 +1,1589 @@
+{
+  "note": "PGL photos from the client Drive folder (Drone Day, night photos, rollers graded, warehoue graded). Each file has a 2400px version and an @1200 version, WebP q78.",
+  "photos": [
+    {
+      "file": "drone-01.webp",
+      "small": "drone-01@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Golden-hour aerial over a western Sydney industrial estate, warehouses and highway, sun low on the horizon",
+      "source": "Still 2026-11-04 120835_1.81.1 - Golden Hour.png"
+    },
+    {
+      "file": "drone-02.webp",
+      "small": "drone-02@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Golden-hour aerial over a western Sydney industrial estate, warehouses and highway, sun low on the horizon",
+      "source": "Still 2026-11-04 120835_1.81.2 - Golden Hour.png"
+    },
+    {
+      "file": "drone-03.webp",
+      "small": "drone-03@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Golden-hour aerial over a western Sydney industrial estate, warehouses and highway, sun low on the horizon",
+      "source": "Still 2026-11-04 120835_1.81.3 - Golden Hour.png"
+    },
+    {
+      "file": "drone-04.webp",
+      "small": "drone-04@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Aerial of a large warehouse roof with solar panels beside a curving road at golden hour",
+      "source": "Still 2026-11-04 120835_1.81.4 - Golden Hour.png"
+    },
+    {
+      "file": "drone-05.webp",
+      "small": "drone-05@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Top-down aerial of a distribution centre yard with rows of red and white trailers at the docks",
+      "source": "Still 2026-11-04 120835_1.81.5 - Golden Hour.png"
+    },
+    {
+      "file": "drone-06.webp",
+      "small": "drone-06@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Top-down aerial of a distribution centre yard with rows of red and white trailers at the docks",
+      "source": "Still 2026-11-04 120835_1.81.6 - Golden Hour.png"
+    },
+    {
+      "file": "drone-07.webp",
+      "small": "drone-07@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Low-angle aerial of a fulfilment-centre facade with loading docks and trucks, sun flare behind",
+      "source": "Still 2026-11-04 120835_1.81.7 - Golden Hour.png"
+    },
+    {
+      "file": "drone-08.webp",
+      "small": "drone-08@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Low-angle aerial of a fulfilment-centre facade with loading docks and trucks, sun flare behind",
+      "source": "Still 2026-11-04 120835_1.81.8 - Golden Hour.png"
+    },
+    {
+      "file": "drone-09.webp",
+      "small": "drone-09@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Low-angle aerial of a fulfilment-centre facade with loading docks and trucks, sun flare behind",
+      "source": "Still 2026-11-04 120835_1.81.9 - Golden Hour.png"
+    },
+    {
+      "file": "drone-10.webp",
+      "small": "drone-10@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Low-angle aerial of a fulfilment-centre facade with loading docks and trucks, sun flare behind",
+      "source": "Still 2026-11-04 120835_1.81.10 - Golden Hour.png"
+    },
+    {
+      "file": "drone-11.webp",
+      "small": "drone-11@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Aerial over warehouse loading docks with trailers backed in, long golden-hour shadows",
+      "source": "Still 2026-11-04 120835_1.81.12 - Golden Hour.png"
+    },
+    {
+      "file": "drone-12.webp",
+      "small": "drone-12@1200.webp",
+      "folder": "drone",
+      "width": 2400,
+      "height": 1350,
+      "description": "Aerial over warehouse loading docks with trailers backed in, long golden-hour shadows",
+      "source": "Still 2026-11-04 120835_1.81.13 - Golden Hour.png"
+    },
+    {
+      "file": "night-01.webp",
+      "small": "night-01@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Sydney Harbour Bridge at night from the air, city lights reflected in the harbour",
+      "source": "Still 1.108.1 - Final.png"
+    },
+    {
+      "file": "night-02.webp",
+      "small": "night-02@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Sydney Harbour Bridge at night from the air, city lights reflected in the harbour",
+      "source": "Still 1.108.2 - Final.png"
+    },
+    {
+      "file": "night-03.webp",
+      "small": "night-03@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Aerial of the lit Harbour Bridge roadway at night with light traffic",
+      "source": "Still 1.108.3 - Final.png"
+    },
+    {
+      "file": "night-04.webp",
+      "small": "night-04@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Aerial of the lit Harbour Bridge roadway at night with light traffic",
+      "source": "Still 1.108.4 - Final.png"
+    },
+    {
+      "file": "night-05.webp",
+      "small": "night-05@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Night aerial of a Phoenix curtainsider truck crossing an elevated overpass beside silos",
+      "source": "Still 1.110.1 - Final.png"
+    },
+    {
+      "file": "night-06.webp",
+      "small": "night-06@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Night aerial of a Phoenix curtainsider truck crossing an elevated overpass beside silos",
+      "source": "Still 1.110.2 - Final.png"
+    },
+    {
+      "file": "night-07.webp",
+      "small": "night-07@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Night aerial of a motorway with light trails and a single truck",
+      "source": "Still 1.110.3 - Final.png"
+    },
+    {
+      "file": "night-08.webp",
+      "small": "night-08@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix-branded curtainsider truck driving towards camera through the Sydney CBD at night under street lights",
+      "source": "Still 1.114.2 - Final.png"
+    },
+    {
+      "file": "night-09.webp",
+      "small": "night-09@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix-branded curtainsider truck driving towards camera through the Sydney CBD at night under street lights",
+      "source": "Still 1.114.3 - Final.png"
+    },
+    {
+      "file": "night-10.webp",
+      "small": "night-10@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix-branded curtainsider truck driving towards camera through the Sydney CBD at night under street lights",
+      "source": "Still 1.114.4 - Final.png"
+    },
+    {
+      "file": "night-11.webp",
+      "small": "night-11@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix-branded curtainsider truck driving towards camera through the Sydney CBD at night under street lights",
+      "source": "Still 1.114.5 - Final.png"
+    },
+    {
+      "file": "night-12.webp",
+      "small": "night-12@1200.webp",
+      "folder": "night",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix-branded curtainsider truck driving towards camera through the Sydney CBD at night under street lights",
+      "source": "Still 1.114.6 - Final.png"
+    },
+    {
+      "file": "rollers-01.webp",
+      "small": "rollers-01@1200.webp",
+      "folder": "rollers",
+      "width": 2400,
+      "height": 1350,
+      "description": "Two Phoenix curtainsider trucks parked at the depot under a blue sky",
+      "source": "Still 2026-11-04 120835_1.94.1-graded.jpg"
+    },
+    {
+      "file": "rollers-02.webp",
+      "small": "rollers-02@1200.webp",
+      "folder": "rollers",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix truck on a highway at sunset between power pylons, headlights on",
+      "source": "Still 2026-11-04 120835_1.101.1-graded.jpg"
+    },
+    {
+      "file": "rollers-03.webp",
+      "small": "rollers-03@1200.webp",
+      "folder": "rollers",
+      "width": 2400,
+      "height": 1350,
+      "description": "Rolling side shot of a Phoenix curtainsider truck on the motorway at golden hour",
+      "source": "Still 2026-11-04 120835_1.104.1-graded.jpg"
+    },
+    {
+      "file": "rollers-04.webp",
+      "small": "rollers-04@1200.webp",
+      "folder": "rollers",
+      "width": 2400,
+      "height": 1350,
+      "description": "Rolling side shot of a Phoenix curtainsider truck on the motorway at golden hour",
+      "source": "Still 2026-11-04 120835_1.104.2-graded.jpg"
+    },
+    {
+      "file": "rollers-05.webp",
+      "small": "rollers-05@1200.webp",
+      "folder": "rollers",
+      "width": 2400,
+      "height": 1350,
+      "description": "Rolling side shot of a Phoenix curtainsider truck on the motorway at golden hour",
+      "source": "Still 2026-11-04 120835_1.104.4-graded.jpg"
+    },
+    {
+      "file": "rollers-06.webp",
+      "small": "rollers-06@1200.webp",
+      "folder": "rollers",
+      "width": 2400,
+      "height": 1350,
+      "description": "Close low-angle of the Phoenix logo on a truck curtain against a sunset sky",
+      "source": "Still 2026-11-04 120835_1.105.1-graded.jpg"
+    },
+    {
+      "file": "warehouse-01.webp",
+      "small": "warehouse-01@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Worker in a hi-vis vest sealing a shrink-wrapped pallet with red Phoenix tape",
+      "source": "DSC06893-graded.jpg"
+    },
+    {
+      "file": "warehouse-02.webp",
+      "small": "warehouse-02@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Worker in a hi-vis vest sealing a shrink-wrapped pallet with red Phoenix tape",
+      "source": "DSC06894-graded.jpg"
+    },
+    {
+      "file": "warehouse-03.webp",
+      "small": "warehouse-03@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver in a red shirt lifting freight from a shipping container",
+      "source": "DSC06895-graded.jpg"
+    },
+    {
+      "file": "warehouse-04.webp",
+      "small": "warehouse-04@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver in a red shirt lifting freight from a shipping container",
+      "source": "DSC06896-revised.jpg"
+    },
+    {
+      "file": "warehouse-05.webp",
+      "small": "warehouse-05@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Wide interior of pallet racking stacked with cartons, reach truck in the aisle",
+      "source": "DSC06898-graded.jpg"
+    },
+    {
+      "file": "warehouse-06.webp",
+      "small": "warehouse-06@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Wide interior of pallet racking stacked with cartons, reach truck in the aisle",
+      "source": "DSC06899-graded.jpg"
+    },
+    {
+      "file": "warehouse-07.webp",
+      "small": "warehouse-07@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Wide interior of pallet racking stacked with cartons, reach truck in the aisle",
+      "source": "DSC06900-graded.jpg"
+    },
+    {
+      "file": "warehouse-08.webp",
+      "small": "warehouse-08@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver in orange hi-vis moving cartons inside the warehouse doorway",
+      "source": "DSC06901-graded.jpg"
+    },
+    {
+      "file": "warehouse-09.webp",
+      "small": "warehouse-09@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver in orange hi-vis moving cartons inside the warehouse doorway",
+      "source": "DSC06902-graded.jpg"
+    },
+    {
+      "file": "warehouse-10.webp",
+      "small": "warehouse-10@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift unloading carton pallets from a flatbed trailer in the yard",
+      "source": "DSC06903-graded.jpg"
+    },
+    {
+      "file": "warehouse-11.webp",
+      "small": "warehouse-11@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift unloading carton pallets from a flatbed trailer in the yard",
+      "source": "DSC06904-graded.jpg"
+    },
+    {
+      "file": "warehouse-12.webp",
+      "small": "warehouse-12@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift unloading carton pallets from a flatbed trailer in the yard",
+      "source": "DSC06905-graded.jpg"
+    },
+    {
+      "file": "warehouse-13.webp",
+      "small": "warehouse-13@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift unloading carton pallets from a flatbed trailer in the yard",
+      "source": "DSC06906-graded.jpg"
+    },
+    {
+      "file": "warehouse-14.webp",
+      "small": "warehouse-14@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver reading paperwork beside a COSCO container and red-taped pallets",
+      "source": "DSC06907-graded.jpg"
+    },
+    {
+      "file": "warehouse-15.webp",
+      "small": "warehouse-15@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver reading paperwork beside a COSCO container and red-taped pallets",
+      "source": "DSC06908-graded.jpg"
+    },
+    {
+      "file": "warehouse-16.webp",
+      "small": "warehouse-16@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver reading paperwork beside a COSCO container and red-taped pallets",
+      "source": "DSC06909-graded.jpg"
+    },
+    {
+      "file": "warehouse-17.webp",
+      "small": "warehouse-17@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver reading paperwork beside a COSCO container and red-taped pallets",
+      "source": "DSC06910-graded.jpg"
+    },
+    {
+      "file": "warehouse-18.webp",
+      "small": "warehouse-18@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver reading paperwork beside a COSCO container and red-taped pallets",
+      "source": "DSC06911-graded.jpg"
+    },
+    {
+      "file": "warehouse-19.webp",
+      "small": "warehouse-19@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Forklift driver reading paperwork beside a COSCO container and red-taped pallets",
+      "source": "DSC06912-graded.jpg"
+    },
+    {
+      "file": "warehouse-20.webp",
+      "small": "warehouse-20@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06914-graded.jpg"
+    },
+    {
+      "file": "warehouse-21.webp",
+      "small": "warehouse-21@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06915-graded.jpg"
+    },
+    {
+      "file": "warehouse-22.webp",
+      "small": "warehouse-22@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06916-graded.jpg"
+    },
+    {
+      "file": "warehouse-23.webp",
+      "small": "warehouse-23@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06917-graded.jpg"
+    },
+    {
+      "file": "warehouse-24.webp",
+      "small": "warehouse-24@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06918-graded.jpg"
+    },
+    {
+      "file": "warehouse-25.webp",
+      "small": "warehouse-25@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06919-graded.jpg"
+    },
+    {
+      "file": "warehouse-26.webp",
+      "small": "warehouse-26@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor handing a delivery docket to a forklift driver in a Phoenix hi-vis vest",
+      "source": "DSC06920-graded.jpg"
+    },
+    {
+      "file": "warehouse-27.webp",
+      "small": "warehouse-27@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Close-up of a forklift driver in a Phoenix hi-vis vest at the controls, trailer of cartons behind",
+      "source": "DSC06921-graded.jpg"
+    },
+    {
+      "file": "warehouse-28.webp",
+      "small": "warehouse-28@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Close-up of a forklift driver in a Phoenix hi-vis vest at the controls, trailer of cartons behind",
+      "source": "DSC06922-graded.jpg"
+    },
+    {
+      "file": "warehouse-29.webp",
+      "small": "warehouse-29@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Close-up of a forklift driver in a Phoenix hi-vis vest at the controls, trailer of cartons behind",
+      "source": "DSC06923-graded.jpg"
+    },
+    {
+      "file": "warehouse-30.webp",
+      "small": "warehouse-30@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Close-up of a forklift driver in a Phoenix hi-vis vest at the controls, trailer of cartons behind",
+      "source": "DSC06924-graded.jpg"
+    },
+    {
+      "file": "warehouse-31.webp",
+      "small": "warehouse-31@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Close-up of a forklift driver in a Phoenix hi-vis vest at the controls, trailer of cartons behind",
+      "source": "DSC06925-graded.jpg"
+    },
+    {
+      "file": "warehouse-32.webp",
+      "small": "warehouse-32@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Close-up of a forklift driver in a Phoenix hi-vis vest at the controls, trailer of cartons behind",
+      "source": "DSC06926-graded.jpg"
+    },
+    {
+      "file": "warehouse-33.webp",
+      "small": "warehouse-33@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06930-graded.jpg"
+    },
+    {
+      "file": "warehouse-34.webp",
+      "small": "warehouse-34@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06931-graded.jpg"
+    },
+    {
+      "file": "warehouse-35.webp",
+      "small": "warehouse-35@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06932-graded.jpg"
+    },
+    {
+      "file": "warehouse-36.webp",
+      "small": "warehouse-36@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06933-graded.jpg"
+    },
+    {
+      "file": "warehouse-37.webp",
+      "small": "warehouse-37@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06934-graded.jpg"
+    },
+    {
+      "file": "warehouse-38.webp",
+      "small": "warehouse-38@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06935-graded.jpg"
+    },
+    {
+      "file": "warehouse-39.webp",
+      "small": "warehouse-39@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06938-graded.jpg"
+    },
+    {
+      "file": "warehouse-40.webp",
+      "small": "warehouse-40@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06939-graded.jpg"
+    },
+    {
+      "file": "warehouse-41.webp",
+      "small": "warehouse-41@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06940-graded.jpg"
+    },
+    {
+      "file": "warehouse-42.webp",
+      "small": "warehouse-42@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06941-graded.jpg"
+    },
+    {
+      "file": "warehouse-43.webp",
+      "small": "warehouse-43@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06942-graded.jpg"
+    },
+    {
+      "file": "warehouse-44.webp",
+      "small": "warehouse-44@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift loading red-strapped carton pallets onto a curtainsider trailer",
+      "source": "DSC06943-graded.jpg"
+    },
+    {
+      "file": "warehouse-45.webp",
+      "small": "warehouse-45@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Stack of shrink-wrapped carton pallets with red tape outside the depot door",
+      "source": "DSC06944-graded.jpg"
+    },
+    {
+      "file": "warehouse-46.webp",
+      "small": "warehouse-46@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a Phoenix vest carrying a wrapped pallet out of the depot",
+      "source": "DSC06945-graded.jpg"
+    },
+    {
+      "file": "warehouse-47.webp",
+      "small": "warehouse-47@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a Phoenix vest carrying a wrapped pallet out of the depot",
+      "source": "DSC06946-graded.jpg"
+    },
+    {
+      "file": "warehouse-48.webp",
+      "small": "warehouse-48@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a Phoenix vest carrying a wrapped pallet out of the depot",
+      "source": "DSC06947-graded.jpg"
+    },
+    {
+      "file": "warehouse-49.webp",
+      "small": "warehouse-49@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a Phoenix vest carrying a wrapped pallet out of the depot",
+      "source": "DSC06949-graded.jpg"
+    },
+    {
+      "file": "warehouse-50.webp",
+      "small": "warehouse-50@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a Phoenix vest carrying a wrapped pallet out of the depot",
+      "source": "DSC06950-graded.jpg"
+    },
+    {
+      "file": "warehouse-51.webp",
+      "small": "warehouse-51@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a Phoenix vest carrying a wrapped pallet out of the depot",
+      "source": "DSC06951-graded.jpg"
+    },
+    {
+      "file": "warehouse-52.webp",
+      "small": "warehouse-52@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo on the depot wall, low angle",
+      "source": "DSC06953-graded.jpg"
+    },
+    {
+      "file": "warehouse-53.webp",
+      "small": "warehouse-53@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a red shirt carrying wrapped pallets in front of the red-framed depot entrance",
+      "source": "DSC06956-graded.jpg"
+    },
+    {
+      "file": "warehouse-54.webp",
+      "small": "warehouse-54@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a red shirt carrying wrapped pallets in front of the red-framed depot entrance",
+      "source": "DSC06957-graded.jpg"
+    },
+    {
+      "file": "warehouse-55.webp",
+      "small": "warehouse-55@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a red shirt carrying wrapped pallets in front of the red-framed depot entrance",
+      "source": "DSC06960-graded.jpg"
+    },
+    {
+      "file": "warehouse-56.webp",
+      "small": "warehouse-56@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a red shirt carrying wrapped pallets in front of the red-framed depot entrance",
+      "source": "DSC06961-graded.jpg"
+    },
+    {
+      "file": "warehouse-57.webp",
+      "small": "warehouse-57@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift driver in a red shirt carrying wrapped pallets in front of the red-framed depot entrance",
+      "source": "DSC06962-graded.jpg"
+    },
+    {
+      "file": "warehouse-58.webp",
+      "small": "warehouse-58@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06965-graded.jpg"
+    },
+    {
+      "file": "warehouse-59.webp",
+      "small": "warehouse-59@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06968-graded.jpg"
+    },
+    {
+      "file": "warehouse-60.webp",
+      "small": "warehouse-60@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06970-graded.jpg"
+    },
+    {
+      "file": "warehouse-61.webp",
+      "small": "warehouse-61@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06972-graded.jpg"
+    },
+    {
+      "file": "warehouse-62.webp",
+      "small": "warehouse-62@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06973-graded.jpg"
+    },
+    {
+      "file": "warehouse-63.webp",
+      "small": "warehouse-63@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06974-cleaned.png"
+    },
+    {
+      "file": "warehouse-64.webp",
+      "small": "warehouse-64@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06974-graded.jpg"
+    },
+    {
+      "file": "warehouse-65.webp",
+      "small": "warehouse-65@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06974-revised.jpg"
+    },
+    {
+      "file": "warehouse-66.webp",
+      "small": "warehouse-66@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Phoenix Global Logistics logo signage on the depot facade against blue sky",
+      "source": "DSC06975-graded.jpg"
+    },
+    {
+      "file": "warehouse-67.webp",
+      "small": "warehouse-67@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift with a wrapped pallet leaving the warehouse, driver in red",
+      "source": "DSC06976-graded.jpg"
+    },
+    {
+      "file": "warehouse-68.webp",
+      "small": "warehouse-68@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Forklift with a wrapped pallet leaving the warehouse, driver in red",
+      "source": "DSC06978-graded.jpg"
+    },
+    {
+      "file": "warehouse-69.webp",
+      "small": "warehouse-69@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Long warehouse aisle of blue and orange pallet racking full of cartons",
+      "source": "DSC06980-graded.jpg"
+    },
+    {
+      "file": "warehouse-70.webp",
+      "small": "warehouse-70@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Long warehouse aisle of blue and orange pallet racking full of cartons",
+      "source": "DSC06983-graded.jpg"
+    },
+    {
+      "file": "warehouse-71.webp",
+      "small": "warehouse-71@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Long warehouse aisle of blue and orange pallet racking full of cartons",
+      "source": "DSC06988-graded.jpg"
+    },
+    {
+      "file": "warehouse-72.webp",
+      "small": "warehouse-72@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Long warehouse aisle of blue and orange pallet racking full of cartons",
+      "source": "DSC06990-graded.jpg"
+    },
+    {
+      "file": "warehouse-73.webp",
+      "small": "warehouse-73@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC06993-graded.jpg"
+    },
+    {
+      "file": "warehouse-74.webp",
+      "small": "warehouse-74@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC06994-graded.jpg"
+    },
+    {
+      "file": "warehouse-75.webp",
+      "small": "warehouse-75@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC06997-graded.jpg"
+    },
+    {
+      "file": "warehouse-76.webp",
+      "small": "warehouse-76@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC07000-graded.jpg"
+    },
+    {
+      "file": "warehouse-77.webp",
+      "small": "warehouse-77@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC07001-graded.jpg"
+    },
+    {
+      "file": "warehouse-78.webp",
+      "small": "warehouse-78@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC07003-graded.jpg"
+    },
+    {
+      "file": "warehouse-79.webp",
+      "small": "warehouse-79@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC07004-graded.jpg"
+    },
+    {
+      "file": "warehouse-80.webp",
+      "small": "warehouse-80@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Busy dock: reach truck and forklifts moving pallets beside a container trailer",
+      "source": "DSC07006-graded.jpg"
+    },
+    {
+      "file": "warehouse-81.webp",
+      "small": "warehouse-81@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Wide view of high-bay racking loaded with cartons and pallets",
+      "source": "DSC07010-graded.jpg"
+    },
+    {
+      "file": "warehouse-82.webp",
+      "small": "warehouse-82@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Wide view of high-bay racking loaded with cartons and pallets",
+      "source": "DSC07011-graded.jpg"
+    },
+    {
+      "file": "warehouse-83.webp",
+      "small": "warehouse-83@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Wide view of high-bay racking loaded with cartons and pallets",
+      "source": "DSC07012-graded.jpg"
+    },
+    {
+      "file": "warehouse-84.webp",
+      "small": "warehouse-84@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Reach truck in the foreground with staff walking past the open roller door",
+      "source": "DSC07013-graded.jpg"
+    },
+    {
+      "file": "warehouse-85.webp",
+      "small": "warehouse-85@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07014-graded.jpg"
+    },
+    {
+      "file": "warehouse-86.webp",
+      "small": "warehouse-86@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07015-graded.jpg"
+    },
+    {
+      "file": "warehouse-87.webp",
+      "small": "warehouse-87@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07016-graded.jpg"
+    },
+    {
+      "file": "warehouse-88.webp",
+      "small": "warehouse-88@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07017-graded.jpg"
+    },
+    {
+      "file": "warehouse-89.webp",
+      "small": "warehouse-89@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07018-graded.jpg"
+    },
+    {
+      "file": "warehouse-90.webp",
+      "small": "warehouse-90@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07019-graded.jpg"
+    },
+    {
+      "file": "warehouse-91.webp",
+      "small": "warehouse-91@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07020-graded.jpg"
+    },
+    {
+      "file": "warehouse-92.webp",
+      "small": "warehouse-92@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07025-graded.jpg"
+    },
+    {
+      "file": "warehouse-93.webp",
+      "small": "warehouse-93@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07026-graded.jpg"
+    },
+    {
+      "file": "warehouse-94.webp",
+      "small": "warehouse-94@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07027-graded.jpg"
+    },
+    {
+      "file": "warehouse-95.webp",
+      "small": "warehouse-95@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Staff checking a pallet of cartons in a racking aisle, reach truck behind",
+      "source": "DSC07031-graded.jpg"
+    },
+    {
+      "file": "warehouse-96.webp",
+      "small": "warehouse-96@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Worker in a Phoenix hi-vis vest beside a reach truck operator in the racking",
+      "source": "DSC07033-graded.jpg"
+    },
+    {
+      "file": "warehouse-97.webp",
+      "small": "warehouse-97@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Worker in a Phoenix hi-vis vest beside a reach truck operator in the racking",
+      "source": "DSC07036-graded.jpg"
+    },
+    {
+      "file": "warehouse-98.webp",
+      "small": "warehouse-98@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Worker in a Phoenix hi-vis vest beside a reach truck operator in the racking",
+      "source": "DSC07038-graded.jpg"
+    },
+    {
+      "file": "warehouse-99.webp",
+      "small": "warehouse-99@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Worker in a Phoenix hi-vis vest beside a reach truck operator in the racking",
+      "source": "DSC07040-graded.jpg"
+    },
+    {
+      "file": "warehouse-100.webp",
+      "small": "warehouse-100@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Worker in a Phoenix hi-vis vest beside a reach truck operator in the racking",
+      "source": "DSC07041-graded.jpg"
+    },
+    {
+      "file": "warehouse-101.webp",
+      "small": "warehouse-101@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07046-graded.jpg"
+    },
+    {
+      "file": "warehouse-102.webp",
+      "small": "warehouse-102@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07047-graded.jpg"
+    },
+    {
+      "file": "warehouse-103.webp",
+      "small": "warehouse-103@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07050-graded.jpg"
+    },
+    {
+      "file": "warehouse-104.webp",
+      "small": "warehouse-104@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07051-graded.jpg"
+    },
+    {
+      "file": "warehouse-105.webp",
+      "small": "warehouse-105@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07052-graded.jpg"
+    },
+    {
+      "file": "warehouse-106.webp",
+      "small": "warehouse-106@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07053-graded.jpg"
+    },
+    {
+      "file": "warehouse-107.webp",
+      "small": "warehouse-107@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07055-graded.jpg"
+    },
+    {
+      "file": "warehouse-108.webp",
+      "small": "warehouse-108@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07056-graded.jpg"
+    },
+    {
+      "file": "warehouse-109.webp",
+      "small": "warehouse-109@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07057-graded.jpg"
+    },
+    {
+      "file": "warehouse-110.webp",
+      "small": "warehouse-110@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07060-graded.jpg"
+    },
+    {
+      "file": "warehouse-111.webp",
+      "small": "warehouse-111@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07061-graded.jpg"
+    },
+    {
+      "file": "warehouse-112.webp",
+      "small": "warehouse-112@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07062-graded.jpg"
+    },
+    {
+      "file": "warehouse-113.webp",
+      "small": "warehouse-113@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07063-graded.jpg"
+    },
+    {
+      "file": "warehouse-114.webp",
+      "small": "warehouse-114@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07064-graded.jpg"
+    },
+    {
+      "file": "warehouse-115.webp",
+      "small": "warehouse-115@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07065-graded.jpg"
+    },
+    {
+      "file": "warehouse-116.webp",
+      "small": "warehouse-116@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07066-graded.jpg"
+    },
+    {
+      "file": "warehouse-117.webp",
+      "small": "warehouse-117@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07067-graded.jpg"
+    },
+    {
+      "file": "warehouse-118.webp",
+      "small": "warehouse-118@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07068-graded.jpg"
+    },
+    {
+      "file": "warehouse-119.webp",
+      "small": "warehouse-119@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07069-graded.jpg"
+    },
+    {
+      "file": "warehouse-120.webp",
+      "small": "warehouse-120@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07070-graded.jpg"
+    },
+    {
+      "file": "warehouse-121.webp",
+      "small": "warehouse-121@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07071-graded.jpg"
+    },
+    {
+      "file": "warehouse-122.webp",
+      "small": "warehouse-122@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07072-graded.jpg"
+    },
+    {
+      "file": "warehouse-123.webp",
+      "small": "warehouse-123@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Supervisor in red with a pick list directing a reach-truck operator in the aisle",
+      "source": "DSC07073-graded.jpg"
+    },
+    {
+      "file": "warehouse-124.webp",
+      "small": "warehouse-124@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Symmetrical long aisle of high-bay racking under skylights",
+      "source": "DSC07074-graded.jpg"
+    },
+    {
+      "file": "warehouse-125.webp",
+      "small": "warehouse-125@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Symmetrical long aisle of high-bay racking under skylights",
+      "source": "DSC07075-graded.jpg"
+    },
+    {
+      "file": "warehouse-126.webp",
+      "small": "warehouse-126@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Symmetrical long aisle of high-bay racking under skylights",
+      "source": "DSC07078-graded.jpg"
+    },
+    {
+      "file": "warehouse-127.webp",
+      "small": "warehouse-127@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07079-graded.jpg"
+    },
+    {
+      "file": "warehouse-128.webp",
+      "small": "warehouse-128@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07080-graded.jpg"
+    },
+    {
+      "file": "warehouse-129.webp",
+      "small": "warehouse-129@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07081-graded.jpg"
+    },
+    {
+      "file": "warehouse-130.webp",
+      "small": "warehouse-130@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07082-graded.jpg"
+    },
+    {
+      "file": "warehouse-131.webp",
+      "small": "warehouse-131@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07083-graded.jpg"
+    },
+    {
+      "file": "warehouse-132.webp",
+      "small": "warehouse-132@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07084-graded.jpg"
+    },
+    {
+      "file": "warehouse-133.webp",
+      "small": "warehouse-133@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07085-graded.jpg"
+    },
+    {
+      "file": "warehouse-134.webp",
+      "small": "warehouse-134@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07086-graded.jpg"
+    },
+    {
+      "file": "warehouse-135.webp",
+      "small": "warehouse-135@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix hi-vis vests walking and checking stock in a racking aisle",
+      "source": "DSC07087-graded.jpg"
+    },
+    {
+      "file": "warehouse-136.webp",
+      "small": "warehouse-136@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Over-the-shoulder close-up of two staff in Phoenix vests pointing at rack labels",
+      "source": "DSC07088-graded.jpg"
+    },
+    {
+      "file": "warehouse-137.webp",
+      "small": "warehouse-137@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Over-the-shoulder close-up of two staff in Phoenix vests pointing at rack labels",
+      "source": "DSC07089-graded.jpg"
+    },
+    {
+      "file": "warehouse-138.webp",
+      "small": "warehouse-138@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Over-the-shoulder close-up of two staff in Phoenix vests pointing at rack labels",
+      "source": "DSC07090-graded.jpg"
+    },
+    {
+      "file": "warehouse-139.webp",
+      "small": "warehouse-139@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Over-the-shoulder close-up of two staff in Phoenix vests pointing at rack labels",
+      "source": "DSC07091-graded.jpg"
+    },
+    {
+      "file": "warehouse-140.webp",
+      "small": "warehouse-140@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Over-the-shoulder close-up of two staff in Phoenix vests pointing at rack labels",
+      "source": "DSC07092-graded.jpg"
+    },
+    {
+      "file": "warehouse-141.webp",
+      "small": "warehouse-141@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 3600,
+      "description": "Over-the-shoulder close-up of two staff in Phoenix vests pointing at rack labels",
+      "source": "DSC07093-graded.jpg"
+    },
+    {
+      "file": "warehouse-142.webp",
+      "small": "warehouse-142@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix vests at the end of a tall racking aisle",
+      "source": "DSC07094-graded.jpg"
+    },
+    {
+      "file": "warehouse-143.webp",
+      "small": "warehouse-143@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1600,
+      "description": "Two staff in Phoenix vests at the end of a tall racking aisle",
+      "source": "DSC07095-graded.jpg"
+    },
+    {
+      "file": "warehouse-144.webp",
+      "small": "warehouse-144@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1350,
+      "description": "Phoenix depot at dusk with a truck and container in the yard, logo lit on the wall",
+      "source": "Still 2026-11-04 120835_1.50.2-graded.jpg"
+    },
+    {
+      "file": "warehouse-145.webp",
+      "small": "warehouse-145@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1350,
+      "description": "Forklift driver moving a netted pallet past a red shipping container",
+      "source": "Still 2026-11-04 120835_1.64.1-graded.jpg"
+    },
+    {
+      "file": "warehouse-146.webp",
+      "small": "warehouse-146@1200.webp",
+      "folder": "warehouse",
+      "width": 2400,
+      "height": 1350,
+      "description": "Empty clean warehouse floor with symmetrical racking, wide shot",
+      "source": "Still 2026-11-04 120835_1.67.1-graded.jpg"
+    }
+  ]
+}
