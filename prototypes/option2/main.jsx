@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter, StaticRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ArrowUpRight, ArrowsOut, CaretDown, CheckCircle, Crosshair, EnvelopeSimple } from '@phosphor-icons/react';
 import '@fontsource-variable/inter';
-import '@fontsource/sawarabi-mincho/latin-400.css';
+import '@fontsource-variable/manrope';
 import { company, faqs, importEmail, qualitySteps, sectors, services, trackingDestination, transportEmail } from '../../src/data';
 import { photos } from './photos';
 import { MAP } from './mapData';
@@ -55,7 +55,7 @@ function Photo({ src, alt = '', className = '', reveal = true, parallax = 8, eag
 
 function PageHero({ lines, text, image, alt, children, tall }) {
   return <section className={'page-hero' + (tall ? ' page-hero-tall' : '')} data-hero>
-    <div className="page-hero-media"><img src={image} alt={alt || ''} data-hero-media /></div>
+    <div className="page-hero-media"><img src={image} srcSet={/@1200\.webp$/.test(image) ? undefined : `${image.replace(/\.webp$/, '@640.webp')} 640w, ${image.replace(/\.webp$/, '@1200.webp')} 1200w, ${image} 2400w`} sizes="(max-width: 767px) 80vw, 100vw" width="2400" height="1600" alt={alt || ''} fetchPriority="high" data-hero-media /></div>
     <div className="page-hero-shade" aria-hidden="true" />
     <div className="wrap page-hero-inner">
       <Lines as="h1" className="display" lines={lines} />
@@ -253,7 +253,7 @@ function StoryRoad({ muted, lines, text, chapters }) {
       <div className="sroad-road"><span className="sroad-kerb" /><span className="sroad-lane" /><span className="sroad-lane sroad-lane-far" /></div>
       <div className="sroad-truck">
         <span className="sroad-shadow" />
-        <div className="sroad-body"><img src="/option2/media/truck@700.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 70vw, 34vw" alt="" /></div>
+        <div className="sroad-body"><img src="/option2/media/truck@700.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 70vw, 34vw" width="700" height="401" alt="" loading="lazy" /></div>
       </div>
     </div>
     <div className="sroad-band">
@@ -438,14 +438,56 @@ function Faq() {
 
 /* ---------- Home ---------- */
 
+// Brand film behind the hero. The poster image paints first (it is the LCP image); the film is
+// fetched only after the page has loaded, sized for the screen (AV1 where supported), and paused
+// whenever the hero is off screen. Reduced motion and Save-Data keep the still poster.
+const HERO_FILM = {
+  small: [['/option2/media/cine-m.mp4', 'video/mp4']],
+  large: [['/option2/media/cine-720.av1.mp4', 'video/mp4; codecs="av01.0.05M.08"'], ['/option2/media/cine-540.mp4', 'video/mp4']],
+};
+
+function HeroFilm() {
+  const ref = useRef(null);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    const v = ref.current;
+    const net = navigator.connection;
+    if (!v || isStatic() || (net && (net.saveData || /2g/.test(net.effectiveType || '')))) return;
+    let idle, io, started = false;
+    const sources = matchMedia('(max-width: 767px)').matches ? HERO_FILM.small : HERO_FILM.large;
+    const start = () => {
+      if (started) return;
+      started = true;
+      const [src] = sources.find(([, type]) => v.canPlayType(type)) || sources[sources.length - 1];
+      v.src = src;
+      io = new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); });
+      io.observe(v);
+    };
+    // Wait a beat after load so the film never competes with the first screen's images.
+    const kick = () => { idle = setTimeout(() => ('requestIdleCallback' in window ? requestIdleCallback(start, { timeout: 1500 }) : start()), 1200); };
+    const playing = () => setOn(true);
+    v.addEventListener('playing', playing);
+    if (document.readyState === 'complete') kick(); else addEventListener('load', kick, { once: true });
+    return () => {
+      removeEventListener('load', kick);
+      v.removeEventListener('playing', playing);
+      clearTimeout(idle);
+      io?.disconnect();
+    };
+  }, []);
+  return <>
+    <picture>
+      <source media="(max-width: 767px)" srcSet="/option2/media/cine-poster-m.webp" width="540" height="960" />
+      <img src="/option2/media/cine-poster.webp" alt="" width="1600" height="900" fetchPriority="high" />
+    </picture>
+    <video ref={ref} className={on ? 'is-on' : undefined} muted loop playsInline preload="none" aria-hidden="true" />
+  </>;
+}
+
 function Home() {
-  const video = useRef(null);
-  useEffect(() => { if (isStatic()) video.current?.pause(); }, []);
   return <>
     <section className="hero" data-hero>
-      <div className="hero-media" data-hero-media>
-        <video ref={video} src="/option2/media/hero.mp4" poster="/option2/media/hero-poster.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
-      </div>
+      <div className="hero-media" data-hero-media><HeroFilm /></div>
       <div className="hero-blur" aria-hidden="true" />
       <div className="hero-shade" aria-hidden="true" />
       <div className="wrap hero-inner">
@@ -588,7 +630,7 @@ function Why() {
       intro="An owned fleet for metro and interstate freight, a contracted operator network for extra capacity, and depot teams who handle every pallet in between."
       items={[[12, '', 'Owned vehicles, from vans to heavy rigid trucks'], [20, '+', 'Contracted operators for extra capacity'], [600, '+', 'Containers handled every year'], [660, 'k+', 'Boxes processed every year']]} />
 
-    <section className="section cells-section">
+    <section className="section tint cells-section">
       <div className="wrap">
         <div className="split-head"><Lines className="display display-l two-tone tt-1" lines={['Need an answer?', 'Talk to operations.']} /><p data-fade>Already a client? <a className="text-link" href={company.clientLogin} rel="noopener">Access Transvirtual <Arrow /></a></p></div>
         <div className="cells" data-stagger>
@@ -791,8 +833,11 @@ function Transitions() {
   </>;
 }
 
-function App() {
-  return <BrowserRouter basename={BASE}>
+// `url` is only passed while prerendering: each route is rendered to HTML at build time so the
+// first paint never waits for the scripts.
+export function App({ url }) {
+  const Router = url ? StaticRouter : BrowserRouter;
+  return <Router basename={BASE} {...(url ? { location: url } : {})}>
     <a className="skip" href="#main">Skip to content</a>
     <Transitions />
     <Header />
@@ -807,7 +852,12 @@ function App() {
       <Route path="*" element={<Page><Home /></Page>} />
     </Routes>
     <Footer />
-  </BrowserRouter>;
+  </Router>;
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+// The prerendered markup gives the first paint; the client then renders over it (same markup,
+// so nothing visibly changes) instead of hydrating, which keeps GSAP's DOM changes out of React's way.
+if (typeof document !== 'undefined') {
+  const root = document.getElementById('root');
+  if (root) createRoot(root).render(<App />);
+}

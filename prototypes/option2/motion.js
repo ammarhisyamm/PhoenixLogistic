@@ -90,10 +90,12 @@ export function usePageMotion(key) {
       });
 
       // Copy and buttons fade up as they arrive.
+      // On the very first load the hero copy is already painted from the prerendered HTML, so it
+      // only rises into place (never hidden again): the largest paint does not wait for scripts.
       gsap.utils.toArray('[data-fade]').forEach(el => {
         const hero = el.closest('[data-hero]');
         gsap.from(el, {
-          y: 32, opacity: 0, duration: 1, ease: 'power3.out', delay: (Number(el.dataset.fade) || 0) + (hero ? wait : 0),
+          y: 32, opacity: hero && !wait ? 1 : 0, duration: 1, ease: 'power3.out', delay: (Number(el.dataset.fade) || 0) + (hero ? wait : 0),
           scrollTrigger: hero ? undefined : { trigger: el, start: 'top 88%' },
         });
       });
