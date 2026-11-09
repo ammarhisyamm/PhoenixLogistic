@@ -36,6 +36,8 @@ export const photos = {
     'customs-clearance': big('warehouse-20'),
     'dangerous-goods': big('warehouse-45'),
   },
+  whySteps: [card('warehouse-16'), card('warehouse-11'), card('warehouse-85'), ai('pallet-wrap'), card('warehouse-35'), card('night-10')],
+  teams: [card('warehouse-81'), card('warehouse-101'), card('rollers-04'), card('warehouse-127')],
   steps: [card('warehouse-20'), card('warehouse-03'), card('warehouse-01'), card('warehouse-45'), card('warehouse-73'), card('rollers-01')],
   sectors: { Retail: card('warehouse-85'), 'E-commerce': card('warehouse-69'), 'Solar & renewable technology': card('drone-04'), FMCG: card('warehouse-14'), 'International imports': ai('container-ship') },
   depots: { Sydney: card('warehouse-58'), Melbourne: card('warehouse-124'), China: ai('container-ship') },

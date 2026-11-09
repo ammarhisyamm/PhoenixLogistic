@@ -8,8 +8,8 @@ import { company, faqs, importEmail, qualitySteps, sectors, services, trackingDe
 import { photos } from './photos';
 import { MAP } from './mapData';
 import { detailIcons, sectorIcons, serviceIcons, stageIcons, stepIcons, valueIcons } from './icons';
-import { Barcode, Boat, ClipboardText, Globe, Handshake, ListChecks, Package, Plant, Truck, Users, Warehouse } from '@phosphor-icons/react';
-import { coverThen, isStatic, scrollToEl, useCursor, useHeader, usePageMotion } from './motion';
+import { Boat, ClipboardText, Globe, Package, Plant, Truck, Users, Warehouse } from '@phosphor-icons/react';
+import { coverThen, isStatic, scrollToEl, useCursor, usePageMotion } from './motion';
 import './option2.css';
 
 const BASE = '/option-2';
@@ -43,8 +43,8 @@ function AmazonLogo({ size = 28 }) {
   return <svg className="badge-logo" viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true"><path d="M.045 18.02c.072-.116.187-.124.348-.022 3.636 2.11 7.594 3.166 11.87 3.166 2.852 0 5.668-.533 8.447-1.595l.315-.14c.138-.06.234-.1.293-.13.226-.088.39-.046.525.13.12.174.09.336-.12.48-.256.19-.6.41-1.006.654-1.244.743-2.64 1.316-4.185 1.726a17.617 17.617 0 01-10.951-.577 17.88 17.88 0 01-5.43-3.35c-.1-.074-.151-.15-.151-.22 0-.047.021-.09.051-.13zm6.565-6.218c0-1.005.247-1.863.743-2.577.495-.71 1.17-1.25 2.04-1.615.796-.335 1.756-.575 2.912-.72.39-.046 1.033-.103 1.92-.174v-.37c0-.93-.105-1.558-.3-1.875-.302-.43-.78-.65-1.44-.65h-.182c-.48.046-.896.196-1.246.46-.35.27-.575.63-.675 1.096-.06.3-.206.465-.435.51l-2.52-.315c-.248-.06-.372-.18-.372-.39 0-.046.007-.09.022-.15.247-1.29.855-2.25 1.82-2.88.976-.616 2.1-.975 3.39-1.05h.54c1.65 0 2.957.434 3.888 1.29.135.15.27.3.405.48.12.165.224.314.283.45.075.134.15.33.195.57.06.254.105.42.135.51.03.104.062.3.076.615.01.313.02.493.02.553v5.28c0 .376.06.72.165 1.036.105.313.21.54.315.674l.51.674c.09.136.136.256.136.36 0 .12-.06.226-.18.314-1.2 1.05-1.86 1.62-1.963 1.71-.165.135-.375.15-.63.045a6.062 6.062 0 01-.526-.496l-.31-.347a9.391 9.391 0 01-.317-.42l-.3-.435c-.81.886-1.603 1.44-2.4 1.665-.494.15-1.093.227-1.83.227-1.11 0-2.04-.343-2.76-1.034-.72-.69-1.08-1.665-1.08-2.94l-.05-.076zm3.753-.438c0 .566.14 1.02.425 1.364.285.34.675.512 1.155.512.045 0 .106-.007.195-.02.09-.016.134-.023.166-.023.614-.16 1.08-.553 1.424-1.178.165-.28.285-.58.36-.91.09-.32.12-.59.135-.8.015-.195.015-.54.015-1.005v-.54c-.84 0-1.484.06-1.92.18-1.275.36-1.92 1.17-1.92 2.43l-.035-.02zm9.162 7.027c.03-.06.075-.11.132-.17.362-.243.714-.41 1.05-.5a8.094 8.094 0 011.612-.24c.14-.012.28 0 .41.03.65.06 1.05.168 1.172.33.063.09.099.228.099.39v.15c0 .51-.149 1.11-.424 1.8-.278.69-.664 1.248-1.156 1.68-.073.06-.14.09-.197.09-.03 0-.06 0-.09-.012-.09-.044-.107-.12-.064-.24.54-1.26.806-2.143.806-2.64 0-.15-.03-.27-.087-.344-.145-.166-.55-.257-1.224-.257-.243 0-.533.016-.87.046-.363.045-.7.09-1 .135-.09 0-.148-.014-.18-.044-.03-.03-.036-.047-.02-.077 0-.017.006-.03.02-.063v-.06z" /></svg>;
 }
 
-function Icon({ as: Cmp, size = 32, className = 'ico' }) {
-  return Cmp ? <Cmp className={className} size={size} weight="light" aria-hidden="true" /> : null;
+function Icon({ as: Cmp, size = 32, className = 'ico', weight = 'light' }) {
+  return Cmp ? <Cmp className={className} size={size} weight={weight} aria-hidden="true" /> : null;
 }
 
 function Photo({ src, alt = '', className = '', reveal = true, parallax = 8, eager }) {
@@ -121,34 +121,26 @@ function MegaMenu({ open, onClose }) {
       <ul className="mega-list">
         {services.map((s, i) => <li key={s.slug} style={{ '--i': i }}>
           <Link to={'/services/' + s.slug} onPointerEnter={() => setActive(s.slug)} onFocus={() => setActive(s.slug)} onClick={onClose} className={active === s.slug ? 'is-active' : undefined}>
-            <Icon as={serviceIcons[s.slug]} size={26} />
-            <span><strong>{s.title}</strong><small>{s.description}</small></span>
+            <Icon as={serviceIcons[s.slug]} size={28} weight={active === s.slug ? 'fill' : 'light'} />
+            <span><strong>{s.title}</strong></span>
             <ArrowUpRight className="mega-go" size={18} aria-hidden="true" />
           </Link>
         </li>)}
       </ul>
       <Link to={'/services/' + current.slug} className="mega-media" onClick={onClose} tabIndex={-1}>
         {services.map(s => <img key={s.slug} src={photos.services[s.slug]} alt="" className={s.slug === active ? 'is-on' : ''} loading="lazy" />)}
-        <span className="mega-caption"><span>{current.shortTitle}</span><small>{current.tags.join(' · ')}</small></span>
+        <span className="mega-caption"><span>{current.shortTitle}</span><small>{current.description}</small></span>
       </Link>
-    </div>
-    <div className="mega-foot">
-      <span><AmazonLogo size={18} />Amazon Partner Carrier · NSW, QLD & VIC</span>
-      <Link to="/tracking" onClick={onClose}><Crosshair size={18} weight="light" aria-hidden="true" />Track a shipment</Link>
-      <a href={'mailto:' + transportEmail}><EnvelopeSimple size={18} weight="light" aria-hidden="true" />{transportEmail}</a>
     </div>
   </div>;
 }
 
-// Floating pill navigation. It sits at the top over the hero and docks to the
-// bottom of the screen, like an app tab bar, once the reader starts scrolling.
+// Floating pill navigation, fixed at the top of the screen.
 function Header() {
-  const [docked, setDocked] = useState(false);
   const [open, setOpen] = useState(false);
   const [mega, setMega] = useState(false);
   const timer = useRef(0);
   const { pathname } = useLocation();
-  useHeader(setDocked);
   useEffect(() => { setOpen(false); setMega(false); }, [pathname]);
   useEffect(() => {
     const esc = e => { if (e.key === 'Escape') { setMega(false); setOpen(false); } };
@@ -158,12 +150,11 @@ function Header() {
   const hover = on => { clearTimeout(timer.current); timer.current = setTimeout(() => setMega(on), on ? 60 : 200); };
   return <>
     <div className={'mega-backdrop' + (mega || open ? ' is-on' : '')} onClick={() => { setMega(false); setOpen(false); }} aria-hidden="true" />
-    <header className={'header' + (docked ? ' is-docked' : '') + (mega ? ' has-mega' : '') + (open ? ' has-menu' : '')}>
+    <header className={'header' + (mega ? ' has-mega' : '') + (open ? ' has-menu' : '')}>
       <div className="header-bar" onPointerLeave={() => hover(false)}>
         <div className="header-inner">
           <Link to="/" className="brand" aria-label="Phoenix Global Logistics home">
-            <img src="/assets/phoenix-logo.png" alt="" width="42" height="36" />
-            <span>Phoenix<br />Global Logistics</span>
+            <img src="/assets/phoenix-logo.png" alt="" width="52" height="44" />
           </Link>
           <nav className="nav" aria-label="Main">
             <button type="button" className={'nav-services' + (pathname.startsWith('/services') ? ' is-current' : '')} aria-expanded={mega} aria-controls="mega" onClick={() => setMega(m => !m)} onPointerEnter={() => hover(true)}>
@@ -197,7 +188,7 @@ function Footer() {
     <div className="wrap">
       <div className="fgrid">
         <div className="fcell fcell-lead">
-          <Link to="/" className="footer-logo" aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo-light.png" alt="" width="84" height="72" /><span>Phoenix<br />Global Logistics</span></Link>
+          <Link to="/" className="footer-logo" aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo-light.png" alt="" width="128" height="109" /></Link>
           <Lines className="display footer-heading" lines={['From container', 'to customer.']} />
           <p className="footer-summary">Australian family-owned logistics, with more than 20 years of cargo experience.</p>
         </div>
@@ -268,33 +259,42 @@ function StoryRoad({ ghost, muted, lines, text, chapters }) {
           <Lines className={'display display-l two-tone tt-' + muted} lines={lines} />
           <p>{text}</p>
         </div>
-        <ol className="sroad-track">
-          {chapters.map(([tag, title, body, icon], i) => <li key={title} style={{ '--i': i }}>
-            <span className="sroad-tag">{tag}</span>
-            <Icon as={icon} size={30} />
-            <h3>{title}</h3>
-            <p>{body}</p>
-          </li>)}
-        </ol>
+        <div className="sroad-view">
+          <ol className="sroad-track">
+            {chapters.map(([tag, title, body, icon], i) => <li key={title} style={{ '--i': i }}>
+              <span className="sroad-tag">{tag}</span>
+              <Icon as={icon} size={30} />
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </li>)}
+          </ol>
+        </div>
       </div>
     </div>
   </section>;
 }
 
-// A photo grows from a framed card to the full screen; the points around it appear one by one.
-function Orbit({ image, lines, items }) {
-  const half = Math.ceil(items.length / 2);
-  return <section className="orbit" data-orbit>
-    <div className="orbit-stage">
-      <figure className="orbit-media"><img src={image} alt="" loading="lazy" /></figure>
-      <div className="orbit-shade" aria-hidden="true" />
-      <div className="orbit-title"><Lines className="display display-xl" lines={lines} /></div>
-      <div className="wrap orbit-items">
-        {[items.slice(0, half), items.slice(half)].map((col, c) => <ul key={c} className={'orbit-col orbit-col-' + c}>
-          {col.map(([title, text, icon]) => <li key={title}><Icon as={icon} size={30} /><h3>{title}</h3><p>{text}</p></li>)}
-        </ul>)}
-      </div>
-    </div>
+// Pinned stepper: a blurred copy of the photo fills the screen, the sharp photo sits in a
+// square frame, and the counter, title and text change step by step as you scroll.
+function Forge({ items, cta }) {
+  const total = String(items.length).padStart(2, '0');
+  return <section className="forge" data-forge>
+    <ol className="forge-stage">
+      {items.map(([title, text, icon, image], i) => <li className="forge-step" key={title} style={{ '--i': i }}>
+        <div className="forge-bg" aria-hidden="true"><img src={image} alt="" loading="lazy" /></div>
+        <div className="wrap forge-grid">
+          <figure className="forge-photo"><img src={image} alt="" loading="lazy" /></figure>
+          <div className="forge-copy">
+            <p className="forge-count"><b>{String(i + 1).padStart(2, '0')}</b> / {total}</p>
+            <Icon as={icon} size={34} />
+            <h3>{title}</h3>
+            <p className="forge-text">{text}</p>
+            {cta && <div className="forge-cta">{cta}</div>}
+          </div>
+        </div>
+      </li>)}
+      <li className="forge-progress" aria-hidden="true"><span /></li>
+    </ol>
   </section>;
 }
 
@@ -369,8 +369,9 @@ function Network() {
               <path d={MAP.rest} className="land" />
               <path d={MAP.cn} className="land land-key land-cn" />
               <path d={MAP.au} className="land land-key" />
-              <path d={MAP.served} className="land-served" />
-</g>
+              <path d={MAP.nsw} className="land-state land-nsw" />
+              <path d={MAP.vic} className="land-state land-vic" />
+            </g>
             {DEPOTS.map(d => <g key={d.city} className={'net-pin' + (active === d.city ? ' is-active' : '')} style={{ transform: at(d.city) }} onClick={() => pick(d.city)}>
               <circle className="net-pulse" r="18" /><circle className="net-dot" r="8" />
               <text x={d.city === 'Melbourne' ? -16 : 16} y={d.city === 'Melbourne' ? 30 : 5} textAnchor={d.city === 'Melbourne' ? 'end' : 'start'}>{d.city}</text>
@@ -409,7 +410,7 @@ function Sectors() {
       <div className={'sector-row' + (active >= 0 ? ' has-active' : '')} data-stagger onPointerLeave={e => { if (e.pointerType === 'mouse') setActive(-1); }}>
         {sectors.map((s, i) => <article className={'sector' + (active === i ? ' is-active' : '')} key={s} onPointerEnter={e => { if (e.pointerType === 'mouse') setActive(i); }} onClick={() => setActive(a => (a === i ? -1 : i))} onFocus={() => setActive(i)} tabIndex={0}>
           <img src={photos.sectors[s]} alt="" loading="lazy" />
-          <span className="sector-blur" aria-hidden="true" />
+          <span className="sector-shade" aria-hidden="true" />
           <div className="sector-body">
             <span className="sector-ico"><Icon as={sectorIcons[s]} size={26} /></span>
             <h3>{s}</h3>
@@ -442,13 +443,14 @@ function Home() {
       <div className="hero-media" data-hero-media>
         <video ref={video} src="/option2/media/hero.mp4" poster="/option2/media/hero-poster.webp" autoPlay muted loop playsInline preload="auto" aria-hidden="true" />
       </div>
+      <div className="hero-blur" aria-hidden="true" />
       <div className="hero-shade" aria-hidden="true" />
       <div className="wrap hero-inner">
         <Lines as="h1" className="display display-hero" lines={['From container to customer,', 'on docket.']} />
         <p className="hero-text" data-fade="0.4">Warehousing, road freight and approved Amazon FBA deliveries, connected under one team from Sydney and Melbourne.</p>
         <div className="hero-actions" data-fade="0.55"><Button to="/contact">Get a quote</Button><Button to="/tracking" variant="ghost-light">Track a shipment</Button></div>
+        <p className="hero-badge" data-fade="0.7"><AmazonLogo /><span>Amazon Partner Carrier<small>Small parcels · NSW, QLD & VIC</small></span></p>
       </div>
-      <p className="hero-badge" data-fade="0.7"><AmazonLogo /><span>Amazon Partner Carrier<small>Small parcels · NSW, QLD & VIC</small></span></p>
     </section>
 
     <section className="section intro">
@@ -567,36 +569,21 @@ function ServicePage() {
 /* ---------- Why Phoenix ---------- */
 
 function Why() {
-  const reasons = [
-    ['One accountable team', 'Arrival, warehousing, transport and delivery coordinated by one team.', Handshake],
-    ['Scanned at every move', 'Depot-in and depot-out scans feed the record linked to your consignment.', Barcode],
-    ['Checked before dispatch', 'The Phoenix Red Table check and automated wrapping protect freight before it leaves.', ListChecks],
-    ['Our own fleet', 'Twelve vehicles of our own, with more than 20 contracted operators for extra capacity.', Truck],
-    ['People you can reach', 'Talk directly with the operations team that is handling your freight.', Users],
-  ];
+  const checks = qualitySteps.map((st, i) => [st.title, st.text, stepIcons[i], photos.whySteps[i]]);
   return <>
     <PageHero lines={['Good freight handling', 'starts before dispatch.']} text="Our fleet, operator network and depot processes help keep freight moving from receiving through to delivery." image={photos.why} />
 
-    <Orbit image={photos.aerial} lines={['Six checks before', 'freight leaves', 'the depot.']} items={qualitySteps.map((st, i) => [st.title, st.text, stepIcons[i]])} />
+    <section className="section forge-intro">
+      <div className="wrap split-head">
+        <Lines className="display display-l two-tone tt-1" lines={['Six checks before', 'freight leaves the depot.']} />
+        <p data-fade>Every consignment passes the same six steps, from the paperwork in the office to the signature at the door.</p>
+      </div>
+    </section>
+    <Forge items={checks} cta={<Button to="/contact" variant="ghost-light">Request a quote</Button>} />
 
     <Outcome muted={2} lines={['Our trucks.', 'Our drivers.', 'Our responsibility.']} thumb={photos.fleet}
       intro="An owned fleet for metro and interstate freight, a contracted operator network for extra capacity, and depot teams who handle every pallet in between."
       items={[[12, '', 'Owned vehicles, from vans to heavy rigid trucks'], [20, '+', 'Contracted operators for extra capacity'], [600, '+', 'Containers handled every year'], [660, 'k+', 'Boxes processed every year']]} />
-
-    <Drive words={['On the road across', 'NSW, QLD & VIC.']} text="Metro, interstate and linehaul freight, with depot teams in Sydney and Melbourne." />
-
-    <section className="section reasons">
-      <p className="reasons-ghost" aria-hidden="true">Why Phoenix</p>
-      <div className="wrap">
-        <div className="split-head">
-          <Lines className="display display-l two-tone tt-1" lines={['Everything after arrival,', 'under one roof.']} />
-          <p data-fade>One point of contact, one record of every scan, and one team accountable from the container to the customer.</p>
-        </div>
-        <ul className="reasons-row" data-stagger>
-          {reasons.map(([t, d, icon], i) => <li key={t}><span className="reasons-n">{String(i + 1).padStart(2, '0')}</span><Icon as={icon} size={32} /><h3>{t}</h3><p>{d}</p></li>)}
-        </ul>
-      </div>
-    </section>
 
     <section className="section cells-section">
       <div className="wrap">
@@ -625,10 +612,10 @@ function About() {
     ['Today', 'Container to customer', 'International arrivals, warehousing, road freight and delivery under one team.', Truck],
   ];
   const teams = [
-    ['Warehouse', 'Receiving, inspecting, preparing and storing freight.', Warehouse],
-    ['Operations', 'Coordinating shipment information, bookings and depot movements.', ClipboardText],
-    ['Logistics', 'Connecting collections, transport and delivery with our fleet and operators.', Truck],
-    ['Family-owned', 'An Australian family business that stays close to every shipment.', Users],
+    ['Warehouse', 'Receiving, inspecting, preparing and storing freight in Sydney and Melbourne.', Warehouse, photos.teams[0]],
+    ['Operations', 'Coordinating shipment information, bookings and depot movements.', ClipboardText, photos.teams[1]],
+    ['Logistics', 'Connecting collections, transport and delivery with our fleet and operators.', Truck, photos.teams[2]],
+    ['Family-owned', 'An Australian family business that stays close to every shipment.', Users, photos.teams[3]],
   ];
   const values = [['Our mission', 'Connect international arrivals, warehousing and Australian transport through coordination and careful freight handling.'], ['How we grow', 'Build long-term relationships, strengthen our Australian operation and keep communication at the center of our service.'], ['Our foundations', 'Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.']];
   return <>
@@ -641,7 +628,13 @@ function About() {
 
     <StoryRoad ghost="Our story" muted={1} lines={['From cargo agent', 'to logistics partner.']} text="How Phoenix grew from international cargo into a connected Australian logistics operation." chapters={chapters} />
 
-    <Orbit image={photos.warehouse} lines={['Hands-on teams', 'behind every', 'shipment.']} items={teams} />
+    <section className="section forge-intro">
+      <div className="wrap split-head">
+        <Lines className="display display-l two-tone tt-1" lines={['Hands-on teams', 'behind every shipment.']} />
+        <p data-fade>Four teams, one family business, and the same people answering for your freight from arrival to delivery.</p>
+      </div>
+    </section>
+    <Forge items={teams} cta={<Button to="/contact" variant="ghost-light">Talk to our team</Button>} />
 
     <section className="section values">
       <div className="wrap">
@@ -716,30 +709,29 @@ function Tracking() {
     <PageHero lines={['Track your', 'shipment.']} text="Use your Transvirtual consignment number or the tracking link issued with your booking confirmation." image={photos.tracking} tall>
       <div className="hero-track" data-fade="0.6"><TrackForm /></div>
     </PageHero>
-    <section className="route" data-route>
-      <div className="wrap route-grid">
-        <div className="route-aside">
-          <Lines className="display display-l" lines={['From depot', 'to delivery.']} />
-          <p className="route-intro" data-fade>Each milestone is a scan that updates the record linked to your consignment number.</p>
-          <div className="route-stage" aria-hidden="true">
-            <div className="route-road"><span className="route-lane" /><span className="route-trail" /></div>
-            <img className="route-truck" src="/option2/media/truck@700.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 70vw, 30vw" alt="" />
-          </div>
-          <div className="route-ticket">
-            <div><small>Consignment</small><strong>PGL000123456</strong></div>
-            <div><small>Lane</small><strong>Sydney → Melbourne</strong></div>
-            <div className="route-state"><small>Status</small><p>{STAGES.map(([, , st]) => <span key={st}>{st}</span>)}</p></div>
-          </div>
+    <section className="section road" data-road>
+      <div className="wrap split-head">
+        <Lines className="display display-l" lines={['From depot', 'to delivery.']} />
+        <p data-fade>Each milestone is a scan that updates the record linked to your consignment number. Example consignment PGL000123456, Sydney to Melbourne.</p>
+      </div>
+      <div className="wrap road-body">
+        <div className="road-lane" aria-hidden="true">
+          <span className="road-asphalt" />
+          <span className="road-done" />
+          <img className="road-truck" src="/option2/media/truck-top@360.webp" srcSet="/option2/media/truck-top@360.webp 360w, /option2/media/truck-top.webp 427w" sizes="120px" alt="" />
         </div>
-        <ol className="route-stops">
-          {STAGES.map(([t, d, , when], i) => <li className="route-stop" key={t} data-stop>
-            <div className="route-top"><span className="route-num">{String(i + 1).padStart(2, '0')}</span><span className="route-ico"><Icon as={stageIcons[i]} size={24} /></span></div>
-            <h3>{t}</h3>
-            <p>{d}</p>
-            <p className="route-when"><CheckCircle size={18} weight="fill" aria-hidden="true" />{when}</p>
+        <ol className="road-stops">
+          {STAGES.map(([t, d, status, when], i) => <li className="road-stop" key={t} data-stop>
+            <span className="road-pin" aria-hidden="true"><Icon as={stageIcons[i]} size={22} /></span>
+            <div className="road-card">
+              <p className="road-meta"><span>{String(i + 1).padStart(2, '0')}</span><span className="road-status">{status}</span></p>
+              <h3>{t}</h3>
+              <p>{d}</p>
+              <p className="road-when"><CheckCircle size={18} weight="fill" aria-hidden="true" />{when}</p>
+            </div>
           </li>)}
-          <li className="route-foot">Example shown. Your consignment shows the scans recorded for your freight.</li>
         </ol>
+        <p className="road-foot">Example shown. Your consignment shows the scans recorded for your freight.</p>
       </div>
     </section>
     <Cta heading={['Need help with', 'a consignment?']} text="For urgent enquiries, include your consignment number and shipment details." />
