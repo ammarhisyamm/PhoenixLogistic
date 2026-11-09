@@ -2,16 +2,71 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/option-2/:path*", "destination": "/option-2" }
+    {
+      "source": "/option-2/:path*",
+      "destination": "/option-2"
+    }
   ],
   "redirects": [
-    { "source": "/prototypes/phoenix", "destination": "/", "permanent": true },
-    { "source": "/prototypes/phoenix/index.html", "destination": "/", "permanent": true },
-    { "source": "/services", "destination": "/services/amazon-fba-logistics", "permanent": false },
-    { "source": "/services/amazon-fba", "destination": "/services/amazon-fba-logistics", "permanent": false },
-    { "source": "/services/warehousing-3pl", "destination": "/services/warehousing-and-3pl", "permanent": false },
-    { "source": "/services/road-freight", "destination": "/services/road-freight-and-transport", "permanent": false },
-    { "source": "/services/container-handling", "destination": "/services/warehousing-and-3pl", "permanent": false },
-    { "source": "/services/last-mile-delivery", "destination": "/services/road-freight-and-transport", "permanent": false }
+    {
+      "source": "/prototypes/phoenix",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/prototypes/phoenix/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/services",
+      "destination": "/services/amazon-fba-logistics",
+      "permanent": false
+    },
+    {
+      "source": "/services/amazon-fba",
+      "destination": "/services/amazon-fba-logistics",
+      "permanent": false
+    },
+    {
+      "source": "/services/warehousing-3pl",
+      "destination": "/services/warehousing-and-3pl",
+      "permanent": false
+    },
+    {
+      "source": "/services/road-freight",
+      "destination": "/services/road-freight-and-transport",
+      "permanent": false
+    },
+    {
+      "source": "/services/container-handling",
+      "destination": "/services/warehousing-and-3pl",
+      "permanent": false
+    },
+    {
+      "source": "/services/last-mile-delivery",
+      "destination": "/services/road-freight-and-transport",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/option2/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=604800, stale-while-revalidate=86400"
+        }
+      ]
+    }
   ]
 }

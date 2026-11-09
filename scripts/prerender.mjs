@@ -1,6 +1,7 @@
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createServer } from 'vite';
+import { createElement } from 'react';
 import { phoenixPaths } from '../prototypes/phoenix/routes.mjs';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
@@ -37,11 +38,21 @@ try {
   await writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`);
   // Option 2 is a client-routed preview: give each of its routes a copy of its shell.
   const option2 = await readFile('dist/option-2/index.html', 'utf8');
+  const { renderToString } = await import('react-dom/server');
+  const { App: Option2App } = await server.ssrLoadModule('/prototypes/option2/main.jsx');
+  // React 19 prepends <link rel="preload"> hints for images to the markup; inside #root they would
+  // break hydration, so they are dropped (the hero image carries fetchpriority="high" instead).
+  const option2Page = route => {
+    const body = renderToString(createElement(Option2App, { url: '/option-2' + (route ? '/' + route : '') })).replace(/^(<link [^>]*\/>)+/, '');
+    return option2.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
+  };
+  await writeFile('dist/option-2/index.html', option2Page(''));
   const option2Routes = ['services', 'why-phoenix', 'about', 'contact', 'tracking', ...['amazon-fba-logistics', 'warehousing-and-3pl', 'road-freight-and-transport', 'international-freight', 'customs-clearance', 'dangerous-goods'].map(slug => `services/${slug}`)];
   for (const route of option2Routes) {
     await mkdir(path.join('dist/option-2', route), { recursive: true });
-    await writeFile(path.join('dist/option-2', route, 'index.html'), option2);
-    await writeFile(path.join('dist/option-2', `${route}.html`), option2);
+    const html = option2Page(route);
+    await writeFile(path.join('dist/option-2', route, 'index.html'), html);
+    await writeFile(path.join('dist/option-2', `${route}.html`), html);
   }
   console.log(`Prerendered ${staticPaths.length} pages, a 404 page and sitemap.`);
 } finally {
