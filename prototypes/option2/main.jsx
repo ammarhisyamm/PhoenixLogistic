@@ -139,7 +139,6 @@ function MegaMenu({ open, onClose }) {
 function Header() {
   const [open, setOpen] = useState(false);
   const [mega, setMega] = useState(false);
-  const timer = useRef(0);
   const { pathname } = useLocation();
   useEffect(() => { setOpen(false); setMega(false); }, [pathname]);
   useEffect(() => {
@@ -147,20 +146,21 @@ function Header() {
     addEventListener('keydown', esc);
     return () => removeEventListener('keydown', esc);
   }, []);
-  const hover = on => { clearTimeout(timer.current); timer.current = setTimeout(() => setMega(on), on ? 60 : 200); };
+  // Services opens and closes on click only (no hover timers fighting the click); the backdrop,
+  // Escape or any nav link closes it.
   return <>
     <div className={'mega-backdrop' + (mega || open ? ' is-on' : '')} onClick={() => { setMega(false); setOpen(false); }} aria-hidden="true" />
     <header className={'header' + (mega ? ' has-mega' : '') + (open ? ' has-menu' : '')}>
-      <div className="header-bar" onPointerLeave={() => hover(false)}>
+      <div className="header-bar">
         <div className="header-inner">
           <Link to="/" className="brand" aria-label="Phoenix Global Logistics home">
             <img src="/assets/phoenix-logo.png" alt="" width="52" height="44" />
           </Link>
           <nav className="nav" aria-label="Main">
-            <button type="button" className={'nav-services' + (pathname.startsWith('/services') ? ' is-current' : '')} aria-expanded={mega} aria-controls="mega" onClick={() => setMega(m => !m)} onPointerEnter={() => hover(true)}>
+            <button type="button" className={'nav-services' + (pathname.startsWith('/services') ? ' is-current' : '')} aria-expanded={mega} aria-controls="mega" onClick={() => { setOpen(false); setMega(m => !m); }}>
               Services<CaretDown size={12} weight="bold" aria-hidden="true" />
             </button>
-            {nav.map(([label, to]) => <NavLink key={to} to={to} onPointerEnter={() => hover(false)} className={({ isActive }) => isActive ? 'is-current' : undefined}>{label}</NavLink>)}
+            {nav.map(([label, to]) => <NavLink key={to} to={to} onClick={() => setMega(false)} className={({ isActive }) => isActive ? 'is-current' : undefined}>{label}</NavLink>)}
           </nav>
           <div className="header-actions">
             <Link className="header-link" to="/tracking" aria-label="Track a shipment"><Crosshair size={18} weight="regular" aria-hidden="true" /><span>Track</span></Link>
@@ -210,7 +210,7 @@ function Footer() {
         <div className="fcell fcell-depot"><p className="flabel">Partners</p><strong>China</strong><span>Air and sea freight</span></div>
         <div className="fcell fcell-depot fcell-badge"><AmazonLogo size={30} /><span>Amazon Partner Carrier<small>NSW, QLD & VIC</small></span></div>
 
-        <div className="fcell fcell-word" aria-hidden="true"><span>Phoenix</span></div>
+        
 
         <div className="fcell fcell-legal"><p>© 2026 Phoenix Global Logistics · ABN {company.abn}</p></div>
         <div className="fcell fcell-legal"><a href="/privacy">Privacy Policy</a></div>
