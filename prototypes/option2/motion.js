@@ -255,18 +255,29 @@ export function usePageMotion(key) {
       // sideways inside their own window so they never run under the heading.
       gsap.utils.toArray('[data-sroad]').forEach(section => {
         const truck = section.querySelector('.sroad-truck');
-        const ghost = section.querySelector('.sroad-ghost');
+        const lane = section.querySelector('.sroad-lane:not(.sroad-lane-far)');
         const view = section.querySelector('.sroad-view');
         const track = section.querySelector('.sroad-track');
+        // One dash + gap is 30% of the truck width; wrapping the offset keeps the line endless.
+        const period = () => truck.offsetWidth * 0.3;
+        const wrapLane = { x: gsap.utils.unitize(v => ((parseFloat(v) % period()) + period()) % period() - period()) };
+        // The truck rumbles only while it is actually moving (the scrub is still catching up).
+        let idle;
+        const driving = () => { section.classList.add('is-driving'); clearTimeout(idle); idle = setTimeout(() => section.classList.remove('is-driving'), 140); };
         mm.add('(min-width: 1000px)', () => {
           const distance = () => Math.max(0, track.scrollWidth - view.clientWidth);
-          const tl = gsap.timeline({ scrollTrigger: { trigger: section, start: 'top top', end: () => '+=' + (distance() + window.innerHeight * 0.8), scrub: 1, pin: true, invalidateOnRefresh: true } });
-          tl.fromTo(truck, { x: () => window.innerWidth * 0.08 }, { x: () => -window.innerWidth * 0.6, ease: 'none', duration: 1 }, 0)
-            .fromTo(ghost, { xPercent: 0 }, { xPercent: -24, ease: 'none', duration: 1 }, 0)
+          const tl = gsap.timeline({ onUpdate: driving, scrollTrigger: { trigger: section, start: 'top top', end: () => '+=' + (distance() + window.innerHeight * 0.8), scrub: 1, pin: true, invalidateOnRefresh: true } });
+          // The camera pans slower than the truck: it creeps left on screen while the road streams right.
+          tl.fromTo(truck, { x: () => window.innerWidth * 0.04 }, { x: () => -window.innerWidth * 0.4, ease: 'none', duration: 1 }, 0)
+            .fromTo(lane, { x: 0 }, { x: () => window.innerWidth * 7, ease: 'none', duration: 1, modifiers: wrapLane }, 0)
             .fromTo(track, { x: 0 }, { x: () => -distance(), ease: 'none', duration: 1 }, 0);
+          return () => clearTimeout(idle);
         });
         mm.add('(max-width: 999px)', () => {
-          gsap.fromTo(truck, { x: () => window.innerWidth * 0.2 }, { x: () => -window.innerWidth * 0.3, ease: 'none', scrollTrigger: { trigger: section, start: 'top bottom', end: 'top 20%', scrub: 1 } });
+          const tl = gsap.timeline({ onUpdate: driving, scrollTrigger: { trigger: section, start: 'top bottom', end: 'top 10%', scrub: 1 } });
+          tl.fromTo(truck, { x: () => window.innerWidth * 0.16 }, { x: () => -window.innerWidth * 0.12, ease: 'none', duration: 1 }, 0)
+            .fromTo(lane, { x: 0 }, { x: () => window.innerWidth * 3, ease: 'none', duration: 1, modifiers: wrapLane }, 0);
+          return () => clearTimeout(idle);
         });
       });
 

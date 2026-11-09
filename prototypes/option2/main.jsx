@@ -245,13 +245,16 @@ function Outcome({ muted, lines, thumb, intro, items, cta }) {
   </section>;
 }
 
-// The Phoenix truck drives along the top of a dark band while a giant word slides behind it
-// and the chapters scroll sideways (pinned on wide screens).
-function StoryRoad({ ghost, muted, lines, text, chapters }) {
+// The Phoenix truck drives on a road that runs into the dark band: the lane markings stream past
+// under the wheels while the chapters scroll sideways (pinned on wide screens).
+function StoryRoad({ muted, lines, text, chapters }) {
   return <section className="sroad" data-sroad>
-    <div className="sroad-top">
-      <p className="sroad-ghost" aria-hidden="true">{ghost}</p>
-      <div className="sroad-truck" aria-hidden="true"><img src="/option2/media/truck@700.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 60vw, 26vw" alt="" /></div>
+    <div className="sroad-top" aria-hidden="true">
+      <div className="sroad-road"><span className="sroad-kerb" /><span className="sroad-lane" /><span className="sroad-lane sroad-lane-far" /></div>
+      <div className="sroad-truck">
+        <span className="sroad-shadow" />
+        <div className="sroad-body"><img src="/option2/media/truck@700.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 70vw, 34vw" alt="" /></div>
+      </div>
     </div>
     <div className="sroad-band">
       <div className="sroad-inner">
@@ -581,7 +584,7 @@ function Why() {
     </section>
     <Forge items={checks} cta={<Button to="/contact" variant="ghost-light">Request a quote</Button>} />
 
-    <Outcome muted={2} lines={['Our trucks.', 'Our drivers.', 'Our responsibility.']} thumb={photos.fleet}
+    <Outcome muted={1} lines={['Our fleet, our people.', 'Our responsibility.']} thumb={photos.fleet}
       intro="An owned fleet for metro and interstate freight, a contracted operator network for extra capacity, and depot teams who handle every pallet in between."
       items={[[12, '', 'Owned vehicles, from vans to heavy rigid trucks'], [20, '+', 'Contracted operators for extra capacity'], [600, '+', 'Containers handled every year'], [660, 'k+', 'Boxes processed every year']]} />
 
@@ -626,7 +629,7 @@ function About() {
       cta={<Button to="/contact" variant="ghost">Talk to our team</Button>}
       items={[[20, '+', 'Years of cargo experience'], [2021, '', 'Phoenix Global Logistics is formed'], [2, '', 'Australian bases, Sydney and Melbourne'], [12, '', 'Owned vehicles on the road']]} />
 
-    <StoryRoad ghost="Our story" muted={1} lines={['From cargo agent', 'to logistics partner.']} text="How Phoenix grew from international cargo into a connected Australian logistics operation." chapters={chapters} />
+    <StoryRoad muted={1} lines={['From cargo agent', 'to logistics partner.']} text="How Phoenix grew from international cargo into a connected Australian logistics operation." chapters={chapters} />
 
     <section className="section forge-intro">
       <div className="wrap split-head">
@@ -712,7 +715,7 @@ function Tracking() {
     <section className="section road" data-road>
       <div className="wrap split-head">
         <Lines className="display display-l" lines={['From depot', 'to delivery.']} />
-        <p data-fade>Each milestone is a scan that updates the record linked to your consignment number. Example consignment PGL000123456, Sydney to Melbourne.</p>
+        <p data-fade>Each milestone is a scan that updates the record linked to your consignment number.</p>
       </div>
       <div className="wrap road-body">
         <div className="road-lane" aria-hidden="true">
@@ -731,7 +734,6 @@ function Tracking() {
             </div>
           </li>)}
         </ol>
-        <p className="road-foot">Example shown. Your consignment shows the scans recorded for your freight.</p>
       </div>
     </section>
     <Cta heading={['Need help with', 'a consignment?']} text="For urgent enquiries, include your consignment number and shipment details." />
