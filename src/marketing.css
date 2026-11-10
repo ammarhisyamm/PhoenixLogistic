@@ -1,0 +1,805 @@
+/* Phoenix marketing layouts. Existing brand tokens and conversion routes are retained. */
+.marketing-section { padding-block: 96px; }
+.marketing-heading { max-width: 680px; margin-bottom: 40px; }
+.marketing-heading h2 { font-size: clamp(38px, 3.6vw, 50px); line-height: 1.16; }
+.marketing-heading p { margin-top: 18px; font-size: 17px; line-height: 1.7; }
+.phoenix-home h2, .phoenix-service h2 { font-size: clamp(38px, 3.6vw, 50px); line-height: 1.16; }
+.phoenix-home h3, .phoenix-service h3 { line-height: 1.3; }
+.phoenix-home [id], .phoenix-service [id] { scroll-margin-top: 16px; }
+.phoenix-intro-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 28px; margin-top: 28px; }
+
+/* The introduction and photograph each have their own space. */
+.phoenix-home-hero { padding-top: 56px; background: linear-gradient(var(--stone-100) 0 82%, var(--white) 82%); }
+.phoenix-home-intro { display: grid; grid-template-columns: 1.25fr 1fr; align-items: center; gap: 72px; margin-bottom: 44px; }
+.phoenix-home-intro h1 { font-size: clamp(48px, 5.2vw, 72px); line-height: 1.13; font-weight: 600; letter-spacing: -.025em; }
+.phoenix-home-intro p { max-width: 470px; color: var(--text-secondary); font-size: 17px; line-height: 1.75; }
+.phoenix-home-photo { margin: 0; overflow: hidden; }
+.phoenix-home-photo img { width: 100%; height: auto; aspect-ratio: 2.65; object-fit: cover; object-position: center 65%; }
+.phoenix-home-proof { position: relative; margin: -40px 32px 0; display: grid; grid-template-columns: 1.55fr 1fr 1fr 1.2fr; align-items: center; padding: 28px 32px; border: 1px solid var(--stone-200); border-radius: var(--radius-sm); background: var(--white); box-shadow: 0 12px 28px -20px rgb(35 32 34 / 25%); }
+.phoenix-home-proof > div + div { border-left: 1px solid var(--stone-200); padding-left: 32px; }
+.phoenix-home-proof > div:not(.pgl-carrier-credential) strong { display: block; font: 600 40px/1.15 var(--font-display); letter-spacing: -.02em; }
+.phoenix-home-proof > div:not(.pgl-carrier-credential) span { display: block; margin-top: 6px; font-size: 12px; line-height: 1.6; color: var(--text-muted); }
+.phoenix-home-proof .pgl-carrier-credential { padding-right: 24px; }
+.phoenix-home-proof .pgl-carrier-credential strong { font-size: 14px; }
+.phoenix-home-proof .pgl-carrier-credential span { font-size: 11px; }
+.phoenix-proof-note { padding: 16px 32px 0; font-size: 11px; text-align: right; }
+
+.phoenix-shipment-tools { padding-block: 44px 0; }
+.phoenix-shipment-tools .pgl-utility-card { border-radius: var(--radius-sm); background: var(--white); }
+.phoenix-shipment-tools .pgl-utility-panel { padding: 30px 32px; }
+.phoenix-shipment-tools .pgl-utility-panel + .pgl-utility-panel { background: var(--stone-100); }
+.phoenix-shipment-tools .pgl-tool-heading h2 { font-size: 25px; }
+.phoenix-shipment-tools .pgl-tool-heading { margin-bottom: 20px; }
+.phoenix-shipment-tools .tracking-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; align-items: start; }
+.phoenix-shipment-tools .tracking-form label { grid-column: 1 / -1; margin-bottom: 8px; font-size: 13px; }
+.phoenix-shipment-tools .tracking-form input { grid-column: 1; grid-row: 2; }
+.phoenix-shipment-tools .tracking-form button { grid-column: 2; grid-row: 2; gap: 16px; padding-inline: 18px; }
+.phoenix-shipment-tools .tracking-form p { grid-column: 1 / -1; margin-bottom: 0; }
+.phoenix-shipment-tools .pgl-utility-panel > .text-link { margin-top: 0; }
+.phoenix-shipment-tools .pgl-quote-starter .form-row { grid-template-columns: 1fr 1fr; gap: 16px; }
+.phoenix-shipment-tools .pgl-quote-starter { position: relative; }
+.phoenix-shipment-tools .pgl-quote-starter .field-help { margin-bottom: 12px; }
+
+/* A visible service catalogue, inspired by the supplied Australian references. */
+.service-catalog { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 28px; }
+.service-catalog-card { display: flex; flex-direction: column; min-width: 0; border-bottom: 1px solid var(--stone-200); }
+.service-catalog-photo { aspect-ratio: 1.65; overflow: hidden; border-radius: var(--radius-sm); background: var(--stone-100); }
+.service-catalog-photo img { width: 100%; height: 100%; object-fit: cover; }
+.service-catalog-copy { flex: 1; display: flex; flex-direction: column; padding: 24px 0 20px; }
+.service-catalog-copy h3 { font-size: 28px; font-weight: 600; }
+.service-catalog-copy > p { margin-top: 12px; font-size: 14px; line-height: 1.75; }
+.service-scope-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 20px 0 0; }
+.service-scope-tags li { padding: 5px 9px; border: 1px solid var(--stone-200); border-radius: var(--radius-sm); font-size: 11px; line-height: 1.6; color: var(--text-secondary); }
+.service-catalog-action { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 24px; margin-top: auto; font-size: 13px; font-weight: 500; }
+.service-catalog-action .arrow { width: 19px; height: 19px; }
+.phoenix-additional-handling { display: flex; flex-wrap: wrap; gap: 16px 32px; padding-top: 32px; }
+.phoenix-additional-handling > span { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.phoenix-additional-handling .service-icon { width: 24px; height: 24px; }
+
+.phoenix-company-intro { background: var(--stone-100); }
+.phoenix-company-layout { display: grid; grid-template-columns: 1.12fr 1fr; align-items: center; gap: 88px; }
+.phoenix-company-image img { width: 100%; height: 460px; object-fit: cover; object-position: center 60%; }
+.phoenix-company-copy > p { margin-top: 24px; font-size: 16px; line-height: 1.8; }
+.phoenix-company-experience { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: center; padding-block: 28px; margin-top: 28px; border-top: 1px solid var(--stone-200); }
+.phoenix-company-experience strong { font: 600 34px/1.2 var(--font-display); white-space: nowrap; }
+.phoenix-company-experience p { font-size: 13px; line-height: 1.7; }
+
+.phoenix-fba-feature { color: var(--white); background: var(--charcoal-900); }
+.phoenix-fba-layout { display: grid; grid-template-columns: 1fr 1.08fr; gap: 88px; align-items: center; }
+.phoenix-fba-copy .pgl-carrier-credential { margin-bottom: 28px; }
+.phoenix-fba-copy .pgl-carrier-credential .service-icon { filter: brightness(0) invert(1); width: 32px; height: 32px; }
+.phoenix-fba-copy .pgl-carrier-credential span { color: var(--stone-200); }
+.phoenix-fba-copy h2 { max-width: 430px; }
+.phoenix-fba-copy > p { margin-top: 24px; color: var(--stone-200); font-size: 16px; }
+.phoenix-feature-list { list-style: none; margin: 24px 0 32px; padding: 0; display: grid; gap: 16px; font-size: 14px; line-height: 1.65; }
+.phoenix-feature-list li { display: flex; gap: 12px; align-items: start; }
+.phoenix-feature-list svg { flex: 0 0 auto; margin-top: 3px; color: var(--red-300); }
+.phoenix-fba-visual > img { width: 100%; height: 360px; object-fit: cover; }
+.phoenix-fba-figures { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding-block: 28px 12px; }
+.phoenix-fba-figures > div + div { border-left: 1px solid var(--charcoal-500); padding-left: 32px; }
+.phoenix-fba-figures strong { display: block; font: 500 42px/1.15 var(--font-display); }
+.phoenix-fba-figures span { display: block; margin-top: 10px; font-size: 12px; color: var(--stone-200); }
+.phoenix-fba-visual > p { font-size: 11px; color: var(--charcoal-300); margin-top: 8px; }
+
+.phoenix-quality-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 88px; align-items: center; }
+.phoenix-quality-visual img { width: 100%; height: 560px; object-fit: cover; object-position: 45% center; }
+.phoenix-quality-copy > p { margin-top: 24px; }
+.phoenix-quality-points { display: grid; gap: 22px; margin-block: 28px 20px; }
+.phoenix-quality-points > div { display: flex; gap: 18px; align-items: start; }
+.phoenix-quality-points .service-icon { width: 30px; height: 30px; margin-top: 2px; }
+.phoenix-quality-points h3 { font-size: 24px; }
+.phoenix-quality-points p { margin-top: 6px; font-size: 14px; }
+
+.phoenix-process-feature { background: var(--stone-100); }
+.phoenix-process-layout { display: grid; grid-template-columns: 1fr 1.7fr; gap: 88px; }
+.phoenix-process-layout > div > p { margin-top: 24px; }
+.phoenix-process-layout > div > .text-link { margin-top: 24px; }
+.phoenix-process-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 32px 40px; }
+.phoenix-process-steps li { padding-top: 20px; border-top: 1px solid var(--charcoal-300); }
+.phoenix-process-step-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.phoenix-process-step-heading .service-icon { width: 32px; height: 32px; }
+.phoenix-process-step-heading span { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-muted); }
+.phoenix-process-steps h3 { font-size: 25px; }
+.phoenix-process-steps p { margin-top: 10px; font-size: 14px; }
+.phoenix-home .pgl-network { padding-block: 96px; }
+.phoenix-home .pgl-network-layout { gap: 72px; }
+.phoenix-home .pgl-locations > div { background: var(--white); border-radius: var(--radius-sm); }
+.phoenix-industry-feature { background: var(--stone-100); }
+.phoenix-industry-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border: 1px solid var(--stone-200); background: var(--white); }
+.phoenix-industry-list > div { padding: 28px 24px; min-width: 0; }
+.phoenix-industry-list > div + div { border-left: 1px solid var(--stone-200); }
+.phoenix-industry-list .service-icon { width: 32px; height: 32px; margin-bottom: 28px; }
+.phoenix-industry-list h3 { font-size: 23px; }
+.phoenix-faq .pgl-faq-layout { grid-template-columns: 1fr 1.55fr; gap: 88px; }
+
+/* Quote content and operational photography form one clear closing section. */
+.freight-quote-section { padding-block: 0 96px; }
+.freight-quote-panel { display: grid; grid-template-columns: 1.2fr 1fr; background: var(--charcoal-900); color: var(--white); overflow: hidden; }
+.freight-quote-copy { padding: 56px; align-self: center; min-width: 0; }
+.freight-quote-copy h2 { max-width: 440px; }
+.freight-quote-copy > p { margin-top: 20px; color: var(--stone-200); max-width: 430px; }
+.freight-quote-copy > .button { margin-top: 28px; }
+.freight-quote-contacts { display: grid; justify-items: start; gap: 4px; margin-top: 24px; font-size: 12px; }
+.freight-quote-contacts a { min-height: 32px; display: inline-flex; align-items: center; overflow-wrap: anywhere; max-width: 100%; }
+.freight-quote-panel > img { width: 100%; height: 100%; min-height: 420px; object-fit: cover; }
+
+/* Shared service template: context, scope, operations and the next action. */
+.phoenix-service-hero { background: var(--stone-100); padding-block: 32px 56px; }
+.phoenix-service-hero .breadcrumb { margin-bottom: 28px; flex-wrap: wrap; row-gap: 8px; }
+.phoenix-service-hero-layout { display: grid; grid-template-columns: 1fr 1.02fr; align-items: center; gap: 72px; }
+.phoenix-service-hero-copy h1 { font-size: clamp(46px, 4.7vw, 64px); line-height: 1.14; font-weight: 600; letter-spacing: -.025em; text-wrap: balance; }
+.phoenix-service-hero-copy > p { margin-top: 24px; max-width: 560px; font-size: 16px; line-height: 1.8; color: var(--text-secondary); }
+.phoenix-service-hero-copy .service-scope-tags { margin-top: 28px; }
+.phoenix-service-hero-copy .service-scope-tags li { border-color: var(--charcoal-300); }
+.phoenix-service-hero-photo { width: 100%; height: 480px; object-fit: cover; border-radius: var(--radius-sm); }
+.phoenix-service[data-service="road-freight-and-transport"] .phoenix-service-hero-photo { object-position: 76% center; }
+.phoenix-service[data-service="warehousing-and-3pl"] .phoenix-service-hero-photo { object-position: 35% center; }
+.phoenix-service[data-service="customs-clearance"] .phoenix-service-hero-photo { object-position: 35% center; }
+.phoenix-service[data-service="dangerous-goods"] .phoenix-service-hero-photo { object-position: 35% center; }
+.phoenix-service-section-nav { border-bottom: 1px solid var(--stone-200); }
+.phoenix-service-section-nav > div { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 40px; }
+.phoenix-service-section-nav a { position: relative; min-height: 66px; display: flex; align-items: center; font-size: 13px; font-weight: 500; }
+.phoenix-service-section-nav a::after { content: ''; position: absolute; height: 2px; background: var(--red-500); bottom: 0; inset-inline: 0; transform: scaleX(0); transform-origin: left; }
+.phoenix-service-scope-layout { display: grid; grid-template-columns: 1fr 1.65fr; gap: 88px; }
+.phoenix-service-audience { padding-top: 28px; margin-top: 32px; border-top: 1px solid var(--stone-200); }
+.phoenix-service-audience h3 { font-size: 23px; }
+.phoenix-service-audience p { margin-top: 12px; font-size: 14px; line-height: 1.8; }
+.phoenix-service-inclusions { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; }
+.phoenix-service-inclusions li { display: flex; gap: 16px; align-items: start; padding: 24px 0; border-top: 1px solid var(--stone-200); font-size: 17px; line-height: 1.6; }
+.phoenix-service-inclusions svg { flex: 0 0 auto; margin-top: 3px; color: var(--red-500); }
+.phoenix-service-operations { background: var(--stone-100); }
+.phoenix-service-operations-layout { display: grid; grid-template-columns: 1.08fr 1fr; gap: 88px; align-items: center; }
+.phoenix-service-operation-photo img { width: 100%; height: 540px; object-fit: cover; border-radius: var(--radius-sm); }
+.phoenix-service-details { margin-top: 28px; display: grid; gap: 24px; }
+.phoenix-service-details h3 { font-size: 25px; }
+.phoenix-service-details p { margin-top: 10px; font-size: 14px; line-height: 1.85; }
+.phoenix-carrier-strip { padding-block: 40px; color: var(--white); background: var(--charcoal-900); }
+.phoenix-carrier-strip > div { display: grid; grid-template-columns: 1.4fr 1fr 1fr; align-items: center; gap: 16px 48px; }
+.phoenix-carrier-strip .pgl-carrier-credential span, .phoenix-carrier-strip > div > p { color: var(--stone-200); }
+.phoenix-carrier-strip .pgl-carrier-credential .service-icon { filter: brightness(0) invert(1); }
+.phoenix-carrier-strip > div > div:not(.pgl-carrier-credential) { border-left: 1px solid var(--charcoal-500); padding-left: 40px; }
+.phoenix-carrier-strip > div > div:not(.pgl-carrier-credential) strong { display: block; font: 500 44px/1.2 var(--font-display); }
+.phoenix-carrier-strip > div > div:not(.pgl-carrier-credential) span { display: block; margin-top: 8px; font-size: 13px; }
+.phoenix-carrier-strip > div > p { grid-column: 2 / -1; font-size: 11px; text-align: right; }
+.service-catalog--related { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+.service-catalog-card--compact .service-catalog-copy { padding-block: 18px; }
+.service-catalog-card--compact h3 { font-size: 23px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .service-catalog-photo img { transition: transform 420ms var(--pgl-motion-out); }
+  .service-catalog-copy h3, .service-catalog-action, .freight-quote-contacts a, .phoenix-service-section-nav a { transition: color 180ms ease; }
+  .service-catalog-action .arrow { transition: transform 180ms ease; }
+  .service-catalog-card:hover .service-catalog-photo img { transform: scale(1.025); }
+  .service-catalog-card:hover h3, .service-catalog-card:hover .service-catalog-action { color: var(--red-700); }
+  .service-catalog-card:hover .arrow { transform: translateX(4px); }
+  .freight-quote-contacts a:hover { color: var(--red-300); }
+  .phoenix-service-section-nav a:hover { color: var(--red-700); }
+  .phoenix-service-section-nav a::after { transition: transform 180ms ease; }
+  .phoenix-service-section-nav a:hover::after { transform: scaleX(1); }
+}
+.service-catalog-card:focus-visible h3 { color: var(--red-700); }
+.phoenix-service-section-nav a:focus-visible::after { transform: scaleX(1); }
+
+@media (max-width: 1100px) {
+  .phoenix-home-intro, .phoenix-company-layout, .phoenix-fba-layout, .phoenix-quality-layout, .phoenix-service-hero-layout, .phoenix-service-operations-layout { gap: 48px; }
+  .phoenix-home-intro { grid-template-columns: 1.15fr 1fr; }
+  .phoenix-home-intro h1 { font-size: 58px; }
+  .phoenix-home-proof { margin-inline: 24px; padding-inline: 24px; grid-template-columns: 1.5fr 1fr 1fr 1.1fr; }
+  .phoenix-home-proof > div + div { padding-left: 20px; }
+  .phoenix-home-proof .pgl-carrier-credential { gap: 12px; padding-right: 16px; }
+  .phoenix-home-proof .pgl-carrier-credential .service-icon { width: 32px; height: 32px; }
+  .phoenix-home-proof > div:not(.pgl-carrier-credential) strong { font-size: 34px; }
+  .phoenix-process-layout, .phoenix-service-scope-layout { gap: 48px; }
+  .phoenix-industry-list > div { padding-inline: 18px; }
+  .phoenix-service-hero-photo { height: 450px; }
+  .phoenix-service-hero-copy h1 { font-size: 52px; }
+  .service-catalog--related { gap: 16px; }
+  .service-catalog-card--compact h3 { font-size: 21px; }
+  .freight-quote-copy { padding: 40px; }
+}
+
+@media (max-width: 900px) {
+  .marketing-section { padding-block: 72px; }
+  .phoenix-home-hero { padding-top: 40px; }
+  .phoenix-home-intro { grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px; }
+  .phoenix-home-intro h1 { font-size: 62px; }
+  .phoenix-home-intro > div { display: flex; align-items: start; justify-content: space-between; gap: 32px; }
+  .phoenix-home-intro p { max-width: 440px; font-size: 16px; }
+  .phoenix-home-intro .phoenix-intro-actions { margin: 0; flex: 0 0 auto; flex-direction: column; align-items: start; gap: 8px; }
+  .phoenix-home-photo img { aspect-ratio: 2; }
+  .phoenix-home-proof { margin-top: -24px; grid-template-columns: repeat(3, 1fr); gap: 24px 0; }
+  .phoenix-home-proof .pgl-carrier-credential { grid-column: 1 / -1; padding: 0 0 20px; border-bottom: 1px solid var(--stone-200); }
+  .phoenix-home-proof .pgl-carrier-credential span { margin-top: 2px; }
+  .phoenix-home-proof > div:nth-child(2) { border: 0; padding: 0; }
+  .phoenix-shipment-tools .pgl-utility-card { grid-template-columns: 1fr; }
+  .phoenix-shipment-tools .pgl-utility-panel + .pgl-utility-panel { border-left: 0; border-top: 1px solid var(--stone-200); }
+  .phoenix-shipment-tools .pgl-utility-panel { padding: 28px; }
+  .phoenix-shipment-tools .pgl-quote-starter .button { width: auto; }
+  .service-catalog { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+  .service-catalog-copy h3 { font-size: 26px; }
+  .phoenix-company-layout, .phoenix-fba-layout, .phoenix-quality-layout { gap: 32px; }
+  .phoenix-company-image img { height: 480px; }
+  .phoenix-company-experience { grid-template-columns: 1fr; gap: 12px; }
+  .phoenix-fba-visual > img { height: 320px; }
+  .phoenix-quality-visual img { height: 570px; }
+  .phoenix-process-layout { grid-template-columns: 1fr; gap: 40px; }
+  .phoenix-process-layout > div > p { max-width: 540px; margin-top: 16px; }
+  .phoenix-process-layout > div > .text-link { margin-top: 16px; }
+  .phoenix-home .pgl-network { padding-block: 72px; }
+  .phoenix-home .pgl-network-layout { gap: 40px; }
+  .phoenix-industry-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .phoenix-industry-list > div:nth-child(4) { border-left: 0; }
+  .phoenix-industry-list > div:nth-child(n+4) { border-top: 1px solid var(--stone-200); }
+  .phoenix-faq .pgl-faq-layout { grid-template-columns: 1fr; gap: 32px; }
+  .freight-quote-section { padding-bottom: 72px; }
+  .freight-quote-panel { grid-template-columns: 1.3fr 1fr; }
+  .freight-quote-copy { padding: 32px; }
+  .phoenix-service-hero-layout { gap: 32px; }
+  .phoenix-service-hero-copy h1 { font-size: 46px; }
+  .phoenix-service-hero-copy > p { font-size: 15px; }
+  .phoenix-service-hero-photo { height: 500px; }
+  .phoenix-service-scope-layout { grid-template-columns: 1fr; gap: 32px; }
+  .phoenix-service-audience { display: grid; grid-template-columns: 1fr 2fr; gap: 32px; margin-top: 24px; padding-top: 24px; }
+  .phoenix-service-audience p { margin: 0; }
+  .phoenix-service-operations-layout { gap: 32px; }
+  .phoenix-service-operation-photo img { height: 580px; }
+  .phoenix-carrier-strip > div { grid-template-columns: 1.4fr 1fr 1fr; gap: 16px; }
+  .phoenix-carrier-strip > div > div:not(.pgl-carrier-credential) { padding-left: 24px; }
+  .phoenix-carrier-strip .pgl-carrier-credential { gap: 12px; }
+  .phoenix-carrier-strip .pgl-carrier-credential strong { font-size: 14px; }
+  .service-catalog--related { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .marketing-section { padding-block: 56px; }
+  .marketing-heading { margin-bottom: 28px; }
+  .marketing-heading p { font-size: 15px; margin-top: 16px; }
+  .phoenix-home h2, .phoenix-service h2 { font-size: 38px; }
+  .phoenix-home [id], .phoenix-service [id] { scroll-margin-top: 16px; }
+  .phoenix-home-hero { padding-top: 32px; background: var(--stone-100); }
+  .phoenix-home-intro { gap: 20px; margin-bottom: 28px; }
+  .phoenix-home-intro h1 { font-size: clamp(40px, 10.6vw, 54px); line-height: 1.15; }
+  .phoenix-home-intro > div { display: block; }
+  .phoenix-home-intro p { font-size: 15px; line-height: 1.75; }
+  .phoenix-home-intro .phoenix-intro-actions { margin-top: 24px; flex-direction: row; align-items: center; gap: 12px 20px; }
+  .phoenix-intro-actions .button { padding-inline: 18px; gap: 16px; }
+  .phoenix-home-photo { margin-inline: -20px; }
+  .phoenix-home-photo img { aspect-ratio: 1.35; object-position: 70% center; }
+  .phoenix-home-proof { margin: -20px 0 0; padding: 20px; gap: 20px 0; }
+  .phoenix-home-proof > div:not(.pgl-carrier-credential) strong { font-size: 32px; }
+  .phoenix-home-proof > div:not(.pgl-carrier-credential) span { font-size: 10px; line-height: 1.6; }
+  .phoenix-home-proof > div + div { padding-left: 14px; }
+  .phoenix-proof-note { padding: 14px 0 24px; font-size: 10px; text-align: left; }
+  .phoenix-shipment-tools { padding-top: 32px; }
+  .phoenix-shipment-tools .pgl-utility-panel { padding: 24px 20px; }
+  .phoenix-shipment-tools .pgl-tool-heading { gap: 12px; }
+  .phoenix-shipment-tools .pgl-tool-heading h2 { font-size: 24px; }
+  .phoenix-shipment-tools .tracking-form { grid-template-columns: 1fr; }
+  .phoenix-shipment-tools .tracking-form input { grid-row: auto; }
+  .phoenix-shipment-tools .tracking-form p { grid-row: 3; margin-bottom: 14px; }
+  .phoenix-shipment-tools .tracking-form button { grid-column: 1; grid-row: 4; width: 100%; }
+  .phoenix-shipment-tools .pgl-utility-panel > .text-link { margin-top: 8px; }
+  .phoenix-shipment-tools .pgl-quote-starter .form-row { gap: 12px; }
+  .phoenix-shipment-tools .pgl-quote-starter input { font-size: 14px; padding-inline: 10px; }
+  .phoenix-shipment-tools .pgl-quote-starter .button { width: 100%; }
+  .service-catalog { grid-template-columns: 1fr; gap: 32px; }
+  .service-catalog-photo { aspect-ratio: 1.7; }
+  .service-catalog-copy { padding-top: 20px; }
+  .service-catalog-copy h3 { font-size: 28px; }
+  .service-catalog-copy > p { font-size: 14px; }
+  .service-catalog-action { padding-top: 20px; min-height: 44px; }
+  .phoenix-additional-handling { gap: 20px; }
+  .phoenix-additional-handling > span { font-size: 12px; gap: 8px; }
+  .phoenix-company-layout, .phoenix-fba-layout, .phoenix-quality-layout { grid-template-columns: 1fr; gap: 32px; }
+  .phoenix-company-image img { height: 300px; }
+  .phoenix-company-copy > p { font-size: 15px; margin-top: 20px; }
+  .phoenix-company-experience { grid-template-columns: auto 1fr; gap: 20px; margin-top: 24px; padding-block: 24px; }
+  .phoenix-company-experience strong { font-size: 30px; }
+  .phoenix-company-experience p { font-size: 12px; }
+  .phoenix-fba-copy > p { font-size: 15px; }
+  .phoenix-fba-copy .pgl-carrier-credential { margin-bottom: 24px; }
+  .phoenix-fba-visual > img { height: 280px; }
+  .phoenix-fba-figures { gap: 24px; }
+  .phoenix-fba-figures strong { font-size: 38px; }
+  .phoenix-fba-figures > div + div { padding-left: 24px; }
+  .phoenix-quality-visual img { height: 360px; object-position: center; }
+  .phoenix-quality-copy > p { font-size: 15px; margin-top: 20px; }
+  .phoenix-quality-points { gap: 22px; }
+  .phoenix-quality-points h3 { font-size: 23px; }
+  .phoenix-quality-points .service-icon { width: 28px; height: 28px; }
+  .phoenix-process-layout { gap: 32px; }
+  .phoenix-process-steps { gap: 28px 24px; }
+  .phoenix-process-steps h3 { font-size: 23px; }
+  .phoenix-process-steps p { font-size: 13px; }
+  .phoenix-home .pgl-network { padding-block: 56px; }
+  .phoenix-home .pgl-network-layout { gap: 32px; }
+  .phoenix-industry-list { grid-template-columns: 1fr 1fr; }
+  .phoenix-industry-list > div { padding: 24px 18px; }
+  .phoenix-industry-list > div:nth-child(odd) { border-left: 0; }
+  .phoenix-industry-list > div:nth-child(even) { border-left: 1px solid var(--stone-200); }
+  .phoenix-industry-list > div:nth-child(n+3) { border-top: 1px solid var(--stone-200); }
+  .phoenix-industry-list h3 { font-size: 23px; }
+  .phoenix-faq .pgl-faq-layout { gap: 24px; }
+  .freight-quote-section { padding-bottom: 56px; }
+  .freight-quote-panel { grid-template-columns: 1fr; }
+  .freight-quote-copy { padding: 32px 24px; }
+  .freight-quote-copy > p { font-size: 14px; }
+  .freight-quote-contacts { font-size: 11px; }
+  .freight-quote-panel > img { min-height: 0; height: 230px; }
+  .phoenix-service-hero { padding-block: 24px 32px; }
+  .phoenix-service-hero .breadcrumb { font-size: 11px; margin-bottom: 28px; gap: 10px; }
+  .phoenix-service-hero-layout { grid-template-columns: 1fr; gap: 28px; }
+  .phoenix-service-hero-copy h1 { font-size: 44px; max-width: 440px; text-wrap: auto; }
+  .phoenix-service-hero-copy > p { margin-top: 20px; font-size: 15px; }
+  .phoenix-service-hero-copy .phoenix-intro-actions { gap: 12px 20px; margin-top: 24px; }
+  .phoenix-service-hero-copy .service-scope-tags { margin-top: 24px; }
+  .phoenix-service-hero-photo { height: 290px; }
+  .phoenix-service-section-nav > div { gap: 0; justify-content: space-between; }
+  .phoenix-service-section-nav a { min-height: 56px; font-size: 11px; }
+  .phoenix-service-audience { grid-template-columns: 1fr; gap: 12px; }
+  .phoenix-service-inclusions { grid-template-columns: 1fr; gap: 0; }
+  .phoenix-service-inclusions li { padding-block: 20px; font-size: 16px; gap: 14px; }
+  .phoenix-service-operations-layout { grid-template-columns: 1fr; gap: 32px; }
+  .phoenix-service-operation-photo img { height: 330px; }
+  .phoenix-service-details { gap: 24px; }
+  .phoenix-service-details h3 { font-size: 25px; }
+  .phoenix-service-details p { font-size: 14px; }
+  .phoenix-carrier-strip { padding-block: 32px; }
+  .phoenix-carrier-strip > div { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .phoenix-carrier-strip .pgl-carrier-credential { grid-column: 1 / -1; }
+  .phoenix-carrier-strip > div > div:nth-child(2) { border: 0; padding: 0; }
+  .phoenix-carrier-strip > div > p { grid-column: 1 / -1; text-align: left; margin-top: -12px; }
+  .service-catalog--related { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+  .service-catalog-card--compact .service-catalog-copy { padding-block: 14px; }
+  .service-catalog-card--compact h3 { font-size: 21px; }
+}
+
+@media (max-width: 360px) {
+  .phoenix-home-intro h1 { font-size: 38px; }
+  .phoenix-home-proof { padding-inline: 16px; }
+  .phoenix-home-proof > div + div { padding-left: 10px; }
+  .phoenix-home-proof > div:not(.pgl-carrier-credential) strong { font-size: 28px; }
+  .phoenix-process-steps { grid-template-columns: 1fr; }
+  .phoenix-service-section-nav a { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-catalog-photo img, .service-catalog-copy h3, .service-catalog-action, .service-catalog-action .arrow, .freight-quote-contacts a, .phoenix-service-section-nav a, .phoenix-service-section-nav a::after { transition: none; }
+  .service-catalog-card:hover .service-catalog-photo img, .service-catalog-card:hover .arrow { transform: none; }
+}
+
+/* Seven-block homepage brief: tools in the hero, followed by trust and capabilities. */
+.phoenix-home-hero { padding-bottom: 40px; background: var(--stone-100); }
+.phoenix-home-hero .phoenix-shipment-tools { padding-top: 28px; }
+.phoenix-home-trust { padding-top: 32px; }
+.phoenix-home-trust .phoenix-home-proof { margin: 0; padding: 28px 0; border: 0; border-radius: 0; box-shadow: none; }
+.phoenix-home-trust .phoenix-proof-note { padding: 0 0 24px; text-align: left; }
+.phoenix-trust-context { display: grid; grid-template-columns: 1.5fr 1fr; gap: 48px; align-items: center; padding-top: 24px; border-top: 1px solid var(--stone-200); }
+.phoenix-trust-context > p { max-width: 680px; font-size: 13px; line-height: 1.8; }
+.phoenix-trust-context > div { display: flex; flex-wrap: wrap; justify-content: end; gap: 4px 24px; }
+.phoenix-trust-context .text-link { font-size: 12px; gap: 10px; }
+.phoenix-services { padding-bottom: 0; }
+.phoenix-capabilities-highlight { padding-block: 72px; margin-top: 72px; }
+.phoenix-quality-process { margin-top: 72px; padding-top: 64px; border-top: 1px solid var(--stone-200); }
+.phoenix-home .pgl-network { background: var(--stone-100); }
+.homepage-quote-questions { padding-block: 64px 80px; }
+.homepage-quote-questions .pgl-faq-layout { gap: 88px; grid-template-columns: 1fr 1.55fr; }
+
+/* Sector fit is presented without unapproved client endorsements. */
+.phoenix-industry-feature { background: var(--white); }
+.industry-explorer { display: grid; grid-template-columns: minmax(230px, .75fr) minmax(0, 1.6fr); gap: 48px; align-items: start; }
+.industry-tabs { display: grid; }
+.industry-tabs > button { display: flex; align-items: center; gap: 18px; min-height: 88px; padding: 20px; border: 0; border-left: 3px solid transparent; border-bottom: 1px solid var(--stone-200); border-radius: 0; background: var(--white); color: var(--text-secondary); text-align: left; font-size: 14px; line-height: 1.5; font-weight: 500; }
+.industry-tabs > button[aria-selected="true"] { border-left-color: var(--red-500); color: var(--text-primary); background: var(--stone-100); font-weight: 600; }
+.industry-tabs .service-icon { width: 28px; height: 28px; flex: 0 0 auto; }
+.industry-panel { min-width: 0; border: 1px solid var(--stone-200); border-radius: var(--radius-sm); overflow: hidden; }
+.industry-panel > img { width: 100%; height: 340px; object-fit: cover; }
+.industry-panel-copy { padding: 28px 32px 24px; min-height: 236px; }
+.industry-panel-copy h3 { max-width: 600px; font-size: 31px; font-weight: 500; }
+.industry-panel-copy > p { font-size: 14px; line-height: 1.8; margin-top: 14px; max-width: 630px; }
+.industry-service-links { display: flex; flex-wrap: wrap; gap: 4px 28px; margin-top: 18px; }
+.industry-service-links a { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; font-size: 13px; font-weight: 500; color: var(--red-700); }
+@media (hover: hover) and (pointer: fine) {
+  .industry-tabs > button { transition: color 160ms ease, background-color 160ms ease; }
+  .industry-tabs > button:hover { background: var(--stone-100); color: var(--red-700); }
+  .industry-service-links .arrow { transition: transform 160ms ease; }
+  .industry-service-links a:hover .arrow { transform: translateX(3px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .industry-panel > img { animation: industry-photo-in 180ms ease-out; }
+  @keyframes industry-photo-in { from { opacity: .3; } to { opacity: 1; } }
+}
+@media (max-width: 900px) {
+  .phoenix-home-trust .phoenix-home-proof { gap: 24px 0; }
+  .phoenix-trust-context { grid-template-columns: 1fr; gap: 12px; }
+  .phoenix-trust-context > div { justify-content: start; }
+  .industry-explorer { grid-template-columns: minmax(190px, .8fr) minmax(0, 1.4fr); gap: 28px; }
+  .industry-tabs > button { gap: 14px; padding-inline: 16px; font-size: 13px; }
+  .industry-panel > img { height: 290px; }
+  .industry-panel-copy { padding: 24px; min-height: 260px; }
+  .industry-panel-copy h3 { font-size: 28px; }
+  .homepage-quote-questions .pgl-faq-layout { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 620px) {
+  .phoenix-home-hero { padding-bottom: 28px; }
+  .phoenix-home-hero .phoenix-shipment-tools { padding-top: 24px; }
+  .phoenix-home-trust { padding-top: 16px; }
+  .phoenix-home-trust .phoenix-home-proof { padding-block: 20px; }
+  .phoenix-home-trust .phoenix-proof-note { padding-bottom: 20px; }
+  .phoenix-trust-context { padding-top: 20px; }
+  .phoenix-trust-context > p { font-size: 12px; }
+  .phoenix-trust-context > div { gap: 4px 16px; }
+  .phoenix-capabilities-highlight { margin-top: 48px; padding-block: 56px; }
+  .phoenix-quality-process { margin-top: 48px; padding-top: 40px; }
+  .industry-explorer { grid-template-columns: 1fr; gap: 24px; }
+  .industry-tabs { grid-template-columns: 1fr 1fr; }
+  .industry-tabs > button { min-height: 76px; padding: 14px 12px; font-size: 12px; gap: 10px; }
+  .industry-tabs > button:last-child { grid-column: 1 / -1; }
+  .industry-tabs .service-icon { width: 24px; height: 24px; }
+  .industry-panel > img { height: 240px; }
+  .industry-panel-copy { padding: 24px 20px 20px; min-height: 250px; }
+  .industry-panel-copy h3 { font-size: 27px; }
+  .industry-panel-copy p { font-size: 13px; }
+  .industry-service-links { gap: 0 20px; margin-top: 14px; }
+  .industry-service-links a { font-size: 12px; gap: 10px; }
+  .homepage-quote-questions { padding-block: 8px 48px; }
+  .homepage-quote-questions .pgl-faq-layout { gap: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .industry-tabs > button, .industry-service-links .arrow { transition: none; }
+  .industry-service-links a:hover .arrow { transform: none; }
+}
+
+/* Company pages: editorial story layouts grounded in Phoenix's own depot photography. */
+.company-page { --company-gutter: clamp(24px, 5vw, 76px); }
+.company-page-hero { padding: 28px 0 0; background: var(--stone-100); overflow: hidden; }
+.company-page-hero .breadcrumb { margin-bottom: 34px; }
+.company-hero-layout { display: grid; grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr); gap: clamp(40px, 7vw, 104px); align-items: center; }
+.company-hero-copy { padding-block: 28px 72px; }
+.company-kicker { margin: 0 0 18px; color: var(--red-700); font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; }
+.company-hero-copy h1 { max-width: 620px; font-size: clamp(48px, 5vw, 72px); line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
+.company-hero-copy > p:not(.company-kicker) { max-width: 500px; margin-top: 22px; font-size: 16px; line-height: 1.8; color: var(--text-secondary); }
+.company-hero-copy .phoenix-intro-actions { margin-top: 28px; }
+.company-hero-visual { position: relative; align-self: stretch; min-height: 460px; margin: 0; overflow: hidden; background: var(--stone-200); }
+.company-hero-visual img { width: 100%; height: 100%; min-height: 460px; object-fit: cover; object-position: center; }
+.company-hero-visual figcaption,.about-story-photo figcaption,.why-process-photo figcaption { position: absolute; right: 16px; bottom: 16px; left: 16px; width: fit-content; max-width: calc(100% - 32px); padding: 9px 12px; background: rgb(35 32 34 / 86%); color: white; font-size: 11px; line-height: 1.45; }
+.about-hero-visual img { object-position: center 54%; }
+.about-history-rail { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); padding-block: 24px; border-top: 1px solid var(--stone-300); }
+.about-history-rail > div { display: flex; align-items: baseline; gap: 16px; min-width: 0; padding: 8px 24px; }
+.about-history-rail > div:first-child { padding-left: 0; }
+.about-history-rail > div + div { border-left: 1px solid var(--stone-300); }
+.about-history-rail strong { flex: 0 0 auto; font: 600 20px/1.2 var(--font-display); }
+.about-history-rail span { font-size: 12px; line-height: 1.55; color: var(--text-secondary); }
+.company-section { padding-block: 104px; }
+.about-story-layout { display: grid; grid-template-columns: 120px minmax(260px,.85fr) minmax(0,1.15fr); gap: 36px; align-items: start; }
+.about-story-marker { display: flex; gap: 12px; align-items: center; padding-top: 10px; color: var(--text-muted); font-size: 12px; }
+.about-story-marker span { color: var(--red-700); font-variant-numeric: tabular-nums; }
+.about-story-copy h2,.about-people-copy h2 { font-size: clamp(34px,3.6vw,48px); line-height: 1.16; text-wrap: balance; }
+.about-story-copy > p,.about-people-copy > p:not(.company-kicker) { margin-top: 20px; max-width: 560px; font-size: 15px; line-height: 1.85; color: var(--text-secondary); }
+.about-story-photo { position: relative; min-width: 0; margin: 0; overflow: hidden; }
+.about-story-photo img { width: 100%; height: 420px; object-fit: cover; object-position: center; }
+.about-people-section { padding-block: 92px; background: var(--stone-100); }
+.about-people-layout { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr); gap: clamp(44px,7vw,100px); align-items: center; }
+.about-people-photo { overflow: hidden; }
+.about-people-photo img { width: 100%; height: 520px; object-fit: cover; object-position: center 60%; }
+.about-people-copy > .company-kicker { margin-bottom: 18px; }
+.about-people-facts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; padding-block: 24px; margin-block: 24px 10px; border-top: 1px solid var(--stone-300); border-bottom: 1px solid var(--stone-300); }
+.about-people-facts > div + div { padding-left: 16px; border-left: 1px solid var(--stone-300); }
+.about-people-facts strong { display: block; font: 600 30px/1.1 var(--font-display); }
+.about-people-facts span { display: block; margin-top: 8px; font-size: 11px; line-height: 1.5; color: var(--text-secondary); }
+.about-locations-section { padding-bottom: 112px; }
+.company-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 48px; margin-bottom: 40px; }
+.company-section-heading h2 { max-width: 680px; font-size: clamp(36px,4vw,52px); line-height: 1.14; text-wrap: balance; }
+.company-section-heading > p { max-width: 390px; font-size: 14px; line-height: 1.8; color: var(--text-secondary); }
+.about-depot-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border-top: 1px solid var(--stone-200); border-bottom: 1px solid var(--stone-200); }
+.about-depot-grid > article { position: relative; min-width: 0; padding: 28px 28px 32px; }
+.about-depot-grid > article:first-child { padding-left: 0; }
+.about-depot-grid > article + article { border-left: 1px solid var(--stone-200); }
+.about-depot-index { display: block; margin-bottom: 28px; color: var(--text-muted); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+.about-depot-grid .service-icon { width: 26px; height: 26px; margin-bottom: 16px; }
+.about-depot-grid h3 { font-size: 26px; }
+.about-depot-grid p,.about-depot-grid address { max-width: 280px; margin-top: 8px; font-size: 13px; line-height: 1.7; color: var(--text-secondary); font-style: normal; }
+.about-depot-grid address { margin-top: 16px; }
+.about-depot-grid .text-link { margin-top: 16px; font-size: 12px; }
+.about-depot-grid .about-trade-card { background: var(--stone-100); padding-inline: 28px; }
+
+.why-capacity-section { padding-block: 74px; color: var(--white); background: var(--charcoal-900); }
+.why-capacity-grid { display: grid; grid-template-columns: minmax(220px,.7fr) minmax(0,1.3fr); gap: 84px; align-items: center; }
+.why-capacity-intro .company-kicker { color: var(--red-300); }
+.why-capacity-intro h2 { max-width: 380px; font-size: clamp(32px,3.5vw,46px); line-height: 1.16; }
+.why-capacity-facts { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); }
+.why-capacity-facts > div { min-height: 170px; padding: 6px 26px 0; border-left: 1px solid var(--charcoal-500); }
+.why-capacity-facts strong { display: block; color: var(--white); font: 500 48px/1.1 var(--font-display); }
+.why-capacity-facts h3 { margin-top: 14px; font-size: 16px; }
+.why-capacity-facts p { margin-top: 8px; font-size: 11px; line-height: 1.65; color: var(--stone-200); }
+.why-quality-section { background: var(--white); }
+.why-quality-section .company-section-heading { margin-bottom: 48px; }
+.why-process-layout { display: grid; grid-template-columns: minmax(0,.82fr) minmax(0,1.18fr); gap: clamp(40px,7vw,96px); align-items: start; }
+.why-process-photo { position: sticky; top: 28px; margin: 0; overflow: hidden; }
+.why-process-photo img { width: 100%; height: 600px; object-fit: cover; object-position: center; }
+.why-process-list { position: relative; list-style: none; display: grid; gap: 0; margin: 0; padding: 0; }
+.why-process-list::before { position: absolute; top: 18px; bottom: 36px; left: 21px; width: 1px; background: var(--stone-300); content: ''; }
+.why-process-list li { position: relative; display: grid; grid-template-columns: 42px 28px minmax(0,1fr); gap: 16px; align-items: start; min-height: 92px; padding: 0 0 26px; }
+.why-process-number { position: relative; z-index: 1; display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid var(--stone-300); border-radius: 50%; background: var(--white); color: var(--text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.why-process-list .service-icon { width: 26px; height: 26px; margin-top: 8px; }
+.why-process-list h3 { font-size: 18px; }
+.why-process-list p { margin-top: 6px; max-width: 450px; font-size: 13px; line-height: 1.7; color: var(--text-secondary); }
+.why-process-gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 40px 28px; list-style: none; margin: 0; padding: 0; }
+.why-process-gallery > li { min-width: 0; border-bottom: 1px solid var(--stone-200); }
+.why-process-gallery-photo { aspect-ratio: 1.5; overflow: hidden; background: var(--stone-100); }
+.why-process-gallery-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.why-process-gallery-copy { padding-block: 22px 26px; }
+.why-process-gallery-heading { display: flex; align-items: baseline; gap: 14px; }
+.why-process-gallery-heading > span { color: var(--red-700); font-size: 12px; font-variant-numeric: tabular-nums; }
+.why-process-gallery h3 { font-size: 27px; line-height: 1.25; }
+.why-process-gallery p { margin-top: 12px; font-size: 14px; line-height: 1.75; color: var(--text-secondary); }
+.why-process-gallery > li:nth-child(3n+2).motion-visible { transition-delay: 70ms; }
+.why-process-gallery > li:nth-child(3n).motion-visible { transition-delay: 140ms; }
+@media (hover:hover) and (pointer:fine) {
+  .why-process-gallery-photo img { transition: transform 480ms var(--pgl-motion-out); }
+  .why-process-gallery-photo:hover img { transform: scale(1.015); }
+}
+@media (max-width:900px) {
+  .why-process-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 32px 24px; }
+  .why-process-gallery > li.motion-visible { transition-delay: 0ms; }
+  .why-process-gallery > li:nth-child(even).motion-visible { transition-delay: 70ms; }
+}
+@media (max-width:620px) {
+  .why-process-gallery { grid-template-columns: 1fr; gap: 28px; }
+  .why-process-gallery h3 { font-size: 26px; }
+  .why-process-gallery p { font-size: 13px; }
+  .why-process-gallery-copy { padding-block: 18px 22px; }
+  .why-process-gallery > li.motion-visible { transition-delay: 0ms; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .why-process-gallery-photo img { transition: none; }
+  .why-process-gallery-photo:hover img { transform: none; }
+}
+.why-visibility-section { padding-block: 92px; background: var(--stone-100); }
+.why-visibility-layout { display: grid; grid-template-columns: minmax(0,.88fr) minmax(0,1.12fr); gap: clamp(48px,8vw,116px); align-items: center; }
+.why-visibility-layout > div:first-child h2 { max-width: 520px; font-size: clamp(38px,4.2vw,56px); line-height: 1.12; }
+.why-visibility-layout > div:first-child > p:not(.company-kicker) { margin-top: 18px; max-width: 480px; font-size: 14px; line-height: 1.8; color: var(--text-secondary); }
+.why-visibility-layout > div:first-child > .button { margin-top: 24px; }
+.why-visibility-proof { display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; align-items: center; padding: 28px; border: 1px solid var(--stone-200); background: var(--white); }
+.why-visibility-proof .pgl-carrier-credential { grid-column: 1 / -1; padding-bottom: 20px; border-bottom: 1px solid var(--stone-200); }
+.why-visibility-proof > p { grid-column: 1 / -1; font-size: 12px; line-height: 1.6; color: var(--text-secondary); }
+.why-visibility-proof > .text-link { grid-column: 1 / -1; justify-self: start; font-size: 12px; }
+.why-visibility-proof > img { grid-column: 1 / -1; width: 100%; height: 210px; margin-top: 14px; object-fit: cover; object-position: center 60%; }
+.why-page > .pgl-cta { margin-top: 0; }
+.about-team-roles { display: grid; gap: 20px; margin-block: 28px 20px; }
+.about-team-roles > div { display: flex; align-items: start; gap: 16px; }
+.about-team-roles .service-icon { width: 28px; height: 28px; margin-top: 2px; }
+.about-team-roles h3 { font-size: 22px; }
+.about-team-roles p { margin-top: 4px; font-size: 13px; line-height: 1.7; }
+.about-mission-layout { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px,8vw,112px); align-items: start; }
+.about-mission-layout h2 { max-width: 530px; font-size: clamp(36px,4vw,52px); line-height: 1.14; }
+.about-mission-layout > div:first-child > p:not(.company-kicker) { margin-top: 24px; font-size: 16px; line-height: 1.8; }
+.about-mission-layout .button { margin-top: 28px; }
+.about-growth-priorities > div { padding-block: 22px; border-top: 1px solid var(--stone-200); }
+.about-growth-priorities h3 { font-size: 24px; }
+.about-growth-priorities p { margin-top: 10px; font-size: 14px; line-height: 1.8; }
+.company-contact-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--stone-300); }
+.company-contact-options a { display: grid; gap: 8px; min-width: 0; min-height: 54px; }
+.company-contact-options strong { font-size: 13px; font-weight: 600; }
+.company-contact-options span { display: flex; align-items: center; gap: 8px; font-size: 11px; line-height: 1.6; }
+.company-contact-options .arrow { flex: 0 0 auto; width: 14px; height: 14px; }
+.company-contact-options a:hover { color: var(--red-700); }
+.about-history-rail > div:nth-child(2).motion-visible,.why-capacity-facts > div:nth-child(2).motion-visible,.about-depot-grid > article:nth-child(2).motion-visible,.why-process-list > li:nth-child(2).motion-visible { transition-delay: 70ms; }
+.about-history-rail > div:nth-child(3).motion-visible,.why-capacity-facts > div:nth-child(3).motion-visible,.about-depot-grid > article:nth-child(3).motion-visible,.why-process-list > li:nth-child(3).motion-visible { transition-delay: 140ms; }
+.why-process-list > li:nth-child(4).motion-visible { transition-delay: 210ms; }
+.why-process-list > li:nth-child(5).motion-visible { transition-delay: 280ms; }
+.why-process-list > li:nth-child(6).motion-visible { transition-delay: 350ms; }
+
+@media (hover:hover) and (pointer:fine) {
+  .company-hero-visual img,.about-story-photo img,.about-people-photo img,.why-process-photo img,.why-visibility-proof > img { transition: transform 480ms var(--pgl-motion-out); }
+  .company-hero-visual:hover img,.about-story-photo:hover img,.about-people-photo:hover img,.why-process-photo:hover img,.why-visibility-proof:hover > img { transform: scale(1.015); }
+  .about-depot-grid article .text-link .arrow { transition: transform 180ms ease-out; }
+  .about-depot-grid article .text-link:hover .arrow { transform: translateX(3px); }
+}
+@media (max-width:1100px) {
+  .company-hero-layout { gap: 44px; }
+  .company-hero-copy h1 { font-size: 58px; }
+  .about-story-layout { grid-template-columns: 78px minmax(0,.9fr) minmax(0,1.1fr); gap: 26px; }
+  .why-capacity-grid { gap: 44px; }
+  .why-capacity-facts > div { padding-inline: 18px; }
+}
+@media (max-width:900px) {
+  .company-hero-layout { grid-template-columns: minmax(0,.95fr) minmax(0,1.05fr); gap: 32px; }
+  .company-hero-copy h1 { font-size: 48px; }
+  .company-hero-visual,.company-hero-visual img { min-height: 410px; }
+  .about-history-rail > div { flex-direction: column; gap: 6px; }
+  .about-story-layout { grid-template-columns: 64px minmax(0,1fr); }
+  .about-story-photo { grid-column: 2; }
+  .about-people-layout,.why-visibility-layout { gap: 40px; }
+  .about-people-photo img { height: 430px; }
+  .why-capacity-grid { grid-template-columns: 1fr; gap: 32px; }
+  .why-capacity-intro h2 { max-width: 570px; }
+  .why-capacity-facts > div:first-child { border-left: 0; padding-left: 0; }
+  .why-process-layout { grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); gap: 36px; }
+  .why-process-photo img { height: 500px; }
+}
+@media (max-width:620px) {
+  .about-mission-layout { grid-template-columns: 1fr; gap: 32px; }
+  .about-mission-layout > div:first-child > p:not(.company-kicker) { margin-top: 18px; font-size: 14px; }
+  .company-contact-options { grid-template-columns: 1fr; gap: 0; }
+  .company-contact-options a { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--stone-200); }
+  .company-contact-options span { font-size: 12px; }
+  .company-page-hero { padding-top: 22px; }
+  .company-page-hero .breadcrumb { margin-bottom: 18px; }
+  .company-hero-layout { grid-template-columns: 1fr; gap: 28px; }
+  .company-hero-copy { padding: 10px 0 0; }
+  .company-hero-copy h1 { max-width: 480px; font-size: clamp(42px,10vw,54px); }
+  .company-hero-copy > p:not(.company-kicker) { margin-top: 16px; font-size: 14px; }
+  .company-hero-copy .phoenix-intro-actions { margin-top: 20px; }
+  .company-hero-visual,.company-hero-visual img { min-height: 0; height: 300px; }
+  .about-history-rail { grid-template-columns: 1fr; padding-block: 16px; }
+  .about-history-rail > div { flex-direction: row; align-items: baseline; padding: 14px 0; }
+  .about-history-rail > div + div { border-left: 0; border-top: 1px solid var(--stone-300); }
+  .company-section { padding-block: 64px; }
+  .about-story-layout { grid-template-columns: 1fr; gap: 20px; }
+  .about-story-marker { padding: 0; }
+  .about-story-copy h2,.about-people-copy h2 { font-size: 36px; }
+  .about-story-copy > p,.about-people-copy > p:not(.company-kicker) { margin-top: 14px; font-size: 14px; }
+  .about-story-photo { grid-column: auto; margin-top: 8px; }
+  .about-story-photo img { height: 280px; }
+  .about-people-section { padding-block: 60px; }
+  .about-people-layout { grid-template-columns: 1fr; gap: 32px; }
+  .about-people-photo img { height: 300px; }
+  .about-people-facts { gap: 8px; padding-block: 18px; }
+  .about-people-facts > div + div { padding-left: 10px; }
+  .about-people-facts strong { font-size: 27px; }
+  .about-people-facts span { font-size: 10px; }
+  .about-locations-section { padding-bottom: 72px; }
+  .company-section-heading { display: grid; gap: 16px; margin-bottom: 28px; }
+  .company-section-heading h2 { font-size: 38px; }
+  .company-section-heading > p { font-size: 13px; }
+  .about-depot-grid { grid-template-columns: 1fr; }
+  .about-depot-grid > article,.about-depot-grid > article:first-child,.about-depot-grid .about-trade-card { padding: 22px 0; }
+  .about-depot-grid > article + article { border-left: 0; border-top: 1px solid var(--stone-200); }
+  .about-depot-grid .about-trade-card { background: transparent; }
+  .about-depot-index { margin-bottom: 18px; }
+  .why-capacity-section { padding-block: 54px; }
+  .why-capacity-grid { gap: 28px; }
+  .why-capacity-intro h2 { font-size: 36px; }
+  .why-capacity-facts { grid-template-columns: 1fr; }
+  .why-capacity-facts > div,.why-capacity-facts > div:first-child { min-height: 0; padding: 18px 0; border-left: 0; border-top: 1px solid var(--charcoal-500); }
+  .why-capacity-facts strong { font-size: 40px; }
+  .why-capacity-facts h3 { margin-top: 6px; }
+  .why-capacity-facts p { max-width: 300px; }
+  .why-quality-section .company-section-heading { margin-bottom: 28px; }
+  .why-process-layout { grid-template-columns: 1fr; gap: 26px; }
+  .why-process-photo { position: relative; top: auto; }
+  .why-process-photo img { height: 300px; }
+  .why-process-list li { grid-template-columns: 38px 24px minmax(0,1fr); gap: 12px; min-height: 88px; padding-bottom: 20px; }
+  .why-process-list::before { left: 18px; }
+  .why-process-number { width: 38px; height: 38px; }
+  .why-process-list h3 { font-size: 16px; }
+  .why-process-list p { font-size: 12px; }
+  .why-visibility-section { padding-block: 60px; }
+  .why-visibility-layout { grid-template-columns: 1fr; gap: 30px; }
+  .why-visibility-layout > div:first-child h2 { font-size: 39px; }
+  .why-visibility-proof { padding: 20px; }
+  .why-visibility-proof > img { height: 180px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .company-hero-visual img,.about-story-photo img,.about-people-photo img,.why-process-photo img,.why-visibility-proof > img,.about-depot-grid article .text-link .arrow { transition: none; }
+  .company-hero-visual:hover img,.about-story-photo:hover img,.about-people-photo:hover img,.why-process-photo:hover img,.why-visibility-proof:hover > img,.about-depot-grid article .text-link:hover .arrow { transform: none; }
+}
+
+/* Page-specific cover photography with a readable Phoenix-red text panel. */
+.brand-cover-hero { position: relative; isolation: isolate; overflow: hidden; min-height: 550px; background: var(--red-700); color: var(--white); }
+.brand-cover-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.brand-cover-hero::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg,rgba(160,13,22,.99) 0%,rgba(160,13,22,.96) 28%,rgba(160,13,22,.78) 46%,rgba(160,13,22,.2) 67%,transparent 83%); }
+.brand-cover-content { padding-block: 30px 54px; }
+.brand-cover-hero .breadcrumb { color: #fff; margin-bottom: 68px; font-size: 12px; flex-wrap: wrap; gap: 12px; line-height: 1.6; }
+.brand-cover-hero .breadcrumb a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+.brand-cover-copy { max-width: 630px; width: 54%; }
+.brand-cover-copy h1 { font-size: clamp(44px,4.7vw,64px); line-height: 1.14; letter-spacing: -.02em; text-wrap: balance; }
+.brand-cover-copy > p { max-width: 530px; margin-top: 22px; font-size: 16px; line-height: 1.8; color: #fff; }
+.brand-cover-copy .phoenix-intro-actions { margin-top: 26px; gap: 12px 28px; }
+.brand-cover-copy .button--primary { color: var(--red-700); background: #fff; border-color: #fff; }
+.brand-cover-copy .text-link { color: #fff; }
+.brand-cover-copy .service-scope-tags { margin-top: 24px; }
+.brand-cover-copy .service-scope-tags li { border-color: #ffffff66; color: #fff; background: #930c1640; }
+.brand-cover-hero--compact { min-height: 390px; }
+.brand-cover-hero--compact .breadcrumb { margin-bottom: 46px; }
+.brand-cover-hero--compact .brand-cover-copy h1 { font-size: clamp(42px,4vw,54px); }
+.about-history-section { background: var(--stone-100); }
+.shipment-access { padding-block: 96px; background: var(--white); }
+.shipment-access-heading { display: grid; grid-template-columns: 1.15fr 1fr; align-items: end; gap: 80px; margin-bottom: 36px; }
+.shipment-access-label { color: var(--red-700); font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+.shipment-access-heading h2 { font-size: clamp(38px,4vw,52px); line-height: 1.15; max-width: 570px; }
+.shipment-access-heading > p { max-width: 480px; font-size: 15px; line-height: 1.8; }
+.shipment-access-lookup { display: grid; grid-template-columns: minmax(0,1fr) 260px; background: var(--stone-100); border: 1px solid var(--stone-200); }
+.shipment-access-tool { padding: 30px 36px; }
+.shipment-access-tool-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.shipment-access-tool-heading > svg { color: var(--red-700); flex: 0 0 auto; }
+.shipment-access-tool-heading h3 { font: 600 18px/1.4 var(--font-body); }
+.shipment-access-tool .tracking-form { padding: 0; display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 14px; align-items: start; }
+.shipment-access-tool .tracking-form label { grid-column: 1 / -1; margin-bottom: 8px; font-size: 13px; }
+.shipment-access-tool .tracking-form input { grid-column: 1; grid-row: 2; height: 50px; background: #fff; }
+.shipment-access-tool .tracking-form .button { grid-column: 2; grid-row: 2; width: auto; margin: 0; min-height: 50px; font-size: 13px; }
+.shipment-access-tool .tracking-form > p { grid-column: 1 / -1; margin: 10px 0 0; font-size: 12px; }
+.shipment-access-portal { display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--stone-200); padding: 30px; }
+.shipment-access-portal h3 { font: 600 16px/1.4 var(--font-body); }
+.shipment-access-portal p { font-size: 13px; margin-top: 8px; line-height: 1.7; }
+.shipment-access-portal a { display: inline-flex; align-items: center; gap: 12px; align-self: start; min-height: 44px; margin-top: 10px; color: var(--red-700); font-size: 13px; font-weight: 600; }
+.shipment-access-contact-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 32px; margin: 48px 0 22px; }
+.shipment-access-contact-heading h3 { font-size: 27px; }
+.shipment-access-contact-heading p { font-size: 13px; line-height: 1.7; }
+.shipment-access-channels { display: grid; grid-template-columns: 1fr 1fr 1.15fr; border-top: 1px solid var(--stone-200); }
+.shipment-access-channel { display: flex; flex-direction: column; gap: 12px; padding: 28px; min-width: 0; }
+.shipment-access-channel:first-child { padding-left: 0; }
+.shipment-access-channel + .shipment-access-channel { border-left: 1px solid var(--stone-200); }
+.shipment-access-channel-label { display: flex; align-items: center; gap: 10px; color: var(--text-muted); font-size: 12px; }
+.shipment-access-channel-label svg { color: var(--red-700); }
+.shipment-access-channel > strong,.shipment-access-wechat strong { font: 500 25px/1.25 var(--font-display); color: var(--text-primary); }
+.shipment-access-channel > span:not(.shipment-access-channel-label),.shipment-access-wechat > div > span:not(.shipment-access-channel-label) { font-size: 12px; line-height: 1.75; color: var(--text-secondary); }
+.shipment-access-email { overflow-wrap: anywhere; }
+.shipment-access-wechat { flex-direction: row; align-items: center; gap: 18px; padding-right: 0; }
+.shipment-access-wechat > div { display: flex; flex-direction: column; gap: 12px; }
+.shipment-access-wechat img { flex: 0 0 auto; width: 88px; height: 88px; }
+@media (hover:hover) and (pointer:fine) {
+  .shipment-access-channel strong,.shipment-access-portal a { transition: color 180ms ease; }
+  .shipment-access-channel:hover strong,.shipment-access-portal a:hover { color: var(--red-700); }
+}
+@media (max-width:900px) {
+  .shipment-access-heading { gap: 40px; }
+  .shipment-access-lookup { grid-template-columns: minmax(0,1fr) 220px; }
+  .shipment-access-tool { padding: 28px; }
+  .shipment-access-portal { padding: 24px; }
+  .shipment-access-contact-heading { flex-direction: column; gap: 12px; }
+  .shipment-access-channels { grid-template-columns: 1fr 1fr; }
+  .shipment-access-wechat { grid-column: 1 / -1; border-top: 1px solid var(--stone-200); }
+  .shipment-access-channel.shipment-access-wechat { border-left: 0; padding-left: 0; justify-content: space-between; }
+}
+@media (max-width:620px) {
+  .shipment-access { padding-block: 60px; }
+  .shipment-access-heading { grid-template-columns: 1fr; gap: 20px; margin-bottom: 28px; }
+  .shipment-access-heading > p { font-size: 14px; }
+  .shipment-access-label { font-size: 12px; margin-bottom: 12px; }
+  .shipment-access-lookup { grid-template-columns: 1fr; }
+  .shipment-access-tool { padding: 24px 20px; }
+  .shipment-access-tool-heading h3 { font-size: 16px; }
+  .shipment-access-tool .tracking-form { grid-template-columns: 1fr; }
+  .shipment-access-tool .tracking-form input { grid-column: 1; grid-row: 2; }
+  .shipment-access-tool .tracking-form > p { grid-row: 3; }
+  .shipment-access-tool .tracking-form .button { grid-column: 1; grid-row: 4; width: 100%; margin-top: 18px; }
+  .shipment-access-portal { border-left: 0; border-top: 1px solid var(--stone-200); padding: 22px 20px; }
+  .shipment-access-portal a { margin-top: 4px; }
+  .shipment-access-contact-heading { margin-top: 36px; gap: 10px; }
+  .shipment-access-contact-heading h3 { font-size: 26px; }
+  .shipment-access-channels { grid-template-columns: 1fr; }
+  .shipment-access-channel,.shipment-access-channel:first-child { padding: 24px 0; }
+  .shipment-access-channel + .shipment-access-channel { border-left: 0; border-top: 1px solid var(--stone-200); }
+  .shipment-access-wechat { grid-column: auto; }
+}
+.about-history-section .about-history-rail { border-top: 0; }
+.why-carrier-context { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--charcoal-500); padding-top: 28px; margin-top: 36px; }
+.why-carrier-context .pgl-carrier-credential span { color: var(--stone-200); }
+.why-carrier-context .service-icon { filter: brightness(0) invert(1); width: 34px; height: 34px; }
+.why-carrier-context .text-link { color: #fff; }
+
+
+@media (hover:hover) and (pointer:fine) {
+  .brand-cover-copy .button--primary:hover { background: var(--stone-100); border-color: var(--stone-100); }
+}
+@media (max-width:900px) {
+  .brand-cover-copy { width: 65%; }
+  .brand-cover-copy h1 { font-size: 50px; }
+  .brand-cover-hero::after { background: linear-gradient(90deg,rgba(160,13,22,.98),rgba(160,13,22,.94) 35%,rgba(160,13,22,.45) 67%,rgba(160,13,22,.05)); }
+}
+@media (max-width:620px) {
+  .brand-cover-hero { display: flex; flex-direction: column; min-height: 0; }
+  .brand-cover-hero::after { display: none; }
+  .brand-cover-image { position: relative; order: 2; z-index: auto; height: 230px; }
+  .brand-cover-content { order: 1; padding-block: 24px 36px; }
+  .brand-cover-hero .breadcrumb { margin-bottom: 30px; font-size: 11px; }
+  .brand-cover-copy { max-width: none; width: 100%; }
+  .brand-cover-copy h1 { font-size: 42px; text-wrap: initial; }
+  .brand-cover-copy > p { font-size: 14px; margin-top: 18px; }
+  .brand-cover-copy .phoenix-intro-actions { margin-top: 22px; gap: 6px 20px; }
+  .brand-cover-hero--compact .brand-cover-copy h1 { font-size: 38px; }
+  .brand-cover-hero--compact .brand-cover-image { height: 180px; }
+  .why-carrier-context { align-items: start; flex-direction: column; gap: 14px; margin-top: 24px; padding-top: 24px; }
+}

@@ -1,0 +1,33 @@
+{
+  "note": "Generated with the Codex CLI image tool (gpt-image) to fill gaps the client photos do not cover. Not real Phoenix operations; do not present as such. Native 1672x941.",
+  "images": [
+    {
+      "file": "aerial-highway.webp",
+      "small": "aerial-highway@1200.webp",
+      "width": 1672,
+      "height": 941,
+      "description": "AI-generated: top-down aerial of a red-cab semi-trailer on an empty highway through golden grassland at golden hour"
+    },
+    {
+      "file": "container-ship.webp",
+      "small": "container-ship@1200.webp",
+      "width": 1672,
+      "height": 941,
+      "description": "AI-generated: container ship from directly above on deep blue ocean with white wake"
+    },
+    {
+      "file": "pallet-wrap.webp",
+      "small": "pallet-wrap@1200.webp",
+      "width": 1672,
+      "height": 941,
+      "description": "AI-generated: carton pallet with red strapping on a stretch-wrap turntable in a warehouse"
+    },
+    {
+      "file": "route-map.webp",
+      "small": "route-map@1200.webp",
+      "width": 1672,
+      "height": 941,
+      "description": "AI-generated: dark map of Australia with glowing red routes linking Perth, Melbourne, Sydney and Brisbane"
+    }
+  ]
+}

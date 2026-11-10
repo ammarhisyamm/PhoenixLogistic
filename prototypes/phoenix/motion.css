@@ -1,0 +1,175 @@
+/* Motion follows a freight route: departure, hand-offs, arrival. */
+.dispatch-progress {
+  display: none;
+  position: fixed;
+  z-index: 12;
+  inset: 0 0 auto;
+  height: 3px;
+  pointer-events: none;
+  background: var(--red);
+  transform-origin: left;
+}
+
+/* The base layout remains readable even before the motion module loads. */
+.hero-line { display: block; overflow: clip; overflow-clip-margin: .12em; }
+.hero-line > span { display: block; }
+.motion-seam {
+  position: absolute;
+  inset: 0 clamp(18px,5.55%,80px) auto;
+  height: 2px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(90deg, #e31b24b0, #e31b2418 75%, transparent);
+  transform-origin: left;
+}
+.motion-metric { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.process-index {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 16px);
+  translate: 0 -50%;
+  white-space: nowrap;
+  font: 600 13px/1 'Inter Variable', sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: #ad1018;
+}
+.process-index span { color: #686164; }
+.delivery-route { position: absolute; inset: -14px 0 auto; height: 2px; background: #e7dedc; pointer-events: none; }
+.delivery-route-fill { display: block; height: 100%; background: var(--red); transform: scaleX(0); transform-origin: left; }
+[data-route-current] { outline: 2px solid #e31b24; outline-offset: -2px; }
+@media (max-width: 999px) {
+  .process-index { position: static; translate: none; align-self: center; }
+  .delivery-route { inset: -8px 0 auto; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fig-hero > .paint-group { background: #171416; }
+  .fig-hero > .paint-group img[data-loaded] { animation: fleet-arrival 820ms var(--ease-out) both; }
+  .fig-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: #171416;
+    animation: hero-curtain 700ms var(--ease-out) both;
+  }
+  .fig-hero > .fig-node:not(.fig-header) { z-index: 1; animation: route-arrival 550ms 130ms var(--ease-out) both; }
+  .fig-hero .hero-line > span { animation: headline-arrival 680ms 100ms var(--ease-out) both; }
+  .fig-hero .hero-line:nth-child(2) > span { animation-delay: 185ms; }
+  .fig-hero > [data-name="Quick tools card"] { animation-delay: 230ms; }
+  .fig-header,.mobile-header { animation: nav-arrival 420ms var(--ease-out) both; }
+  .quote-review[open] { animation: quote-arrival 220ms var(--ease-out) both; }
+  .track-result { animation: route-arrival 220ms var(--ease-out) backwards; }
+
+  @supports (animation-timeline: scroll()) {
+    .dispatch-progress {
+      display: block;
+      animation: dispatch-route linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+@keyframes fleet-arrival { from { opacity: 0; scale: 1.06; } to { opacity: 1; scale: 1; } }
+@keyframes hero-curtain { from { opacity: .88; } to { opacity: 0; } }
+@keyframes headline-arrival { from { opacity: .36; translate: 0 .8em; } to { opacity: 1; translate: 0 0; } }
+@keyframes nav-arrival { from { opacity: .82; translate: 0 -7px; } to { opacity: 1; translate: 0 0; } }
+@keyframes route-arrival { from { opacity: .72; translate: 0 12px; } }
+@keyframes quote-arrival { from { opacity: .45; scale: .98; } to { opacity: 1; scale: 1; } }
+@keyframes dispatch-route { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* The red block opens from the icon corner on the industry and delivery cards. */
+[data-name^="Sector / "]:not(.fig-text,[data-name="Sector / Title"]),
+[data-name="Type-Card"] { overflow: hidden; }
+:is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]) > .paint-group { z-index: -2; }
+:is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"])::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #b8131b;
+  transform-origin: top left;
+  transform: scale(.12);
+  opacity: 0;
+  transition: transform 260ms var(--ease-out), opacity 180ms var(--ease-out);
+}
+[data-layer="62:903"]::before { background: #861017; }
+[data-layer="187:610"] > .paint-group > .paint { background: #fff !important; }
+[data-layer="187:610"] [data-name="Sector / Title"] { color: #232022 !important; }
+[data-layer="190:463"] { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover::before {
+    transform: none;
+    opacity: 1;
+  }
+  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover .fig-text { color: #fff !important; }
+  [data-layer="187:610"]:hover [data-name="Sector / Title"] { color: #fff !important; }
+  [data-name="Type-Card"]:hover [data-name="Icon"] .fig-text { color: #232022 !important; }
+  [data-name="Type-Card"]:hover [data-name="Icon"] > .paint-group { background: #fff; }
+  .fig-photo:not([data-layer="198:556"]) .image-paint img { transition: transform 280ms var(--ease-out); }
+  .fig-photo:not([data-layer="198:556"]):hover .image-paint img,
+  a[data-name^="Service row"]:hover .image-paint img { transform: scale(1.035); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-swap,.quick-quote,.mobile-header details[open] nav,
+  .fig-button:is(a,button),
+  .fig-photo .image-paint img,
+  :is([data-name^="Sector / "], [data-name="Type-Card"])::before { transition: none; }
+  .fig-photo .image-paint img { transform: none !important; }
+}
+
+/* Fine-pointer polish and equivalent focus feedback for links. */
+a[data-motion-card]::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+a[data-motion-card]:focus-visible::after { transform: scaleX(1); }
+a[data-name^="Service row"]::before {
+  content: '';
+  position: absolute;
+  top: 26px;
+  right: 26px;
+  z-index: 2;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  background: var(--red);
+  clip-path: polygon(25% 10%,90% 10%,90% 75%,74% 75%,74% 37%,21% 90%,10% 79%,63% 26%,25% 26%);
+}
+a[data-name^="Service row"]:focus-visible::before { transform: translate(3px,-3px); }
+@media (max-width: 999px) {
+  a[data-name^="Service row"]::before { top: 12px; right: 14px; }
+}
+.fig-field:focus-within { box-shadow: 0 0 0 2px #e31b2444; }
+.fig-header a.fig-text { text-decoration: none !important; }
+.fig-header a.fig-text::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -4px;
+  height: 1px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.fig-header a.fig-text[aria-current="page"]::after { transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) {
+  a[data-motion-card]::after,a[data-name^="Service row"]::before { transition: transform 240ms var(--ease-out); }
+  a[data-name^="Service row"]:hover::before { transform: translate(3px,-3px); }
+  a[data-motion-card]:hover::after { transform: scaleX(1); }
+  [data-motion-card] .fig-photo .image-paint img { transition: transform 280ms var(--ease-out); }
+  [data-motion-card]:hover .fig-photo .image-paint img { transform: scale(1.045); }
+  .fig-header a.fig-text::after { transition: transform 160ms var(--ease-out); }
+  .fig-header a.fig-text:hover::after { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  a[data-motion-card]::after,a[data-name^="Service row"]::before,.fig-header a.fig-text::after { transition: none; }
+}
