@@ -89,7 +89,7 @@ function TrackForm({ compact }) {
   return <form className={'track' + (compact ? ' track-compact' : '')} onSubmit={submit}>
     <label htmlFor={compact ? 'track-c' : 'track'}>Consignment number</label>
     <div className="track-row">
-      <input id={compact ? 'track-c' : 'track'} name="consignment" placeholder="E.g. PGL000123456" autoComplete="off" onChange={() => setNote('')} />
+      <input id={compact ? 'track-c' : 'track'} name="consignment" placeholder="PGL000123456" autoComplete="off" onChange={() => setNote('')} />
       <button type="submit" className="track-go"><BtnText>Track</BtnText><Arrow /></button>
     </div>
     <p className="track-note" role="status">{note || 'Use the reference on your booking confirmation.'}</p>
