@@ -1,0 +1,64 @@
+/* Responsive pass, loaded after option2.css.
+   Fixes found in a 5-width audit (1440, 1024, 768, 390, 360) of every option-2 page. */
+
+/* Big figures: tabular digits leave a wide gap after "1" in the display face ("1 1", "1 9+"). */
+.stat-number, .outcome-num { font-variant-numeric: proportional-nums; }
+
+/* Footer email addresses were cut off in the four-column footer on small laptops. */
+.fcell a[href^="mailto:"] { overflow-wrap: anywhere; }
+@media (min-width: 1000px) and (max-width: 1199px) {
+  .fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fcell-lead, .fcell-track { grid-column: 1 / -1; }
+}
+
+/* Smallest copy stays readable (was 11.7px under the partner badge). */
+.fcell-badge small, .hero small { font-size: 12px; }
+
+/* ---------- Tablet and phone ---------- */
+@media (max-width: 1099px) {
+  /* Header bar spans the screen with the same 12px margin, like the desktop dev note. */
+  .header-bar { width: 100%; max-width: 920px; }
+}
+
+@media (max-width: 999px) {
+  /* Footer and inline email links get a full 44px tap height on touch screens. */
+  .fcell a, .fcell-legal a, .fcell-legal .to-top { display: flex; align-items: center; min-height: 44px; margin-bottom: 0; }
+  .fcell > p:not(.flabel) { margin-bottom: 8px; }
+  .flabel { margin-bottom: 8px; }
+  dd a[href^="mailto:"], .legal a[href^="mailto:"], main p a[href^="mailto:"] { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+}
+
+@media (min-width: 640px) and (max-width: 999px) {
+  /* Six process steps sit two across instead of one tall column. */
+  .stack { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .stack-inner { height: 100%; }
+  .stack-copy h3 { font-size: clamp(20px, 2.6vw, 24px); }
+
+  /* Industry cards two across; the odd last card spans the row. */
+  .sector-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .sector { min-height: 300px; }
+  .sector:last-child:nth-child(odd) { grid-column: 1 / -1; min-height: 260px; }
+
+  /* The square map was taller than the screen on tablets. */
+  .net-map { aspect-ratio: 16 / 11; }
+
+  /* How-we-work and team columns two across. */
+  .how-grid, .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .how-grid article { padding-inline: 0 24px; border-bottom: 1px solid #ffffff1f; }
+  .how-grid article:nth-child(odd) { border-right: 1px solid #ffffff1f; }
+  .how-grid article:nth-child(even) { padding-left: 24px; }
+  .how-grid article + article { border-left: 0; }
+
+  /* Stats sit three across instead of stacking. */
+  .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stat, .stat + .stat { padding: 24px 20px 24px 0; border-bottom: 0; }
+  .stat + .stat { padding-left: 20px; border-left: 1px solid var(--line); }
+  .stats-dark .stat + .stat { border-color: #ffffff26; }
+  .stat-number { font-size: clamp(48px, 7.4vw, 72px); }
+}
+
+@media (max-width: 639px) {
+  /* Phones: card images a touch shorter so a whole step fits in one screen. */
+  .stack-photo { aspect-ratio: 16 / 10; }
+  .sector { min-height: 240px; }
+}

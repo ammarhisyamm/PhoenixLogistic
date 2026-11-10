@@ -9,6 +9,16 @@
   ],
   "redirects": [
     {
+      "source": "/privacy",
+      "destination": "/option-2/privacy",
+      "permanent": false
+    },
+    {
+      "source": "/terms",
+      "destination": "/option-2/terms",
+      "permanent": false
+    },
+    {
       "source": "/prototypes/phoenix",
       "destination": "/",
       "permanent": true

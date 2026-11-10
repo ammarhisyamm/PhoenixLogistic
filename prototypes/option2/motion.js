@@ -13,7 +13,7 @@ export const isStatic = () => typeof window !== 'undefined' && (matchMedia('(pre
 export let lenis = null;
 if (typeof window !== 'undefined' && !isStatic()) {
   document.documentElement.classList.add('motion');
-  if (matchMedia('(pointer: fine) and (min-width: 768px)').matches) {
+  if (matchMedia('(pointer: fine) and (min-width: 1000px)').matches) {
     lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1 });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(t => lenis.raf(t * 1000));
@@ -79,32 +79,47 @@ export function usePageMotion(key) {
       return undefined;
     }
     const wait = lift();
+    const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
-      // Headline lines wipe from dim to full colour while rising a touch.
-      gsap.utils.toArray('[data-lines]').forEach(el => {
-        const lines = el.querySelectorAll('.ln > span');
-        const hero = el.closest('[data-hero]');
-        const tl = gsap.timeline({ delay: hero ? wait + 0.1 : 0, scrollTrigger: hero ? undefined : { trigger: el, start: 'top 85%' } });
-        tl.fromTo(lines, { '--p': 0 }, { '--p': 100, duration: 1.3, ease: 'power1.inOut', stagger: 0.12 }, 0)
-          .from(lines, { yPercent: 40, duration: 1.2, ease, stagger: 0.12 }, 0);
-      });
+      mm.add('(min-width: 1000px)', () => {
+        // Headline lines wipe from dim to full colour while rising a touch.
+        gsap.utils.toArray('[data-lines]').forEach(el => {
+          const lines = el.querySelectorAll('.ln > span');
+          const hero = el.closest('[data-hero]');
+          const tl = gsap.timeline({ delay: hero ? wait + 0.1 : 0, scrollTrigger: hero ? undefined : { trigger: el, start: 'top 85%' } });
+          tl.fromTo(lines, { '--p': 0 }, { '--p': 100, duration: 1.3, ease: 'power1.inOut', stagger: 0.12 }, 0)
+            .from(lines, { yPercent: 40, duration: 1.2, ease, stagger: 0.12 }, 0);
+        });
 
-      // Copy and buttons fade up as they arrive.
-      // On the very first load the hero copy is already painted from the prerendered HTML, so it
-      // only rises into place (never hidden again): the largest paint does not wait for scripts.
-      gsap.utils.toArray('[data-fade]').forEach(el => {
-        const hero = el.closest('[data-hero]');
-        gsap.from(el, {
-          y: 32, opacity: hero && !wait ? 1 : 0, duration: 1, ease: 'power3.out', delay: (Number(el.dataset.fade) || 0) + (hero ? wait : 0),
-          scrollTrigger: hero ? undefined : { trigger: el, start: 'top 88%' },
+        // Copy and buttons fade up as they arrive.
+        // On the very first load the hero copy is already painted from the prerendered HTML, so it
+        // only rises into place (never hidden again): the largest paint does not wait for scripts.
+        gsap.utils.toArray('[data-fade]').forEach(el => {
+          const hero = el.closest('[data-hero]');
+          gsap.from(el, {
+            y: 32, opacity: hero && !wait ? 1 : 0, duration: 1, ease: 'power3.out', delay: (Number(el.dataset.fade) || 0) + (hero ? wait : 0),
+            scrollTrigger: hero ? undefined : { trigger: el, start: 'top 88%' },
+          });
+        });
+
+        // Card groups arrive in batches, one after another.
+        gsap.utils.toArray('[data-stagger]').forEach(el => {
+          const items = gsap.utils.toArray(el.children);
+          gsap.set(items, { y: 80, opacity: 0 });
+          ScrollTrigger.batch(items, { start: 'top 90%', once: true, onEnter: batch => gsap.to(batch, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', stagger: 0.12, overwrite: true }) });
         });
       });
 
-      // Card groups arrive in batches, one after another.
-      gsap.utils.toArray('[data-stagger]').forEach(el => {
-        const items = gsap.utils.toArray(el.children);
-        gsap.set(items, { y: 80, opacity: 0 });
-        ScrollTrigger.batch(items, { start: 'top 90%', once: true, onEnter: batch => gsap.to(batch, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', stagger: 0.12, overwrite: true }) });
+      // A short entrance on mobile leaves text readable during a fast swipe.
+      mm.add('(max-width: 999px)', () => {
+        const targets = gsap.utils.toArray('[data-fade], [data-stagger] > *, .forge-grid');
+        targets.forEach(el => {
+          if (el.closest('[data-hero]')) return;
+          gsap.from(el, {
+            y: 12, opacity: 0.85, duration: 0.36, ease: 'power2.out', clearProps: 'transform,opacity',
+            scrollTrigger: { trigger: el, start: 'top 94%', once: true },
+          });
+        });
       });
 
       // Dividers draw in from the left.
@@ -112,25 +127,27 @@ export function usePageMotion(key) {
         gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1.2, ease: 'power2.out', scrollTrigger: { trigger: el, start: 'top 90%' } });
       });
 
-      // Photos unveil from the centre, then drift slower than the page.
-      gsap.utils.toArray('[data-reveal]').forEach(el => {
-        const img = el.querySelector('img');
-        const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 85%' } });
-        tl.fromTo(el, { clipPath: 'inset(14% 14% 14% 14%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.8, ease });
-        if (img) tl.fromTo(img, { scale: 1.35 }, { scale: 1, duration: 2, ease }, 0);
-      });
-      gsap.utils.toArray('[data-parallax]').forEach(el => {
-        const amount = Number(el.dataset.parallax) || 10;
-        gsap.fromTo(el, { yPercent: -amount }, {
-          yPercent: amount, ease: 'none',
-          scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true },
+      mm.add('(min-width: 1000px)', () => {
+        // Photos unveil from the centre, then drift slower than the page.
+        gsap.utils.toArray('[data-reveal]').forEach(el => {
+          const img = el.querySelector('img');
+          const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 85%' } });
+          tl.fromTo(el, { clipPath: 'inset(14% 14% 14% 14%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.8, ease });
+          if (img) tl.fromTo(img, { scale: 1.35 }, { scale: 1, duration: 2, ease }, 0);
         });
-      });
+        gsap.utils.toArray('[data-parallax]').forEach(el => {
+          const amount = Number(el.dataset.parallax) || 10;
+          gsap.fromTo(el, { yPercent: -amount }, {
+            yPercent: amount, ease: 'none',
+            scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true },
+          });
+        });
 
-      // Hero media settles in, then dims and sinks as the reader leaves it.
-      gsap.utils.toArray('[data-hero-media]').forEach(el => {
-        gsap.fromTo(el, { scale: 1.15 }, { scale: 1, duration: 2.4, ease, delay: wait });
-        gsap.to(el, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top top', end: 'bottom top', scrub: true } });
+        // Hero media settles in, then dims and sinks as the reader leaves it.
+        gsap.utils.toArray('[data-hero-media]').forEach(el => {
+          gsap.fromTo(el, { scale: 1.15 }, { scale: 1, duration: 2.4, ease, delay: wait });
+          gsap.to(el, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top top', end: 'bottom top', scrub: true } });
+        });
       });
 
       // Numbers count up once.
@@ -144,39 +161,42 @@ export function usePageMotion(key) {
         });
       });
 
-      const mm = gsap.matchMedia();
-
       // Truck scene: the Phoenix truck drives across and the headline appears in its wake.
-      gsap.utils.toArray('[data-drive]').forEach(section => {
-        const truck = section.querySelector('.drive-truck');
-        const words = section.querySelector('.drive-words');
-        const after = section.querySelectorAll('.drive-after');
-        const road = section.querySelector('.drive-road');
-        const speed = section.querySelector('.drive-speed b');
-        gsap.to(truck.querySelector('img'), { y: -2, duration: 0.18, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-        const setSpeed = speed ? gsap.quickTo({ v: 0 }, 'v', { duration: 0.6, ease: 'power2.out', onUpdate() { speed.textContent = String(Math.round(this.targets()[0].v)).padStart(2, '0'); } }) : () => {};
-        // The headline is uncovered exactly behind the truck's tail, measured every frame.
-        const follow = () => {
-          const t = truck.getBoundingClientRect();
-          const w = words.getBoundingClientRect();
-          const shown = Math.min(100, Math.max(0, ((w.right - t.right) / w.width) * 100));
-          words.style.clipPath = `inset(0% 0% 0% ${100 - shown}%)`;
-        };
-        const build = pin => {
+      mm.add('(min-width: 1000px)', () => {
+        gsap.utils.toArray('[data-drive]').forEach(section => {
+          const truck = section.querySelector('.drive-truck');
+          const words = section.querySelector('.drive-words');
+          const after = section.querySelectorAll('.drive-after');
+          const road = section.querySelector('.drive-road');
+          const speed = section.querySelector('.drive-speed b');
+          gsap.to(truck.querySelector('img'), { y: -2, duration: 0.18, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+          const setSpeed = gsap.quickTo({ v: 0 }, 'v', {
+            duration: 0.6, ease: 'power2.out',
+            onUpdate() { speed.textContent = String(Math.round(this.targets()[0].v)).padStart(2, '0'); },
+          });
+          const follow = () => {
+            const truckRight = truck.getBoundingClientRect().right;
+            const heading = words.getBoundingClientRect();
+            const shown = Math.min(100, Math.max(0, (heading.right - truckRight) / heading.width * 100));
+            words.style.clipPath = `inset(0% 0% 0% ${100 - shown}%)`;
+          };
           const tl = gsap.timeline({
             onUpdate: follow,
-            scrollTrigger: pin
-              ? { trigger: section, start: 'top top', end: '+=180%', scrub: 0.6, pin: true, invalidateOnRefresh: true, onUpdate: self => setSpeed(Math.min(98, Math.abs(self.getVelocity()) / 28)), onLeave: () => setSpeed(0), onLeaveBack: () => setSpeed(0) }
-              : { trigger: section, start: 'top 80%', end: 'bottom 20%', scrub: 0.6, invalidateOnRefresh: true },
+            scrollTrigger: {
+              trigger: section, start: 'top top', end: '+=180%', scrub: 0.6, pin: true,
+              invalidateOnRefresh: true,
+              onUpdate: self => setSpeed(Math.min(98, Math.abs(self.getVelocity()) / 28)),
+              onLeave: () => setSpeed(0), onLeaveBack: () => setSpeed(0),
+            },
           });
           tl.fromTo(truck, { x: () => section.clientWidth }, { x: () => -truck.offsetWidth, ease: 'none', duration: 1 }, 0)
             .fromTo(road, { backgroundPositionX: '0px' }, { backgroundPositionX: '-1200px', ease: 'none', duration: 1 }, 0);
           if (after.length) tl.from(after, { y: 40, opacity: 0, stagger: 0.05, duration: 0.15, ease: 'power2.out' }, 0.6);
           follow();
-          return () => { words.style.clipPath = ''; };
+        });
+        return () => {
+          document.querySelectorAll('.drive-words').forEach(words => { words.style.clipPath = ''; });
         };
-        mm.add('(min-width: 1000px)', () => build(true));
-        mm.add('(max-width: 999px)', () => build(false));
       });
 
       // Horizontal service track, pinned on wide screens. Photos slide inside their frames.
@@ -195,25 +215,29 @@ export function usePageMotion(key) {
       });
 
       // A full-bleed photo grows from a framed card to the whole screen.
-      gsap.utils.toArray('[data-expand]').forEach(el => {
-        const media = el.querySelector('.expand-media');
-        const copy = el.querySelector('.expand-copy');
-        const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top top', end: '+=120%', scrub: 0.6, pin: true } });
-        tl.fromTo(media, { clipPath: 'inset(18% 30% 18% 30%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' })
-          .fromTo(media.querySelector('img'), { scale: 1.35 }, { scale: 1, ease: 'none' }, 0)
-          .fromTo(copy, { opacity: 0, y: 60 }, { opacity: 1, y: 0, ease: 'none' }, 0.45);
+      mm.add('(min-width: 1000px)', () => {
+        gsap.utils.toArray('[data-expand]').forEach(el => {
+          const media = el.querySelector('.expand-media');
+          const copy = el.querySelector('.expand-copy');
+          const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top top', end: '+=120%', scrub: 0.6, pin: true } });
+          tl.fromTo(media, { clipPath: 'inset(18% 30% 18% 30%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' })
+            .fromTo(media.querySelector('img'), { scale: 1.35 }, { scale: 1, ease: 'none' }, 0)
+            .fromTo(copy, { opacity: 0, y: 60 }, { opacity: 1, y: 0, ease: 'none' }, 0.45);
+        });
       });
 
       // Stacked step cards: each card shrinks and dims as the next one slides over it.
-      gsap.utils.toArray('[data-stack]').forEach(list => {
-        const cards = gsap.utils.toArray(list.children);
-        cards.forEach((card, i) => {
-          const next = cards[i + 1];
-          if (!next) return;
-          const inner = card.querySelector('.stack-inner');
-          gsap.to(inner, {
-            '--dim': 0.12, ease: 'none',
-            scrollTrigger: { trigger: next, start: 'top 55%', end: 'top 15%', scrub: true },
+      mm.add('(min-width: 1000px)', () => {
+        gsap.utils.toArray('[data-stack]').forEach(list => {
+          const cards = gsap.utils.toArray(list.children);
+          cards.forEach((card, i) => {
+            const next = cards[i + 1];
+            if (!next) return;
+            const inner = card.querySelector('.stack-inner');
+            gsap.to(inner, {
+              '--dim': 0.12, ease: 'none',
+              scrollTrigger: { trigger: next, start: 'top 55%', end: 'top 15%', scrub: true },
+            });
           });
         });
       });
@@ -346,7 +370,7 @@ export function usePageMotion(key) {
     document.fonts?.ready.then(refresh);
     window.addEventListener('load', refresh);
     const late = setTimeout(refresh, 1200);
-    return () => { clearTimeout(late); ctx.revert(); window.removeEventListener('load', refresh); };
+    return () => { clearTimeout(late); mm.revert(); ctx.revert(); window.removeEventListener('load', refresh); };
   }, [key]);
 }
 

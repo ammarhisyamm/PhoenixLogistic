@@ -36,7 +36,7 @@ try {
   const urls = staticPaths.filter(route => route !== '/privacy' && route !== '/tracking');
   await writeFile('dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(route=>`  <url><loc>${siteOrigin}${route}</loc></url>`).join('\n')}\n</urlset>\n`);
   await writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`);
-  // Option 2 is a client-routed preview: give each of its routes a copy of its shell.
+  // Prerender each Option 2 route so its content is available on direct visits.
   const option2 = await readFile('dist/option-2/index.html', 'utf8');
   const { renderToString } = await import('react-dom/server');
   const { App: Option2App } = await server.ssrLoadModule('/prototypes/option2/main.jsx');
@@ -44,10 +44,14 @@ try {
   // break hydration, so they are dropped (the hero image carries fetchpriority="high" instead).
   const option2Page = route => {
     const body = renderToString(createElement(Option2App, { url: '/option-2' + (route ? '/' + route : '') })).replace(/^(<link [^>]*\/>)+/, '');
-    return option2.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
+    const html = option2.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
+    if (route !== 'privacy' && route !== 'terms') return html;
+    const meta = pageMeta('/' + route);
+    return html.replace(/<title>.*?<\/title>/, `<title>${escape(meta.title)}</title>`)
+      .replace('</head>', `<meta name="description" content="${escape(meta.description)}" /></head>`);
   };
   await writeFile('dist/option-2/index.html', option2Page(''));
-  const option2Routes = ['services', 'why-phoenix', 'about', 'contact', 'tracking', ...['amazon-fba-logistics', 'warehousing-and-3pl', 'road-freight-and-transport', 'international-freight', 'customs-clearance', 'dangerous-goods'].map(slug => `services/${slug}`)];
+  const option2Routes = ['services', 'why-phoenix', 'about', 'contact', 'tracking', 'privacy', 'terms', ...['amazon-fba-logistics', 'warehousing-and-3pl', 'road-freight-and-transport', 'international-freight', 'customs-clearance', 'dangerous-goods'].map(slug => `services/${slug}`)];
   for (const route of option2Routes) {
     await mkdir(path.join('dist/option-2', route), { recursive: true });
     const html = option2Page(route);

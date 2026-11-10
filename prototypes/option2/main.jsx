@@ -5,12 +5,14 @@ import { ArrowUpRight, ArrowsOut, CaretDown, CheckCircle, Crosshair, EnvelopeSim
 import '@fontsource-variable/inter';
 import '@fontsource-variable/manrope';
 import { company, faqs, importEmail, qualitySteps, sectors, services, trackingDestination, transportEmail } from '../../src/data';
+import { pageMeta } from '../../src/metadata';
 import { photos } from './photos';
 import { MAP } from './mapData';
 import { detailIcons, sectorIcons, serviceIcons, stageIcons, stepIcons, valueIcons } from './icons';
 import { Boat, ClipboardText, Globe, Package, Plant, Truck, Users, Warehouse } from '@phosphor-icons/react';
 import { coverThen, isStatic, scrollToEl, useCursor, usePageMotion } from './motion';
 import './option2.css';
+import './responsive.css';
 
 const BASE = '/option-2';
 const nav = [['Why Phoenix', '/why-phoenix'], ['About', '/about'], ['Contact', '/contact']];
@@ -53,11 +55,12 @@ function Photo({ src, alt = '', className = '', reveal = true, parallax = 8, eag
   </figure>;
 }
 
-function PageHero({ lines, text, image, alt, children, tall }) {
+function PageHero({ label, lines, text, image, alt, children, tall }) {
   return <section className={'page-hero' + (tall ? ' page-hero-tall' : '')} data-hero>
-    <div className="page-hero-media"><img src={image} srcSet={/@1200\.webp$/.test(image) ? undefined : `${image.replace(/\.webp$/, '@640.webp')} 640w, ${image.replace(/\.webp$/, '@1200.webp')} 1200w, ${image} 2400w`} sizes="(max-width: 767px) 80vw, 100vw" width="2400" height="1600" alt={alt || ''} fetchPriority="high" data-hero-media /></div>
+    <div className="page-hero-media"><img src={image} srcSet={image.startsWith('/assets/') || /@1200\.webp$/.test(image) ? undefined : `${image.replace(/\.webp$/, '@640.webp')} 640w, ${image.replace(/\.webp$/, '@1200.webp')} 1200w, ${image} 2400w`} sizes="(max-width: 767px) 80vw, 100vw" width="2400" height="1600" alt={alt || ''} fetchPriority="high" data-hero-media /></div>
     <div className="page-hero-shade" aria-hidden="true" />
     <div className="wrap page-hero-inner">
+      {label && <p className="page-hero-label" data-fade>{label}</p>}
       <Lines as="h1" className="display" lines={lines} />
       {text && <p className="page-hero-text" data-fade="0.5">{text}</p>}
       {children}
@@ -78,21 +81,30 @@ function Stats({ dark }) {
 
 function TrackForm({ compact }) {
   const [note, setNote] = useState('');
+  const [invalid, setInvalid] = useState(false);
+  const inputId = compact ? 'track-c' : 'track';
   const submit = e => {
     e.preventDefault();
     const ref = String(new FormData(e.currentTarget).get('consignment') || '').trim();
-    if (!/^[a-zA-Z0-9 _./-]{1,80}$/.test(ref)) { setNote('Enter the consignment reference from your booking confirmation.'); return; }
+    if (!/^[a-zA-Z0-9 _./-]{1,80}$/.test(ref)) {
+      setInvalid(true);
+      setNote('Enter the consignment reference from your booking confirmation.');
+      e.currentTarget.elements.consignment.focus();
+      return;
+    }
     const url = trackingDestination(ref);
     if (url) { location.assign(url); return; }
     setNote(`For ${ref}, use the tracking link on your booking confirmation or email ${transportEmail}.`);
   };
   return <form className={'track' + (compact ? ' track-compact' : '')} onSubmit={submit}>
-    <label htmlFor={compact ? 'track-c' : 'track'}>Consignment number</label>
+    <label htmlFor={inputId}>Consignment number</label>
     <div className="track-row">
-      <input id={compact ? 'track-c' : 'track'} name="consignment" placeholder="E.g. PGL000123456" autoComplete="off" onChange={() => setNote('')} />
+      <input id={inputId} name="consignment" placeholder="E.g. PGL000123456" autoComplete="off"
+        aria-describedby={inputId + '-note'} aria-invalid={invalid}
+        onChange={() => { setInvalid(false); setNote(''); }} />
       <button type="submit" className="track-go"><BtnText>Track</BtnText><Arrow /></button>
     </div>
-    <p className="track-note" role="status">{note || 'Use the reference on your booking confirmation.'}</p>
+    <p className="track-note" id={inputId + '-note'} role="status">{note || 'Use the reference on your booking confirmation.'}</p>
   </form>;
 }
 
@@ -142,6 +154,12 @@ function Header() {
   const { pathname } = useLocation();
   useEffect(() => { setOpen(false); setMega(false); }, [pathname]);
   useEffect(() => {
+    const desktop = matchMedia('(min-width: 1100px)');
+    const closeMenus = () => { setOpen(false); setMega(false); };
+    desktop.addEventListener('change', closeMenus);
+    return () => desktop.removeEventListener('change', closeMenus);
+  }, []);
+  useEffect(() => {
     const esc = e => { if (e.key === 'Escape') { setMega(false); setOpen(false); } };
     addEventListener('keydown', esc);
     return () => removeEventListener('keydown', esc);
@@ -169,14 +187,14 @@ function Header() {
           </div>
         </div>
         <MegaMenu open={mega} onClose={() => setMega(false)} />
-        <div id="menu" className={'menu' + (open ? ' is-open' : '')} hidden={!open}>
+        <nav id="menu" aria-label="Mobile navigation" onClick={event => { if (event.target.closest('a')) setOpen(false); }} className={'menu' + (open ? ' is-open' : '')} hidden={!open}>
           <Link to="/" style={{ '--i': 0 }}>Home</Link>
           <details style={{ '--i': 1 }}>
             <summary>Services<CaretDown size={18} aria-hidden="true" /></summary>
             <div className="menu-services">{services.map(s => <Link key={s.slug} to={'/services/' + s.slug}><Icon as={serviceIcons[s.slug]} size={22} />{s.title}</Link>)}</div>
           </details>
           {[...nav, ['Track a shipment', '/tracking']].map(([label, to], i) => <Link key={to} to={to} style={{ '--i': i + 2 }}>{label}</Link>)}
-        </div>
+        </nav>
       </div>
     </header>
   </>;
@@ -213,8 +231,8 @@ function Footer() {
         
 
         <div className="fcell fcell-legal"><p>© 2026 Phoenix Global Logistics · ABN {company.abn}</p></div>
-        <div className="fcell fcell-legal"><a href="/privacy">Privacy Policy</a></div>
-        <div className="fcell fcell-legal"><a href="/terms">Terms of Carriage</a></div>
+        <div className="fcell fcell-legal"><Link to="/privacy">Privacy Policy</Link></div>
+        <div className="fcell fcell-legal"><Link to="/terms">Terms of Carriage</Link></div>
         <div className="fcell fcell-legal"><button type="button" className="to-top" onClick={() => scrollToEl(document.body, 0)}>Back to top <ArrowUpRight size={14} weight="bold" aria-hidden="true" /></button></div>
       </div>
     </div>
@@ -320,9 +338,11 @@ function Drive({ words = ['On the road across', 'NSW, QLD & VIC.'], text, cta })
         {text && <p className="drive-after">{text}</p>}
         {cta && <div className="drive-after">{cta}</div>}
       </div>
-      <div className="drive-road" aria-hidden="true" />
-      <div className="drive-truck" aria-hidden="true"><img src="/option2/media/truck.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 70vw, 46vw" alt="" /></div>
-      <p className="drive-speed" aria-hidden="true"><b>00</b><span>km/h<br />Linehaul</span></p>
+      <div className="drive-visual" aria-hidden="true">
+        <div className="drive-road" aria-hidden="true" />
+        <div className="drive-truck" aria-hidden="true"><img src="/option2/media/truck.webp" srcSet="/option2/media/truck@700.webp 700w, /option2/media/truck.webp 1400w" sizes="(max-width: 999px) 70vw, 46vw" alt="" /></div>
+        <p className="drive-speed" aria-hidden="true"><b>00</b><span>km/h<br />Linehaul</span></p>
+      </div>
     </div>
   </section>;
 }
@@ -333,8 +353,10 @@ function StepStack() {
     {qualitySteps.map((s, i) => <li className="stack-card" key={s.title} style={{ '--i': i }}>
       <div className="stack-inner">
         <div className="stack-copy">
-          <Icon as={stepIcons[i]} size={56} />
-          <h3>{s.title}</h3>
+          <div className="stack-title">
+            <Icon as={stepIcons[i]} size={56} />
+            <h3>{s.title}</h3>
+          </div>
           <p className="stack-desc">{s.text}</p>
           <p className="stack-count">Step {i + 1} of {qualitySteps.length}</p>
         </div>
@@ -735,7 +757,7 @@ function Contact() {
             <label className="field field-wide"><span>Dimensions, weight and shipment details*</span><textarea name="details" rows="4" required placeholder="Include dimensions, total weight and any handling requirements." /></label>
           </div>
           <button className="btn btn-primary" type="submit"><BtnText>Prepare quote request</BtnText><Arrow /></button>
-          <p className="fine">We use your details to respond to your enquiry. <a href="/privacy">Privacy Policy</a>.</p>
+          <p className="fine">We use your details to respond to your enquiry. <Link to="/privacy">Privacy Policy</Link>.</p>
           {review && <div className="review" role="status"><p>Your request is ready for <strong>{review.target}</strong>.</p><pre>{review.body}</pre><a className="btn btn-primary" href={'mailto:' + review.target + '?subject=Phoenix%20freight%20quote&body=' + encodeURIComponent(review.body)}><BtnText>Open email draft</BtnText><Arrow /></a></div>}
         </form>
       </div>
@@ -782,17 +804,70 @@ function Tracking() {
   </>;
 }
 
+/* ---------- Legal pages ---------- */
+
+function LegalContent({ children }) {
+  return <div className="section wrap legal-content">{children}</div>;
+}
+
+function LegalSection({ id, title, children }) {
+  return <section className="legal-row" aria-labelledby={id}>
+    <h2 id={id} className="legal-heading">{title}</h2>
+    <div className="legal-copy">{children}</div>
+  </section>;
+}
+
+function Privacy() {
+  return <>
+    <PageHero label="Website privacy" lines={['Your enquiry details.']} text="How information is handled by this website." image="/assets/cover-privacy.webp" alt="Organised document folders and a closed laptop at a depot office" />
+    <LegalContent>
+      <LegalSection id="quote-enquiries" title="Quote enquiries">
+        <p>The quote form prepares an email on your device. The website does not submit your form details to a server. Your enquiry reaches Phoenix when you send the prepared email using your email provider.</p>
+      </LegalSection>
+      <LegalSection id="shipment-support" title="Shipment support">
+        <p>Consignment references entered into the tracking form appear in the page address and in a prepared email if you choose to request a tracking link. Enter only the shipment reference, not passwords or other account credentials.</p>
+      </LegalSection>
+      <LegalSection id="your-browser" title="Your browser">
+        <p>This website does not use advertising analytics or non-essential cookies. Fonts and website imagery are served with the website. Your hosting and email providers may process technical information as part of delivering their services.</p>
+      </LegalSection>
+      <LegalSection id="privacy-contact" title="Contact Phoenix">
+        <p>For questions about information you provide to our team, contact <a href={`mailto:${transportEmail}`}>{transportEmail}</a>.</p>
+      </LegalSection>
+    </LegalContent>
+  </>;
+}
+
+function Terms() {
+  return <>
+    <PageHero label="Terms of Carriage & Conditions" lines={['Terms for your shipment.']} text="Request the current Phoenix Global Logistics terms of carriage and service conditions before booking." image="/assets/cover-terms.webp" alt="Freight paperwork and a sealed carton at a dispatch counter" />
+    <LegalContent>
+      <LegalSection id="request-terms" title="Request the current terms">
+        <p>Contact the relevant operational team for the terms and conditions that apply to your freight service.</p>
+        <div className="legal-actions">
+          <Button variant="ghost" href={`mailto:${transportEmail}?subject=Terms%20of%20carriage%20request`}>Transport terms</Button>
+          <Button variant="ghost" href={`mailto:${importEmail}?subject=Service%20conditions%20request`}>Import service conditions</Button>
+        </div>
+      </LegalSection>
+    </LegalContent>
+  </>;
+}
+
 /* ---------- Shell ---------- */
 
 function Page({ children }) {
   const { pathname } = useLocation();
   usePageMotion(pathname);
+  useEffect(() => {
+    document.title = pathname === '/privacy' || pathname === '/terms'
+      ? pageMeta(pathname).title
+      : 'Phoenix Global Logistics · Option 2';
+  }, [pathname]);
   // Keyed by path so a route change swaps the whole <main>; GSAP pin wrappers inside
   // the old page then never confuse React when it removes the old sections.
   return <main id="main" key={pathname}>{children}</main>;
 }
 
-const PAGE_NAMES = { '/': 'Home', '/why-phoenix': 'Why Phoenix', '/about': 'About', '/contact': 'Contact', '/tracking': 'Tracking' };
+const PAGE_NAMES = { '/': 'Home', '/why-phoenix': 'Why Phoenix', '/about': 'About', '/contact': 'Contact', '/tracking': 'Tracking', '/privacy': 'Privacy Policy', '/terms': 'Terms of Carriage' };
 function pageName(to) {
   if (to.startsWith('/services/')) return services.find(s => '/services/' + s.slug === to)?.shortTitle || 'Services';
   return PAGE_NAMES[to] || 'Phoenix';
@@ -849,6 +924,8 @@ export function App({ url }) {
       <Route path="/about" element={<Page><About /></Page>} />
       <Route path="/contact" element={<Page><Contact /></Page>} />
       <Route path="/tracking" element={<Page><Tracking /></Page>} />
+      <Route path="/privacy" element={<Page><Privacy /></Page>} />
+      <Route path="/terms" element={<Page><Terms /></Page>} />
       <Route path="*" element={<Page><Home /></Page>} />
     </Routes>
     <Footer />
