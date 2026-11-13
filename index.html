@@ -11,59 +11,10 @@
     <meta property="og:image" content="https://phoenix-logistic.vercel.app/assets/phoenix-fleet.webp" />
     <link rel="icon" type="image/png" href="/assets/phoenix-logo.png" />
     <title>Phoenix Global Logistics</title>
-    <style>
-      html { scrollbar-gutter: stable; }
-      .dispatch-loader { display: grid; min-height: 100svh; background: #faf7f5; place-content: center; justify-items: center; gap: 20px; color: #232022; font: 13px system-ui, sans-serif; }
-      #boot { position: fixed; inset: 0; z-index: 50; display: grid; place-content: center; justify-items: center; gap: 28px; background: #faf7f5; color: #232022; font: 500 13px/1.4 'Inter Variable', system-ui, sans-serif; letter-spacing: .02em; transition: opacity 200ms ease-out; }
-      #boot[hidden] { display: none; }
-      #boot.boot-done { opacity: 0; pointer-events: none; }
-      #boot img.boot-logo { width: 74px; height: auto; }
-      .boot-route { position: relative; width: min(340px, 78vw); height: 46px; }
-      .boot-road { position: absolute; left: 0; right: 0; bottom: 6px; height: 2px; background: repeating-linear-gradient(90deg, #d9cfcc 0 10px, transparent 10px 18px); }
-      .boot-stop { position: absolute; bottom: 2px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: #faf7f5; border: 2px solid #d9cfcc; transition: border-color 200ms, background 200ms; }
-      .boot-stop.on { border-color: #e31b24; background: #e31b24; }
-      .boot-truck { position: absolute; bottom: 9px; left: 18%; width: 58px; translate: -100% 0; }
-      .boot-status { min-height: 1.4em; color: #686164; display: flex; gap: 10px; align-items: baseline; }
-      .boot-status b { color: #e31b24; font-weight: 600; font-variant-numeric: tabular-nums; }
-    </style>
   </head>
   <body>
-    <div id="boot" role="status" aria-live="polite" aria-label="Loading Phoenix Global Logistics">
-      <img class="boot-logo" src="/assets/phoenix-logo.png" width="74" height="63" alt="" />
-      <div class="boot-route" aria-hidden="true">
-        <span class="boot-road"></span>
-        <span class="boot-stop on" style="left:0"></span><span class="boot-stop" style="left:50%"></span><span class="boot-stop" style="left:100%"></span>
-        <svg class="boot-truck" viewBox="0 0 58 28" fill="none"><rect x="0" y="2" width="38" height="19" rx="1.5" fill="#232022"/><circle cx="12" cy="11.5" r="5" fill="#e31b24"/><path d="M38 8h10.5l6.5 7v6H38z" fill="#e31b24"/><path d="M41 10h6.5l4 4.5H41z" fill="#faf7f5"/><circle cx="10" cy="23.5" r="3.5" fill="#232022" stroke="#faf7f5" stroke-width="1.5"/><circle cx="30" cy="23.5" r="3.5" fill="#232022" stroke="#faf7f5" stroke-width="1.5"/><circle cx="48" cy="23.5" r="3.5" fill="#232022" stroke="#faf7f5" stroke-width="1.5"/></svg>
-      </div>
-      <p class="boot-status">Loading Phoenix Global Logistics</p>
-    </div>
     <div id="root"></div>
-    <script>
-      (function () {
-        var boot = document.getElementById('boot');
-        document.documentElement.classList.add('booting');
-        var seen = false;
-        try { seen = sessionStorage.getItem('phoenix-boot') === '1'; sessionStorage.setItem('phoenix-boot', '1'); } catch (e) {}
-        var done = false;
-        var deadline = setTimeout(finish, 6000);
-        function finish() {
-          if (done) return;
-          done = true;
-          clearTimeout(deadline);
-          document.documentElement.classList.remove('booting');
-          if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            boot.hidden = true;
-            return;
-          }
-          boot.setAttribute('aria-hidden', 'true');
-          boot.classList.add('boot-done');
-          boot.addEventListener('transitionend', function () { boot.hidden = true; }, { once: true });
-          setTimeout(function () { boot.hidden = true; }, 250);
-        }
-        window.__phoenixReady = finish;
-      })();
-    </script>
-    <noscript><style>#boot{display:none}</style>This site requires JavaScript. Contact Phoenix for freight, warehouse and delivery enquiries.</noscript>
+    
     <script type="module" src="/prototypes/phoenix/main.jsx"></script>
   </body>
 </html>

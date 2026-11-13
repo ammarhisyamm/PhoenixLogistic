@@ -2,7 +2,7 @@ import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createServer } from 'vite';
 import { createElement } from 'react';
-import { phoenixPaths } from '../prototypes/phoenix/routes.mjs';
+import { phoenixRoutes as phoenixRouteList } from '../prototypes/phoenix/routes.mjs';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
@@ -11,7 +11,11 @@ try {
   const { render, pageCoverImage, pageMeta, siteOrigin, staticPaths } = await server.ssrLoadModule('/src/prerender.tsx');
   const phoenixTemplate = await readFile('dist/index.html', 'utf8');
   const legacyTemplate = await readFile('dist/legacy.html', 'utf8');
-  const phoenixRoutes = new Set(Object.values(phoenixPaths));
+  const phoenixRoutes = new Set(phoenixRouteList);
+  const { renderToString } = await import('react-dom/server');
+  const { App: PhoenixApp } = await server.ssrLoadModule('/prototypes/phoenix/app.jsx');
+  // React 19 prepends <link rel="preload"> hints for images; inside #root they are dropped.
+  const phoenixPage = route => renderToString(createElement(PhoenixApp, { url: route })).replace(/^(<link [^>]*\/>)+/, '');
   for (const route of [...staticPaths, '/404']) {
     const meta = pageMeta(route);
     let html = (phoenixRoutes.has(route) ? phoenixTemplate : legacyTemplate)
@@ -23,6 +27,8 @@ try {
       .replace(/<meta property="og:image" content="[^"]*"\s*\/?\s*>/, `<meta property="og:image" content="${escape(pageCoverImage(route))}" />`);
     if (!phoenixRoutes.has(route)) {
       html = html.replace('<div id="root"></div>', `<div id="root" data-prerender-path="${route}">${render(route)}</div>`);
+    } else {
+      html = html.replace('<div id="root"></div>', `<div id="root">${phoenixPage(route)}</div>`);
     }
     const extraHead = route === '/404' ? '<meta name="robots" content="noindex" />' : `<link rel="canonical" href="${siteOrigin}${route === '/' ? '/' : route}" /><meta property="og:url" content="${siteOrigin}${route}" />`;
     html = html.replace('</head>', `${extraHead}</head>`);
@@ -38,7 +44,6 @@ try {
   await writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`);
   // Option 2 is a client-routed preview: give each of its routes a copy of its shell.
   const option2 = await readFile('dist/option-2/index.html', 'utf8');
-  const { renderToString } = await import('react-dom/server');
   const { App: Option2App } = await server.ssrLoadModule('/prototypes/option2/main.jsx');
   // React 19 prepends <link rel="preload"> hints for images to the markup; inside #root they would
   // break hydration, so they are dropped (the hero image carries fetchpriority="high" instead).

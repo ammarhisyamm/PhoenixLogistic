@@ -1,58 +1,23 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/oswald';
 import '@fontsource/sawarabi-mincho/latin-400.css';
 import '@fontsource/dm-serif-display/400.css';
-import { Design } from './design';
-import { phoenixPaths } from './routes.mjs';
-import './style.css';
-import './motion.css';
-import './polish.css';
-import './experience.css';
+import { App } from './app';
+import './site.css';
 
-const pages = import.meta.glob('./data/{home,services,tracking,contact,about,why}.json', { import: 'default' });
+// Old preview links (/?page=about) still land on the right page.
 const url = new URL(location.href);
-const path = url.pathname.replace(/\/$/, '') || '/';
-const legacyPage = path === '/' && url.searchParams.get('page');
-const page = Object.hasOwn(phoenixPaths, legacyPage)
-  ? legacyPage
-  : Object.keys(phoenixPaths).find(key => phoenixPaths[key] === path) || 'home';
-
+const legacy = { services: '/services/amazon-fba-logistics', tracking: '/tracking', contact: '/contact', about: '/about', why: '/why-phoenix', home: '/' };
 if (url.searchParams.has('page') || url.searchParams.has('compare')) {
-  url.pathname = phoenixPaths[page];
+  const page = url.searchParams.get('page');
+  if (legacy[page]) url.pathname = legacy[page];
   for (const key of ['page', 'compare', 'v']) url.searchParams.delete(key);
   history.replaceState(null, '', url);
 }
 
-function App({ tree }) {
-  const getScale = () => document.documentElement.clientWidth / 1440;
-  const [scale, setScale] = useState(getScale);
-  useLayoutEffect(() => {
-    const resize = () => setScale(getScale());
-    const observer = new ResizeObserver(resize);
-    observer.observe(document.documentElement);
-    resize();
-    return () => observer.disconnect();
-  }, []);
-  useEffect(() => {
-    if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
-    window.__phoenixReady?.();
-  }, []);
-
-  return <div className="prototype-shell" style={{ '--desktop-scale': scale }}>
-    <div className="dispatch-progress" aria-hidden="true" />
-    <div className="dispatch-truck" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M1 4h17v11H1zM18 8h7l5 5v2H18z" fill="#e31b24"/><circle cx="7" cy="16" r="2.6" fill="#232022" stroke="#fff" strokeWidth="1.2"/><circle cx="24" cy="16" r="2.6" fill="#232022" stroke="#fff" strokeWidth="1.2"/></svg></div>
-    <Design tree={tree} page={page} />
-  </div>;
-}
-
-const root = createRoot(document.getElementById('root'));
-let active = true;
-pages['./data/' + page + '.json']().then(tree => {
-  if (active) root.render(<App tree={tree} />);
-}).catch(() => {
-  window.__phoenixReady?.();
-  if (active) root.render(<p className="dispatch-loader" role="alert">The page could not load. <a href={location.href}>Try again</a></p>);
-});
-if (import.meta.hot) import.meta.hot.dispose(() => { active = false; root.unmount(); });
+// Every route is prerendered, so the client hydrates the existing markup: the first paint
+// (and the hero image) never has to be replaced once scripts arrive.
+const root = document.getElementById('root');
+if (root?.firstElementChild) hydrateRoot(root, <App />);
+else if (root) createRoot(root).render(<App />);
