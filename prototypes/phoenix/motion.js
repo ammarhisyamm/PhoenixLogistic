@@ -73,7 +73,6 @@ export function usePageMotion(key) {
       return undefined;
     }
     const wait = lift();
-    const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
       gsap.utils.toArray('[data-lines]').forEach(el => {
         const lines = el.querySelectorAll('.ln > span');
@@ -142,44 +141,6 @@ export function usePageMotion(key) {
         gsap.fromTo(img, { yPercent: 18, xPercent: 6, scale: 0.94 }, { yPercent: -8, xPercent: -4, scale: 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.6 } });
       });
 
-      // Why Phoenix process: pinned on desktop; each step swaps the blurred backdrop, wipes
-      // the square photo up into place and replaces the counter, title and text.
-      gsap.utils.toArray('[data-forge]').forEach(section => {
-        mm.add('(min-width: 1000px)', () => {
-          const steps = gsap.utils.toArray(section.querySelectorAll('.forge-step'));
-          const n = steps.length;
-          const bar = section.querySelector('.forge-progress span');
-          const parts = steps.map(st => ({ bg: st.querySelector('.forge-bg'), photo: st.querySelector('.forge-photo'), img: st.querySelector('.forge-photo img'), copy: st.querySelectorAll('.forge-copy > *') }));
-          parts.forEach((p, i) => {
-            if (i === 0) return;
-            gsap.set(p.bg, { opacity: 0 });
-            gsap.set(p.photo, { clipPath: 'inset(100% 0% 0% 0%)' });
-            gsap.set(p.copy, { opacity: 0, y: 40 });
-          });
-          const live = k => steps.forEach((st, i) => { st.style.pointerEvents = i === k ? 'auto' : 'none'; st.setAttribute('aria-hidden', i === k ? 'false' : 'true'); });
-          live(0);
-          const tl = gsap.timeline({ defaults: { ease: 'power2.inOut' }, scrollTrigger: {
-            trigger: section, start: 'top top', end: '+=' + (n - 1) * 90 + '%', scrub: 0.8, pin: true, refreshPriority: 1,
-            onUpdate: self => live(Math.min(n - 1, Math.round(self.progress * (n - 1)))),
-          } });
-          tl.set({}, {}, 0);
-          for (let i = 1; i < n; i++) {
-            const at = i - 1 + 0.25;
-            const prev = parts[i - 1];
-            const next = parts[i];
-            tl.to(prev.copy, { opacity: 0, y: -40, duration: 0.3, stagger: 0.03, ease: 'power2.in' }, at)
-              .to(prev.img, { scale: 0.92, duration: 0.5 }, at)
-              .to(next.bg, { opacity: 1, duration: 0.5, ease: 'none' }, at)
-              .to(next.photo, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.5 }, at)
-              .fromTo(next.img, { scale: 1.25 }, { scale: 1, duration: 0.6, ease: 'power2.out' }, at)
-              .to(next.copy, { opacity: 1, y: 0, duration: 0.35, stagger: 0.04, ease: 'power2.out' }, at + 0.25);
-          }
-          tl.to({}, { duration: 0.25 });
-          if (bar) tl.fromTo(bar, { scaleX: 1 / n }, { scaleX: 1, ease: 'none', duration: tl.duration() }, 0);
-          return () => steps.forEach(st => { st.style.pointerEvents = ''; st.removeAttribute('aria-hidden'); });
-        });
-      });
-
       // Rows near the middle of the screen are the active ones.
       gsap.utils.toArray('[data-focus]').forEach(el => {
         ScrollTrigger.create({ trigger: el, start: 'top 62%', end: 'bottom 38%', toggleClass: 'is-active' });
@@ -202,7 +163,7 @@ export function usePageMotion(key) {
       const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
       setTimeout(() => scrollToEl(target), 60);
     }
-    return () => { clearTimeout(late); ctx.revert(); mm.revert(); window.removeEventListener('load', refresh); };
+    return () => { clearTimeout(late); ctx.revert(); window.removeEventListener('load', refresh); };
   }, [key]);
 }
 

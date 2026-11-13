@@ -37,13 +37,14 @@ export const photos = {
     ph('540beaec06fb5157843343b5439c88135a35d508'),
     ph('28b01dff2b08985699bb0c58d90ae8eef01141cd'),
   ],
+  // The Why Phoenix process carousel uses the same frames as Option 2's Why Phoenix page.
   process: [
-    { ...ph('4d85808114abc8ade2ca8f331ae9b06759d4b656', { 720: true, 1200: true }, 1536), alt: 'Phoenix office team member preparing import documents' },
-    { ...ph('f09eba6b3589f4d6964a6a4559e1b988fa44c4a7', { 720: true }, 1200), alt: 'Freight being scanned into the depot' },
-    { ...ph('15c0fdc43f06d94ba59a23d5fe61092b5332bfa3', { 720: true, 1200: true }, 1536), alt: 'Cartons checked on the Phoenix Red Table' },
-    { ...ph('81d48974de076fa323c0bec171cb26b4ae760fc4', { 720: true, 1200: true }, 1536), alt: 'Pallet secured on the automated stretch wrapper' },
-    { ...ph('14353d44ed5f4fd552abc44caae391ccb481da60', { 720: true, 1200: true }, 1800), alt: 'Freight scanned out as a driver loads the truck' },
-    { ...ph('f641228e5b140300fad613975d75eb214d81b54b', { 720: true, 1200: true }, 1536), alt: 'Driver collecting a signature for proof of delivery' },
+    { ...op('warehouse-16'), alt: 'Forklift driver checking paperwork before unloading a container' },
+    { ...op('warehouse-11'), alt: 'Forklift unloading palletised freight from a curtain-side trailer' },
+    { ...op('warehouse-85'), alt: 'Team member checking cartons on warehouse racking' },
+    { src: '/option2/generated/pallet-wrap.webp', set: '/option2/generated/pallet-wrap@1200.webp 1200w, /option2/generated/pallet-wrap.webp 2400w', alt: 'Pallet secured on an automated stretch wrapper' },
+    { ...op('warehouse-35'), alt: 'Forklift driver in a Phoenix vest moving freight to the trailer' },
+    { ...op('night-10'), alt: 'Phoenix truck on the road at night heading for delivery' },
   ],
 };
 
