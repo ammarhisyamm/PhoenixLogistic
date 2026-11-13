@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, StaticRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
-  AmazonLogo, ArrowLeft, ArrowRight, ArrowUpRight, BatteryCharging, BookBookmark, CaretDown, ChatCircleText, Check, Clock,
+  AmazonLogo, ArrowLeft, Barcode, ClipboardText, ListChecks, Signature, ArrowRight, ArrowUpRight, BatteryCharging, BookBookmark, CaretDown, ChatCircleText, Check, Clock,
   Crosshair, EnvelopeSimple, FileText, Globe, Handshake, MapPin, Package, Phone, Plant, ShoppingCart, SolarPanel, Storefront,
   Basket, Boat, GlobeHemisphereEast, Truck, Warehouse, X,
 } from '@phosphor-icons/react';
@@ -335,7 +335,7 @@ function ServiceRail() {
 
 function Cta({ lines = ["Let's plan your next shipment."], text = 'Send your origin, destination and freight details to our team.', image = photos.ctaRoad, red }) {
   return <section className={'cta' + (red ? ' cta-red' : '')}>
-    {!red && <div className="cta-media"><img src={image.src} srcSet={image.set} sizes="100vw" alt="" loading="lazy" width="2200" height="1238" data-parallax="10" /></div>}
+    {!red && <div className="cta-media"><img src={image.src} srcSet={image.set} sizes="100vw" alt="" loading="lazy" width="2200" height="1238" data-parallax="9" /></div>}
     <div className="wrap cta-inner">
       <Lines className="t-h2-lg" lines={lines} />
       <p className="t-lead" data-fade="0.2">{text}</p>
@@ -576,50 +576,34 @@ function ServicePage() {
   </>;
 }
 
-function ProcessCarousel() {
-  const [index, setIndex] = useState(0);
-  const start = useRef(null);
-  const prev = useRef(0);
-  const n = processSteps.length;
-  // Slides sit around the active one (-2 … +3) so there is always a neighbour on both sides;
-  // a slide that wraps from one end to the other moves without a transition, off screen.
-  const offset = (i, at) => ((i - at + n + Math.floor(n / 2)) % n) - Math.floor(n / 2);
-  useEffect(() => { prev.current = index; }, [index]);
-  const go = d => setIndex(i => (i + d + n) % n);
-  const keys = e => {
-    if (!['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
-    e.preventDefault();
-    go(e.key === 'ArrowLeft' ? -1 : 1);
-  };
-  const down = e => { start.current = [e.clientX, e.clientY]; };
-  const up = e => {
-    if (!start.current) return;
-    const dx = e.clientX - start.current[0], dy = e.clientY - start.current[1];
-    start.current = null;
-    if (Math.abs(dx) > 48 && Math.abs(dx) > 1.3 * Math.abs(dy)) go(dx > 0 ? -1 : 1);
-  };
-  return <div className="carousel" id="quality-process" role="region" aria-roledescription="carousel" aria-label="Freight handling process" tabIndex={0} onKeyDown={keys}>
-    <div className="carousel-viewport" onPointerDown={down} onPointerUp={up} onPointerCancel={() => { start.current = null; }}>
-      <ol className="carousel-track">
-        {processSteps.map((step, i) => <li key={step.title} className={'slide' + (i === index ? ' is-active' : '') + (Math.abs(offset(i, index) - offset(i, prev.current)) > 1 ? ' is-jump' : '')}
-          style={{ '--o': offset(i, index) }} aria-hidden={i !== index || undefined}
-          onClick={() => i !== index && setIndex(i)} aria-roledescription="slide" aria-label={`${i + 1} of ${n}`}>
-          <div className="slide-media"><img src={photos.process[i].src} srcSet={photos.process[i].set} sizes="(max-width: 767px) 80vw, 46vw" alt={photos.process[i].alt} loading="lazy" draggable="false" width="1200" height="800" /></div>
-          <div className="slide-copy">
-            <span className="slide-num">{String(i + 1).padStart(2, '0')}</span>
-            <h3 className="t-h3">{step.title}</h3>
-            <p>{step.text}</p>
+const processIcons = [ClipboardText, Barcode, ListChecks, Package, Truck, Signature];
+
+// Pinned on desktop: each step swaps the blurred backdrop, wipes the square photo up and
+// replaces the copy as the page scrolls. On smaller screens the steps simply stack.
+function ProcessForge() {
+  const total = String(processSteps.length).padStart(2, '0');
+  return <section className="forge" id="quality-process" data-forge aria-label="Freight handling process">
+    <ol className="forge-stage">
+      {processSteps.map((step, i) => {
+        const Icon = processIcons[i];
+        const ph = photos.process[i];
+        return <li className="forge-step" key={step.title}>
+          <div className="forge-bg" aria-hidden="true"><img src={ph.src} srcSet={ph.set} sizes="50vw" alt="" loading="lazy" /></div>
+          <div className="wrap forge-grid">
+            <figure className="forge-photo"><img src={ph.src} srcSet={ph.set} sizes="(max-width: 999px) 92vw, 560px" alt={ph.alt} loading="lazy" width="1200" height="1200" /></figure>
+            <div className="forge-copy">
+              <p className="forge-count"><b>{String(i + 1).padStart(2, '0')}</b> / {total}</p>
+              <Icon className="forge-ico" size={36} weight="light" aria-hidden="true" />
+              <h3>{step.title}</h3>
+              <p className="forge-text">{step.text}</p>
+              {i === processSteps.length - 1 && <div className="forge-cta"><Btn to="/contact" variant="light">Request a Quote</Btn></div>}
+            </div>
           </div>
-        </li>)}
-      </ol>
-    </div>
-    <div className="carousel-controls">
-      <button type="button" className="round-btn" onClick={() => go(-1)} aria-label="Previous process step"><ArrowLeft size={22} /></button>
-      <button type="button" className="round-btn round-btn-dark" onClick={() => go(1)} aria-label="Next process step"><ArrowRight size={22} /></button>
-      <span className="carousel-count" aria-live="polite">{String(index + 1).padStart(2, '0')} <span>/ {String(n).padStart(2, '0')}</span></span>
-      <span className="carousel-progress" aria-hidden="true"><span style={{ transform: `scaleX(${(index + 1) / n})` }} /></span>
-    </div>
-  </div>;
+        </li>;
+      })}
+      <li className="forge-progress" aria-hidden="true"><span /></li>
+    </ol>
+  </section>;
 }
 
 function Why() {
@@ -629,12 +613,12 @@ function Why() {
       <Credential light />
     </PageHero>
 
-    <section className="section process">
+    <section className="section forge-intro">
       <div className="wrap">
-        <SectionHead className="section-head-center" lines={['From office intake', 'to signed delivery.']} text="Depot scans, the Phoenix Red Table check and automated wrapping help identify preparation issues and protect freight before dispatch." />
+        <SectionHead lines={['From office intake', 'to signed delivery.']} text="Depot scans, the Phoenix Red Table check and automated wrapping help identify preparation issues and protect freight before dispatch." />
       </div>
-      <ProcessCarousel />
     </section>
+    <ProcessForge />
 
     <AboutBlock image={photos.aboutBuilding} />
 

@@ -122,7 +122,7 @@ main { outline: none; }
 /* ---------- Photos ---------- */
 .photo { position: relative; overflow: hidden; background: var(--paper); }
 .photo img { width: 100%; height: 100%; object-fit: cover; }
-.photo img[data-parallax] { height: 116%; margin-top: -8%; }
+.photo img[data-parallax] { position: absolute; left: 0; top: -10%; height: 120%; }
 
 /* ---------- Header ---------- */
 .header { position: fixed; z-index: 60; top: 12px; left: 0; right: 0; padding-inline: clamp(12px, 2vw, 16px); pointer-events: none; transition: transform .6s var(--ease); }
@@ -308,7 +308,7 @@ main { outline: none; }
 /* ---------- CTA ---------- */
 .cta { position: relative; overflow: hidden; isolation: isolate; color: var(--white); background: var(--ink); text-align: center; }
 .cta-media { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
-.cta-media img { width: 100%; height: 120%; margin-top: -10%; object-fit: cover; }
+.cta-media img { position: absolute; left: 0; top: -15%; width: 100%; height: 130%; object-fit: cover; }
 .cta::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(20, 17, 18, .45), rgba(20, 17, 18, .62)); }
 .cta-red { background: radial-gradient(120% 90% at 50% 0%, #9c121a 0%, var(--red-deep) 55%, #4a070b 100%); }
 .cta-red::before { display: none; }
@@ -365,29 +365,34 @@ main { outline: none; }
   .connected-card:not(:first-child) .t-h3 { font-size: clamp(1.125rem, .95rem + .5vw, 1.5rem); }
 }
 
-/* ---------- Why: process carousel ---------- */
-.process { overflow: hidden; }
-.carousel { --w: clamp(260px, 72vw, 640px); --g: clamp(16px, 2.4vw, 40px); outline: none; }
-.carousel:focus-visible .slide.is-active .slide-media { outline: 2px solid var(--red); outline-offset: 4px; }
-.carousel-viewport { touch-action: pan-y; user-select: none; }
-.carousel-track { display: grid; justify-content: center; }
-.slide { grid-area: 1 / 1; width: var(--w); cursor: pointer; transform: translateX(calc(var(--o) * (var(--w) + var(--g)))); transition: transform 1s var(--ease); }
-.slide.is-jump { transition: none; }
-.slide.is-active { cursor: default; }
-.slide-media { overflow: hidden; aspect-ratio: 16 / 10; border-radius: var(--radius); transform: scale(.86); transform-origin: 50% 100%; transition: transform 1s var(--ease), filter 1s var(--ease); filter: saturate(.6) brightness(.92); }
-.slide-media img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.slide.is-active .slide-media { transform: none; filter: none; }
-.slide-copy { display: grid; gap: 8px; max-width: 520px; padding-top: 20px; opacity: .72; transition: opacity .8s var(--ease), transform .8s var(--ease); transform: translateY(8px); }
-.slide.is-active .slide-copy { opacity: 1; transform: none; }
-.slide-num { color: var(--ink-2); font-size: 14px; transition: color .6s; }
-.slide.is-active .slide-num { color: var(--red); }
-.slide-copy p { color: var(--ink-2); }
-.carousel-controls { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: clamp(28px, 3vw, 40px); padding-inline: var(--gutter); }
-.carousel-count { margin-left: 8px; font-size: 14px; font-variant-numeric: tabular-nums; }
-.carousel-count span { color: var(--muted); }
-.carousel-progress { width: 80px; height: 2px; background: var(--line); overflow: hidden; }
-.carousel-progress span { display: block; height: 100%; background: var(--red); transform-origin: left; transition: transform .8s var(--ease); }
-@media (min-width: 900px) { .carousel { --w: min(46vw, 680px); } }
+/* ---------- Why: pinned process stepper (as on Option 2) ---------- */
+.forge-intro { padding-bottom: var(--head-gap); }
+.forge { position: relative; background: var(--ink); color: var(--white); }
+.forge-stage { position: relative; }
+.forge-step { position: relative; display: grid; align-items: center; overflow: hidden; padding-block: clamp(64px, 10vw, 96px); }
+.forge-bg { position: absolute; inset: -6%; }
+.forge-bg img { width: 100%; height: 100%; object-fit: cover; filter: blur(34px) brightness(.45) saturate(1.1); transform: scale(1.08); }
+.forge-grid { position: relative; display: grid; gap: 32px; align-items: center; }
+.forge-photo { width: 100%; aspect-ratio: 1; margin: 0; overflow: hidden; border-radius: var(--radius); }
+.forge-photo img { width: 100%; height: 100%; object-fit: cover; }
+.forge-copy { max-width: 560px; }
+.forge-count { font: 400 clamp(18px, 1.6vw, 22px)/1 var(--serif); color: rgba(255, 255, 255, .6); font-variant-numeric: tabular-nums; }
+.forge-count b { font-weight: 400; color: var(--white); }
+.forge-ico { display: block; margin-top: clamp(24px, 3vw, 40px); color: var(--white); }
+.forge-copy h3 { margin-top: 18px; font: 400 clamp(30px, 3.1vw, 50px)/1.08 var(--serif); letter-spacing: -.02em; }
+.forge-text { max-width: 420px; margin-top: 18px; font-size: clamp(16px, 1.2vw, 18px); color: rgba(255, 255, 255, .82); }
+.forge-cta { margin-top: 32px; }
+.forge-progress { display: none; }
+@media (min-width: 640px) and (max-width: 999px) { .forge-photo { aspect-ratio: 16 / 10; } }
+@media (min-width: 1000px) {
+  html.motion .forge-stage { height: 100svh; min-height: 640px; overflow: hidden; }
+  html.motion .forge-step { position: absolute; inset: 0; padding: 0; }
+  .forge-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(48px, 6vw, 120px); padding-top: 48px; }
+  .forge-photo { justify-self: end; width: min(100%, 62svh, 560px); }
+  .forge-copy h3 { white-space: nowrap; }
+  html.motion .forge-progress { display: block; position: absolute; left: var(--gutter); right: var(--gutter); bottom: 32px; height: 2px; background: rgba(255, 255, 255, .15); }
+  .forge-progress span { display: block; height: 100%; background: var(--red); transform: scaleX(0); transform-origin: left; }
+}
 
 /* ---------- Why: support ---------- */
 .support-grid { display: grid; gap: 40px 64px; align-items: center; }
