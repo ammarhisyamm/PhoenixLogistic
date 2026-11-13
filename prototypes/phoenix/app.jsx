@@ -3,7 +3,7 @@ import { BrowserRouter, StaticRouter, Link, NavLink, Route, Routes, useLocation,
 import {
   AmazonLogo, ArrowLeft, ArrowRight, ArrowUpRight, BatteryCharging, BookBookmark, CaretDown, ChatCircleText, Check, Clock,
   Crosshair, EnvelopeSimple, FileText, Globe, Handshake, MapPin, Package, Phone, Plant, ShoppingCart, SolarPanel, Storefront,
-  Basket, Boat, Target, Truck, Warehouse, X,
+  Basket, Boat, GlobeHemisphereEast, Truck, Warehouse, X,
 } from '@phosphor-icons/react';
 import { company, importEmail, services, trackingDestination, transportEmail } from '../../src/data';
 import { coverThen, scrollToEl, useCursor, useHeaderScroll, usePageMotion } from './motion';
@@ -293,22 +293,47 @@ function AboutBlock({ image = photos.aboutHome }) {
   </section>;
 }
 
-function ServiceCard({ service, index }) {
-  const Ico = serviceIcons[service.slug];
+function ServiceCard({ service }) {
   const img = servicePhotos[service.slug].card;
   return <Link className="service-card" to={'/services/' + service.slug} data-cursor="View">
-    <div className="service-card-top">
-      <Ico size={28} weight="light" className="ico" aria-hidden="true" />
-      <span className="service-card-num">{String(index + 1).padStart(2, '0')}</span>
-      <ArrowUpRight size={20} className="service-card-arrow" aria-hidden="true" />
-    </div>
-    <h3 className="t-h4">{service.title}</h3>
+    <div className="service-card-media"><img src={img.src} srcSet={img.set} sizes="(max-width: 639px) 84vw, (max-width: 1023px) 46vw, 540px" alt="" loading="lazy" width="720" height="540" draggable="false" /></div>
+    <h3 className="service-card-title">{footerServiceNames[service.slug]}</h3>
     <p>{service.description}</p>
-    <div className="service-card-media"><img src={img.src} srcSet={img.set} sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 400px" alt="" loading="lazy" width="720" height="480" /></div>
+    <span className="service-card-link">View service <ArrowRight size={16} weight="bold" aria-hidden="true" /></span>
   </Link>;
 }
 
-function Cta({ lines = ["Let's plan your", 'next shipment.'], text = 'Send your origin, destination and freight details to our team.', image = photos.ctaRoad, red }) {
+// Six service cards on a rail that runs off the right edge; swipe, trackpad or the arrows move it.
+function ServiceRail() {
+  const rail = useRef(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+  const update = () => {
+    const el = rail.current;
+    if (!el) return;
+    setEdge({ start: el.scrollLeft < 8, end: el.scrollLeft + el.clientWidth > el.scrollWidth - 8 });
+  };
+  useEffect(() => { update(); addEventListener('resize', update); return () => removeEventListener('resize', update); }, []);
+  const move = d => {
+    const el = rail.current;
+    const card = el?.querySelector('.service-card');
+    if (!card) return;
+    el.scrollBy({ left: d * (card.offsetWidth + parseFloat(getComputedStyle(el).columnGap || 0)), behavior: 'smooth' });
+  };
+  return <>
+    <div className="wrap rail-head">
+      <SectionHead className="section-head-stack" lines={['Six services, one team', 'accountable for your freight']} text="From international arrivals and inbound preparation to storage, transport and delivery." />
+      <div className="rail-controls" data-fade="0.2">
+        <button type="button" className="round-btn" onClick={() => move(-1)} disabled={edge.start} aria-label="Previous services"><ArrowLeft size={22} /></button>
+        <button type="button" className="round-btn round-btn-dark" onClick={() => move(1)} disabled={edge.end} aria-label="More services"><ArrowRight size={22} /></button>
+      </div>
+    </div>
+    <div className="service-rail" ref={rail} onScroll={update} data-lenis-prevent-wheel="" data-stagger>
+      {orderedServices.map(s => <ServiceCard key={s.slug} service={s} />)}
+    </div>
+  </>;
+}
+
+function Cta({ lines = ["Let's plan your next shipment."], text = 'Send your origin, destination and freight details to our team.', image = photos.ctaRoad, red }) {
   return <section className={'cta' + (red ? ' cta-red' : '')}>
     {!red && <div className="cta-media"><img src={image.src} srcSet={image.set} sizes="100vw" alt="" loading="lazy" width="2200" height="1238" data-parallax="10" /></div>}
     <div className="wrap cta-inner">
@@ -445,13 +470,8 @@ function Home() {
 
     <AboutBlock />
 
-    <section className="section tint" id="services">
-      <div className="wrap">
-        <SectionHead lines={['Six services, one team', 'accountable for your freight']} text="From international arrivals and inbound preparation to storage, transport and delivery." />
-        <div className="service-grid" data-stagger>
-          {orderedServices.map((s, i) => <ServiceCard key={s.slug} service={s} index={i} />)}
-        </div>
-      </div>
+    <section className="section services-home" id="services">
+      <ServiceRail />
     </section>
 
     <section className="section depots">
@@ -460,7 +480,7 @@ function Home() {
           <Btn to="/contact#depots" variant="dark">Contact our depots</Btn>
         </SectionHead>
         <ul className="depot-list">
-          {depots.map(d => <li key={d.name} className="depot" data-focus>
+          {depots.map(d => <li key={d.name} className="depot">
             <span className="depot-line" data-line aria-hidden="true" />
             <h3 className="depot-name">{d.name}</h3>
             <p data-fade>{d.text}</p>
@@ -475,6 +495,7 @@ function Home() {
         <SectionHead lines={['Freight behind', 'Australian business.']} text="Operational experience across retail, e-commerce, renewable technology, FMCG and international imports." />
         <ul className="sector-grid" data-stagger>
           {sectors.map(({ name, icon: Ico }) => <li key={name} className="sector">
+            <svg className="sector-wave" viewBox="0 0 246 222" preserveAspectRatio="none" aria-hidden="true"><path d="M150 0h96v0c-30 70-60 95-110 95S60 70 20 95 0 160 10 222H70c-10-40 0-70 40-80s90 10 120-40c10-20 16-50 16-102z" /></svg>
             <span className="sector-icon"><Ico size={24} weight="regular" aria-hidden="true" /></span>
             <h3 className="t-h3">{name}</h3>
           </li>)}
@@ -482,7 +503,7 @@ function Home() {
       </div>
     </section>
 
-    <Cta red />
+    <Cta />
   </>;
 }
 
@@ -671,9 +692,9 @@ function About() {
     { title: 'Logistics', text: 'Connecting collections, transport and delivery with our fleet and operator network.', icon: Truck },
   ];
   const values = [
-    { title: 'Our mission', text: 'Connect international arrivals, warehousing and Australian transport through coordination and careful freight handling.', icon: Target },
+    { title: 'Our mission', text: 'Connect international arrivals, warehousing and Australian transport through coordination and careful freight handling.', icon: Crosshair },
     { title: 'How we grow', text: 'Build long-term relationships, strengthen our Australian operation and keep communication at the center of our service.', icon: Handshake },
-    { title: 'Our foundations', text: 'Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.', icon: Plant },
+    { title: 'Our foundations', text: 'Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.', icon: GlobeHemisphereEast },
   ];
   return <>
     <PageHero lines={['A family business.', 'An established operation.']} text="Australian-owned logistics with more than 20 years of cargo experience and a hands-on approach to every shipment." image={photos.aboutHero} alt="Two Phoenix team members walking through the warehouse racking" />
@@ -686,8 +707,7 @@ function About() {
           <p className="t-lead">Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
         </div>
       </div>
-      <div className="story-truck"><img src={photos.truck} alt="Phoenix fleet truck with a white cab and branded box" width="1200" height="675" loading="lazy" data-drive /></div>
-      <span className="story-road" aria-hidden="true" />
+      <div className="story-truck" data-truck><img src={photos.truck} alt="Phoenix fleet truck with a white cab and branded box" width="1200" height="675" loading="lazy" /></div>
     </section>
 
     <section className="section">
@@ -713,17 +733,18 @@ function About() {
         <div className="values-right">
           <Lines className="t-h2-lg" lines={['Carrier capability with the', 'care of a family business.']} />
           <p className="t-lead" data-fade="0.1">{aboutCopy}</p>
-          <ul className="value-list" data-stagger>
-            {values.map(({ title, text, icon: Ico }) => <li key={title} className="value">
-              <Ico size={28} weight="light" className="ico" aria-hidden="true" />
-              <div><h3 className="t-h3">{title}</h3><p>{text}</p></div>
+          <ul className="value-list">
+            {values.map(({ title, text, icon: Ico }) => <li key={title} className="value" data-fade>
+              <Ico size={40} weight="fill" className="ico" aria-hidden="true" />
+              <h3 className="t-h3">{title}</h3>
+              <p>{text}</p>
             </li>)}
           </ul>
         </div>
       </div>
     </section>
 
-    <Cta lines={['Lets plan your', 'next shipment.']} />
+    <Cta />
   </>;
 }
 
@@ -786,7 +807,7 @@ function Tracking() {
     <section className="section">
       <div className="wrap">
         <SectionHead lines={['From Depot to Delivery']} text="Sydney and Melbourne depots, Australian linehaul and established China supply-chain connections." />
-        <ol className="stage-grid" data-sequence>
+        <ol className="stage-grid" data-stagger>
           {stages.map((s, i) => <li key={s.title} className="stage">
             <span className="stage-num">{i + 1}</span>
             <h3 className="t-h3">{s.title}</h3>

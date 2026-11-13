@@ -25,7 +25,7 @@ export const photos = {
   toolsStrip: P + 'b5412d27a8d564954d2102a69a415143af0e8baa@1200.webp',
   aboutHome: ph('a4f5de75bd6c6d9945d9d1f2a9a65baba1157c36'),
   aboutBuilding: ph('d8b1a3477528c1eef1bdd725e52d2322d2862767', undefined, 1800),
-  ctaRoad: ph('7e9fabec41c8fc5c4052f96779ee0264474129da'),
+  ctaRoad: img(P + 'cta-aerial.webp', undefined, 2880),
   ctaTracking: ph('0372be51480b7767b2e1eb99b2680753d578da82'),
   whyHero: ph('b9421ed653f48f7d5999583db3bac97cf2915bfc'),
   aboutHero: ph('09445c1e0faf987225a9c223d03627222f866cd0'),

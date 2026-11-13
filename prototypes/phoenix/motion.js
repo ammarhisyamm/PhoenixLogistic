@@ -135,6 +135,12 @@ export function usePageMotion(key) {
         gsap.fromTo(el, { xPercent: 45 }, { xPercent: -6, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom 45%', scrub: 0.8 } });
       });
 
+      // The fleet truck rises and settles as the story section scrolls past (parallax).
+      gsap.utils.toArray('[data-truck]').forEach(el => {
+        const img = el.querySelector('img');
+        gsap.fromTo(img, { yPercent: 18, xPercent: 6, scale: 0.94 }, { yPercent: -8, xPercent: -4, scale: 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.6 } });
+      });
+
       // Rows near the middle of the screen are the active ones.
       gsap.utils.toArray('[data-focus]').forEach(el => {
         ScrollTrigger.create({ trigger: el, start: 'top 62%', end: 'bottom 38%', toggleClass: 'is-active' });
