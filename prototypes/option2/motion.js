@@ -199,7 +199,8 @@ export function usePageMotion(key) {
         const media = el.querySelector('.expand-media');
         const copy = el.querySelector('.expand-copy');
         const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top top', end: '+=120%', scrub: 0.6, pin: true } });
-        tl.fromTo(media, { clipPath: 'inset(18% 30% 18% 30%)' }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' })
+        const frame = innerWidth < 1000 ? 'inset(14% 7% 14% 7%)' : 'inset(18% 30% 18% 30%)';
+        tl.fromTo(media, { clipPath: frame }, { clipPath: 'inset(0% 0% 0% 0%)', ease: 'none' })
           .fromTo(media.querySelector('img'), { scale: 1.35 }, { scale: 1, ease: 'none' }, 0)
           .fromTo(copy, { opacity: 0, y: 60 }, { opacity: 1, y: 0, ease: 'none' }, 0.45);
       });

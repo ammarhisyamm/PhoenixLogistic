@@ -709,16 +709,19 @@ a.cell:hover .arrow { transform: none; }
   .stats { grid-template-columns: 1fr; }
   .stat, .stat + .stat { padding: 32px 0; border-left: 0; border-bottom: 1px solid var(--line); }
   .stats-dark .stat { border-color: #ffffff26; }
-  .drive { height: auto; min-height: 0; padding-top: 112px; padding-bottom: calc(40vw + 120px); }
+  .drive { height: auto; min-height: 0; padding-top: clamp(88px, 14vw, 120px); padding-bottom: calc(41vw + 96px); }
+  .drive-stage { position: static; }
+  .drive-copy { gap: 20px; }
   .drive-copy { position: relative; top: auto; grid-template-columns: minmax(0, 1fr); }
   .drive-copy > .drive-after { grid-column: 1; }
   .drive-head { grid-row: auto; }
   .drive-truck { width: 72vw; }
   .drive-speed { display: none; }
   .services-h-head { margin-bottom: 40px; }
-  .h-track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 16px; scrollbar-width: none; }
+  .h-track { width: auto; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); padding-bottom: 16px; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .h-track::after { content: ''; flex: none; width: 1px; }
   .h-card { flex: none; width: min(78vw, 360px); scroll-snap-align: start; }
-  .expand { height: 80svh; }
+  .expand { height: 100svh; }
   .stack-card { top: calc(84px + var(--i) * 10px); }
   .stack-inner { grid-template-columns: minmax(0, 1fr); grid-template-rows: 200px 1fr; height: 520px; }
   .stack-photo { order: -1; }
@@ -762,3 +765,23 @@ a.cell:hover .arrow { transform: none; }
   .h-card .photo { aspect-ratio: 4 / 3; }
 }
 @media (min-width: 1000px) and (max-height: 820px) { .h-card .photo { aspect-ratio: 16 / 9; } .h-card p { display: none; } }
+
+/* ---------- Responsive polish (audit) ---------- */
+.drive-speed { padding: 6px 10px; background: #2b2829; }
+.fcell small { font-size: 12px; }
+.radios input { width: 20px; height: 20px; margin: 0; }
+.radios label { min-height: 44px; padding-right: 8px; cursor: pointer; }
+@media (max-width: 999px) {
+  /* Comfortable tap targets for footer and inline links on touch screens. */
+  .fcell a, .fcell > p:not(.flabel) { margin-bottom: 0; padding-block: 9px; }
+  .text-link { min-height: 44px; }
+  .sector-more .text-link { margin-top: 8px; }
+}
+@media (max-width: 560px) {
+  .track-row { flex-wrap: wrap; }
+  .track input { flex: 1 1 100%; height: 56px; }
+  .track-go { flex: 1 1 100%; justify-content: space-between; height: 54px; }
+  .drive-truck { width: 84vw; }
+  .drive { padding-bottom: calc(48vw + 88px); }
+}
+@media (max-width: 999px) { .to-top { min-height: 44px; display: inline-flex; align-items: center; } }
