@@ -464,17 +464,20 @@ body { font-family: 'Manrope Variable', sans-serif; }
 .svc-mega { clip-path: inset(0 0 100% 0); }
 .svc-mega.is-open { clip-path: inset(0 0 0 0); }
 
-/* Buttons: soft corners, a quick lift on hover, a press state and a red glow on the primary. */
-.fig-button[data-variant], .fb-btn { transition: translate 220ms cubic-bezier(.23,1,.32,1), box-shadow 220ms cubic-bezier(.23,1,.32,1), scale 120ms ease-out; }
-.fig-button[data-variant="primary"] { box-shadow: 0 1px 0 #ffffff33 inset, 0 8px 18px -12px #e31b24b3; }
+/* Buttons: the Option 2 interaction (colour wipes up from the bottom, label rolls up, arrow nudges). No lift, no glow. */
+.fig-button[data-variant], .fb-btn { box-shadow: none !important; }
+.fig-button[data-variant]::after { transition: transform .5s cubic-bezier(.16,1,.3,1) !important; }
+.btn-roll { display: inline-grid; overflow: hidden; padding-block: .2em; margin-block: -.2em; vertical-align: top; }
+.btn-roll > span { grid-area: 1 / 1; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+.btn-roll > span + span { transform: translateY(150%); }
+.fig-button[data-variant] .fig-svg { transition: filter .4s cubic-bezier(.16,1,.3,1), translate .5s cubic-bezier(.16,1,.3,1) !important; }
 @media (hover: hover) and (pointer: fine) {
-  .fig-button[data-variant]:hover, .fb-btn:hover { translate: 0 -2px; box-shadow: 0 14px 26px -16px #23202299; }
-  .fig-button[data-variant="primary"]:hover { box-shadow: 0 1px 0 #ffffff33 inset, 0 16px 30px -14px #e31b24cc; }
-  .fig-header .fig-button[data-variant]:hover { box-shadow: 0 10px 22px -14px #000000b3; }
+  .fig-button:hover .btn-roll > span, .fig-button:focus-visible .btn-roll > span { transform: translateY(-150%); }
+  .fig-button:hover .btn-roll > span + span, .fig-button:focus-visible .btn-roll > span + span { transform: none; }
+  .fig-button[data-variant]:hover .fig-svg { translate: 4px 0; }
 }
-.fig-button[data-variant]:active, .fb-btn:active { translate: 0 0; scale: .97; box-shadow: none; }
 .fig-button[data-variant]:focus-visible, .fb-btn:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) { .fig-button[data-variant], .fb-btn { transition: none; } .fig-button[data-variant]:hover { translate: none; } }
+@media (prefers-reduced-motion: reduce) { .btn-roll > span, .fig-button[data-variant]::after { transition: none !important; } }
 
 /* Active navigation reads white on the dark bar, with a white underline. */
 .fig-header a.fig-text[aria-current="page"], .services-menu summary[aria-current="location"] > span { text-decoration-color: #fff; }
@@ -562,3 +565,35 @@ body { font-family: 'Manrope Variable', sans-serif; }
   .fig-text.fig-subheading:not(.fig-number):not(.fig-footer .fig-subheading):not(.fig-button *) { font-size: 28px !important; line-height: 1.2 !important; }
   .fb-network-places b, .fb-partner-row .fb-partner-title { font-size: 28px; line-height: 1.2; }
 }
+
+/* No heavy drop shadows (owner): flat surfaces, separation comes from colour and hairlines. */
+[data-scrolled] .fig-header, [data-scrolled] .mobile-header, .fig-root > .fig-header { box-shadow: none !important; }
+[data-layer="187:434"], .fb-network-live, .fig-button, .fig-button > .paint-group, .fig-button > .paint-group > * { box-shadow: none !important; }
+.svc-mega { box-shadow: 0 0 0 1px #e6dfdd !important; }
+[data-fill-card="tracking"][data-stage-active], .fb-value:hover { box-shadow: none !important; }
+
+/* Home switch (Track a shipment / Quick quote): square tabs. */
+[data-layer="187:438"] > .fig-button.fig-button.fig-button, [data-layer="187:438"] > .fig-button.fig-button > .paint-group,
+[data-layer="187:438"] > .fig-button.fig-button > .paint-group > *, [data-layer="187:438"] > .fig-button.fig-button::after { border-radius: 0 !important; }
+
+/* Header bar: 18px corners (owner: 16–20px). */
+@media (min-width: 1000px) {
+  .fig-root .fig-header.fig-header, .fig-root .fig-header.fig-header > .paint-group, .fig-header > .paint-group > * { border-radius: 18px !important; }
+}
+@media (max-width: 999px) { .mobile-header { border-radius: 16px !important; } }
+
+/* Titles: Geist SemiBold, a touch lighter than bold, in brand ink rather than pure black. */
+.fig-text:is(.fig-display, .fig-heading, .fig-subheading):not(.fig-number):not(.fig-stat-value):not(.fig-button *),
+.fb-network-places b, .fb-partner-title, .related-card-label { font-weight: 560 !important; }
+.fig-text:is(.fig-heading, .fig-subheading):not(.fig-number) { -webkit-font-smoothing: antialiased; }
+
+/* Network map, lighter: land is a pre-rendered image, pins and routes are one small SVG, and the pulses are
+   composited HTML rings. No looping SVG animation, so entering the section stays smooth. */
+.fb-network-stage { position: absolute; top: 0; bottom: 0; left: 50%; aspect-ratio: 700 / 990; height: 100%; translate: -50% 0; }
+.fb-network-stage > .fb-network-map, .fb-network-stage > .fb-network-land { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fb-pulse-dot { position: absolute; width: 36px; height: 36px; margin: -18px 0 0 -18px; border-radius: 50%; background: var(--red); opacity: 0; pointer-events: none; transition: opacity .3s; }
+.fb-pulse-dot.is-dim { visibility: hidden; }
+@media (prefers-reduced-motion: no-preference) { .fb-pulse-dot { animation: fb-pulse-dot 2.4s ease-out infinite; will-change: transform, opacity; } }
+@keyframes fb-pulse-dot { from { transform: scale(.4); opacity: .4; } to { transform: scale(1.6); opacity: 0; } }
+.fb-route-sea { animation: none !important; }
+.fb-network-frame { contain: layout paint; }

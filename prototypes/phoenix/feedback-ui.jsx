@@ -57,7 +57,6 @@ const PLACES = [
   { id: 'China', title: 'China', text: 'Air and sea freight partners', routes: ['China'] },
 ];
 // Trucks that loop along routes so the map reads as a live network.
-const TRAFFIC = [[0, 7], [2, 9], [4, 11], [6, 8], [3, 10], [7, 12]];
 
 // Pause looping CSS and SVG animations while their block is off screen (keeps scrolling smooth).
 function useOffscreenPause(ref) {
@@ -97,37 +96,21 @@ function NetworkMap() {
         </button>
       </li>)}
     </ul>
-    <div className="fb-network-frame">
-      <svg className="fb-network-map fb-network-land" viewBox="230 -20 700 990" aria-hidden="true">
-        <defs>
-          <linearGradient id="fb-fade-x" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".2" stopColor="#fff" /><stop offset=".86" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
-          <linearGradient id="fb-fade-y" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".14" stopColor="#fff" /><stop offset=".9" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
-          <mask id="fb-mask-x" maskUnits="userSpaceOnUse" x="230" y="-20" width="700" height="990"><rect x="230" y="-20" width="700" height="990" fill="url(#fb-fade-x)" /></mask>
-          <mask id="fb-mask" maskUnits="userSpaceOnUse" x="230" y="-20" width="700" height="990"><rect x="230" y="-20" width="700" height="990" fill="url(#fb-fade-y)" /></mask>
-        </defs>
-        <g mask="url(#fb-mask)"><g mask="url(#fb-mask-x)">
-          <path d={MAP.rest} className="fb-land" />
-          <path d={MAP.cn} className="fb-land fb-land-key" />
-          <path d={MAP.au} className="fb-land fb-land-au" />
-        </g></g>
-      </svg>
+    <div className="fb-network-frame"><div className="fb-network-stage">
+      <img className="fb-network-land" src="/option2/media/network-land.webp" alt="" width="700" height="990" loading="lazy" decoding="async" />
+      {['China', 'Sydney', 'Melbourne'].map(name => <span key={name} className={'fb-pulse-dot' + (lit(name) ? '' : ' is-dim')} style={{ left: (CITIES[name][0] - 230) / 7 + '%', top: (CITIES[name][1] + 20) / 9.9 + '%' }} aria-hidden="true" />)}
       <svg className="fb-network-map" viewBox="230 -20 700 990" role="img" aria-label="Map of China and Australia with Phoenix road routes across Australia and a sea route from China">
         <path id="fb-sea" d={arc(CITIES.China, CITIES.Sydney, -.18)} className={'fb-route fb-route-sea' + (lit('China') || lit('Sydney') ? '' : ' is-dim')} />
         {ROUTES.map(([a, b], i) => <path key={a + b} id={'fb-r' + i} d={arc(CITIES[a], CITIES[b])} className={'fb-route' + (routeLit([a, b]) ? '' : ' is-dim')} pathLength="1" style={{ '--i': i }} />)}
-        {TRAFFIC.map(([route, dur], k) => <circle key={k} r="5" className="fb-traffic">
-          <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(k * 1.3) + 's'} keyPoints={k % 2 ? '1;0' : '0;1'} keyTimes="0;1" calcMode="linear"><mpath href={'#fb-r' + route} /></animateMotion>
-        </circle>)}
-        <g className="fb-ship"><animateMotion dur="16s" repeatCount="indefinite" rotate="auto"><mpath href="#fb-sea" /></animateMotion><rect x="-11" y="-4" width="22" height="8" rx="3" /></g>
         {Object.entries(CITIES).map(([name, [x, y]]) => {
           const key = ['Sydney', 'Melbourne', 'China'].includes(name);
           return <g key={name} transform={`translate(${x} ${y})`} className={'fb-pin' + (key ? ' fb-pin-key' : '') + (lit(name) ? '' : ' is-dim')}>
-            {key && <circle r="18" className="fb-pulse" />}
             <circle r={key ? 9 : 5} />
             <text x={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? -14 : 14} y="5" textAnchor={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? 'end' : 'start'} className={key ? '' : 'fb-pin-minor'}>{name}</text>
           </g>;
         })}
       </svg>
-    </div>
+    </div></div>
   </div>;
 }
 
@@ -140,7 +123,7 @@ function PartnerPanel() {
         <figcaption>Linehaul fleet · Sydney ⇄ Melbourne</figcaption>
       </figure>
       <div className="fb-partner-row">
-        <img src="/phoenix-prototype/a4f5de75bd6c6d9945d9d1f2a9a65baba1157c36.webp" alt="Forklift unloading freight at the Phoenix depot" loading="lazy" />
+        <img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" />
         <div className="fb-partner-card">
           <span className="fb-partner-logo"><AmazonMark size={40} /></span>
           <div>

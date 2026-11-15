@@ -1,6 +1,17 @@
 import { services } from '../../src/data';
 import { photos } from '../option2/photos';
 
+// How-we-work photos: three different scenes per service, none repeating the page's cover photo (owner, round 4).
+const card = name => `/option2/photos/${name}@1200.webp`;
+const DETAIL_PHOTOS = {
+  'amazon-fba-logistics': ['warehouse-109', 'drone-05', 'warehouse-139'],
+  'warehousing-and-3pl': ['warehouse-81', 'warehouse-96', 'warehouse-131'],
+  'road-freight-and-transport': ['rollers-02', 'night-08', 'rollers-01'],
+  'international-freight': ['warehouse-145', 'warehouse-144', 'drone-11'],
+  'customs-clearance': ['warehouse-136', 'warehouse-127', 'warehouse-73'],
+  'dangerous-goods': ['warehouse-87', 'warehouse-50', 'warehouse-37'],
+};
+
 const servicePaths = new Map(services.map(service => ['/services/' + service.slug, service]));
 
 export function serviceForPath(path) {
@@ -25,7 +36,7 @@ export function applyServiceTemplate(tree, service) {
   }
   const cover = photos.serviceHero[service.slug];
   // Each service gets its own three How-we-work photos (client asked for the repeated ones to change).
-  const detailPhotos = photos.serviceDetails[service.slug];
+  const detailPhotos = (DETAIL_PHOTOS[service.slug] ?? []).map(card).concat(photos.serviceDetails[service.slug]).slice(0, 3);
   const images = {
     '209:446': photos.services[related[0].slug],
     '209:451': photos.services[related[1].slug],
