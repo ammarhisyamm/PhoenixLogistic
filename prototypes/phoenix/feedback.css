@@ -4,7 +4,6 @@
 .fig-text { font-feature-settings: 'ss01'; }
 .fig-heading, .fig-subheading { letter-spacing: -.025em; }
 /* Manrope is wider than the serif it replaces; scale display copy so it keeps the Figma line breaks. */
-.fig-text.fig-display { font-size: calc(var(--text-size) * .9); }
 [data-layer="193:858"], [data-layer="193:857"] { height: auto !important; }
 
 /* ---------- Header: rounded, shorter, matte black ---------- */
@@ -341,3 +340,14 @@ body { font-family: 'Manrope Variable', sans-serif; }
   .fb-about-stat b { min-width: 4.2ch; }
 }
 @media (max-width: 999px) { .fb-live { width: fit-content !important; margin-top: 12px; } }
+
+/* Owner, round 2b: headings in Geist SemiBold, -1px tracking; body copy stays Manrope. */
+.fig-text:is(.fig-display, .fig-heading),
+[data-name="Proof / Number"], .fig-stat-value,
+.fb-about-copy h2, .fb-about-stat b, .fb-values2-head h2, .fb-value h3, .fb-values2-facts dt,
+.fb-network-places b, .fb-partner-title, .related-card-label, .fb-quote h2, .fb-quote h3 {
+  font-family: 'Geist Variable', sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -1px !important;
+}
+.fig-text.fig-stat-value { overflow: visible !important; white-space: nowrap; }

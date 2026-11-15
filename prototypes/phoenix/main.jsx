@@ -3,6 +3,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/oswald';
 import '@fontsource-variable/manrope';
+import '@fontsource-variable/geist';
 import '@fontsource/sawarabi-mincho/latin-400.css';
 import '@fontsource/dm-serif-display/400.css';
 import { Design } from './design';
