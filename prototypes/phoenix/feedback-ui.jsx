@@ -21,11 +21,14 @@ export function HeroVideo() {
     const v = video.current;
     if (!v) return;
     if (reduced()) { v.pause(); return; }
-    v.play().catch(() => {});
+    // Play only while the hero is on screen; decoding off screen costs frames elsewhere on the page.
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); });
+    io.observe(v);
+    return () => io.disconnect();
   }, []);
+  // H.264 first: hardware-decoded almost everywhere (AV1 falls back to slow software decoding on many laptops).
   return <span className="hero-video" aria-hidden="true">
     <video ref={video} muted loop playsInline preload="metadata" poster="/option2/media/cine-poster.webp">
-      <source src="/option2/media/cine-720.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
       <source src="/option2/media/cine-540.mp4" type="video/mp4" />
     </video>
     <span className="hero-video-shade" />
@@ -56,6 +59,20 @@ const PLACES = [
 // Trucks that loop along routes so the map reads as a live network.
 const TRAFFIC = [[0, 7], [2, 9], [4, 11], [6, 8], [3, 10], [7, 12]];
 
+// Pause looping CSS and SVG animations while their block is off screen (keeps scrolling smooth).
+function useOffscreenPause(ref) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      el.toggleAttribute('data-offscreen', !e.isIntersecting);
+      el.querySelectorAll('svg').forEach(svg => { try { e.isIntersecting ? svg.unpauseAnimations() : svg.pauseAnimations(); } catch { /* not an SMIL root */ } });
+    }, { rootMargin: '200px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+}
+
 function NetworkMap() {
   const [focus, setFocus] = useState(null);
   const lit = name => !focus || PLACES.find(p => p.id === focus).routes.includes(name);
@@ -67,6 +84,7 @@ function NetworkMap() {
     io.observe(root.current);
     return () => io.disconnect();
   }, []);
+  useOffscreenPause(root);
   return <div ref={root} className={'fb-network' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
     <p className="fb-network-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
     <ul className="fb-network-places" aria-label="Where we operate">
@@ -80,7 +98,7 @@ function NetworkMap() {
       </li>)}
     </ul>
     <div className="fb-network-frame">
-      <svg className="fb-network-map" viewBox="230 -20 700 990" role="img" aria-label="Map of China and Australia with Phoenix road routes across Australia and a sea route from China">
+      <svg className="fb-network-map fb-network-land" viewBox="230 -20 700 990" aria-hidden="true">
         <defs>
           <linearGradient id="fb-fade-x" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".2" stopColor="#fff" /><stop offset=".86" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
           <linearGradient id="fb-fade-y" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".14" stopColor="#fff" /><stop offset=".9" stopColor="#fff" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
@@ -92,6 +110,8 @@ function NetworkMap() {
           <path d={MAP.cn} className="fb-land fb-land-key" />
           <path d={MAP.au} className="fb-land fb-land-au" />
         </g></g>
+      </svg>
+      <svg className="fb-network-map" viewBox="230 -20 700 990" role="img" aria-label="Map of China and Australia with Phoenix road routes across Australia and a sea route from China">
         <path id="fb-sea" d={arc(CITIES.China, CITIES.Sydney, -.18)} className={'fb-route fb-route-sea' + (lit('China') || lit('Sydney') ? '' : ' is-dim')} />
         {ROUTES.map(([a, b], i) => <path key={a + b} id={'fb-r' + i} d={arc(CITIES[a], CITIES[b])} className={'fb-route' + (routeLit([a, b]) ? '' : ' is-dim')} pathLength="1" style={{ '--i': i }} />)}
         {TRAFFIC.map(([route, dur], k) => <circle key={k} r="5" className="fb-traffic">
@@ -389,9 +409,11 @@ function MiniContainer() {
   </svg>;
 }
 function Conveyor() {
+  const root = useRef(null);
+  useOffscreenPause(root);
   const items = ['box', 'tall', 'dg', 'container', 'box', 'pallet', 'dg', 'tall', 'container', 'box'];
   const draw = t => t === 'dg' ? <DgParcel /> : t === 'container' ? <MiniContainer /> : t === 'pallet' ? <WrappedPallet /> : t === 'tall' ? <Carton w={52} h={70} fragile /> : <Carton />;
-  return <div className="fb-conveyor" aria-hidden="true">
+  return <div ref={root} className="fb-conveyor" aria-hidden="true">
     <svg width="0" height="0" style={{ position: 'absolute' }}><defs>
       <linearGradient id="cb6456" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9b384" /><stop offset=".55" stopColor="#c69a66" /><stop offset="1" stopColor="#a87d4e" /></linearGradient>
       <linearGradient id="fb-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".28" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
@@ -513,22 +535,27 @@ function ServicesPin() {
     if (!section || !track) return;
     const desktop = matchMedia('(min-width: 1000px)');
     let raf = 0;
+    // The stage itself is CSS sticky (no scroll-linked transforms); only the row's scrollLeft follows the page.
     const update = () => {
       raf = 0;
-      if (!desktop.matches) { section.style.removeProperty('--pin'); return; }
+      if (!desktop.matches) return;
       const r = section.getBoundingClientRect();
-      const zoom = r.width / section.offsetWidth || 1; // the canvas is zoomed to the viewport
+      const zoom = r.width / section.offsetWidth || 1;
       const extra = SERVICES_PIN * zoom, content = r.height - extra;
-      const start = Math.max(0, content - innerHeight); // pin once the whole row is on screen
+      const start = Math.max(0, content - innerHeight);
       const pinned = Math.min(extra, Math.max(0, -r.top - start));
-      section.style.setProperty('--pin', pinned / zoom + 'px');
-      track.scrollLeft = (pinned / extra) * (track.scrollWidth - track.clientWidth);
+      const max = track.scrollWidth - track.clientWidth;
+      const left = Math.round((pinned / extra) * max);
+      if (Math.abs(track.scrollLeft - left) > .5) track.scrollLeft = left;
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
-    update();
-    addEventListener('scroll', onScroll, { passive: true });
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { addEventListener('scroll', onScroll, { passive: true }); update(); }
+      else removeEventListener('scroll', onScroll);
+    });
+    io.observe(section);
     addEventListener('resize', onScroll);
-    return () => { removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll); cancelAnimationFrame(raf); section.style.removeProperty('--pin'); };
+    return () => { io.disconnect(); removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll); cancelAnimationFrame(raf); };
   }, []);
   return <span ref={ref} className="fb-services-pin" hidden />;
 }

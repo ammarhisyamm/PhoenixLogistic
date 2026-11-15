@@ -207,7 +207,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
      id==='187:441'&&ctx.quickQuote?<QuoteStarter/>:
      id==='67:1289'?<div className="fig-radios"><label><input name="frequency" type="radio" value="One-off shipment" defaultChecked/> One-off shipment</label><label><input name="frequency" type="radio" value="Regular contract"/> Regular contract</label></div>:
      id==='119:677'?<ProcessCards n={n}/>:
-     <State.Provider value={scope}>{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
+     <State.Provider value={scope}>{id==='187:477'?<div className="pin-stage">{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</div>:children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
    </>}
    {n.after&&<FeedbackPart name={n.after} n={n} page={ctx.page}/>}
    {relatedCard&&<span className="related-card-label" aria-hidden="true">{n.linkLabel}</span>}

@@ -527,8 +527,38 @@ body { font-family: 'Manrope Variable', sans-serif; }
 
 /* Home services: heading and card row ride down with the scroll while the row moves sideways. */
 @media (min-width: 1000px) {
-  [data-layer="187:477"] > .fig-node { translate: 0 var(--pin, 0px); }
+  [data-layer="187:477"] { overflow: clip !important; }
+  [data-layer="187:477"] > .pin-stage { position: sticky; top: min(0px, calc(100vh / tan(atan2(100cqw, 1440px)) - 884px)); width: 100%; height: 884px; }
   [data-layer="187:477"] [data-layer="323:1069"] { scroll-snap-type: none !important; scroll-behavior: auto !important; }
 }
 @media (min-width: 1000px) { [data-layer="187:478"] { width: 720px !important; } }
 @media (max-width: 999px) { .fb-partner .fb-partner-row img { display: none; } }
+@media (max-width: 999px) { [data-layer="187:477"] > .pin-stage { display: contents; } }
+/* The page root clips instead of hiding overflow, so it is not a scroll container and sticky works inside it. */
+@media (min-width: 1000px) { .fig-root.fig-root { overflow: clip !important; } }
+
+/* ---------- Performance (round 4) ---------- */
+.fb-network-frame .fb-network-map { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fb-network-land { pointer-events: none; }
+[data-offscreen], [data-offscreen] * { animation-play-state: paused !important; }
+/* Moving freight: no per-frame filters; each belt is one composited layer. */
+.fb-parcel, .fb-truck .fb-pallet { filter: none !important; }
+.fb-belt-track, .fb-truck-vehicle, .fb-truck .fb-pallet { will-change: transform; }
+.fb-belt-rollers { inset: 4px -22px 4px 0; will-change: transform; }
+@media (prefers-reduced-motion: no-preference) { .fb-belt-rollers { animation: fb-rollers-x .9s linear infinite; } }
+@keyframes fb-rollers-x { to { transform: translateX(-22px); } }
+/* Header: a solid matte bar instead of a live backdrop blur over video and photos. */
+.fig-root .fig-header.fig-header > .paint-group, .mobile-header { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.fig-root .fig-header.fig-header > .paint-group > .paint:not(.image-paint):not(.fig-stroke) { background: #1b191af2 !important; }
+@media (max-width: 999px) { .mobile-header { background: #1b191af2 !important; } }
+
+/* ---------- One type scale for every title (round 4) ----------
+   Page hero 64 · section title 48 · card / block title 28, all Geist SemiBold. */
+.fig-text.fig-subheading:not(.fig-number):not(.fig-button *), .fb-network-places b, .fb-partner-title, .related-card-label {
+  font-family: 'Geist Variable', sans-serif !important; font-weight: 600 !important; letter-spacing: -.5px !important;
+}
+@media (min-width: 1000px) {
+  .fig-text.fig-heading:not(.fig-hero .fig-heading) { font-size: 48px !important; line-height: 1.15 !important; letter-spacing: -1.2px !important; }
+  .fig-text.fig-subheading:not(.fig-number):not(.fig-footer .fig-subheading):not(.fig-button *) { font-size: 28px !important; line-height: 1.2 !important; }
+  .fb-network-places b, .fb-partner-row .fb-partner-title { font-size: 28px; line-height: 1.2; }
+}
