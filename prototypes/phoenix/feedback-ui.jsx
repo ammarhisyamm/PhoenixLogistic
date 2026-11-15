@@ -47,29 +47,65 @@ const arc = ([x1, y1], [x2, y2], bend = .12) => {
   return `M${x1} ${y1}Q${mx - dy * bend} ${my + dx * bend} ${x2} ${y2}`;
 };
 
+const PLACES = [
+  { id: 'Sydney', title: 'Sydney', text: 'Head depot · Wetherill Park, NSW', routes: ['Sydney'] },
+  { id: 'Melbourne', title: 'Melbourne', text: 'Warehouse · Truganina, VIC', routes: ['Melbourne'] },
+  { id: 'Australia', title: 'Australia-wide', text: 'Metro, interstate and linehaul', routes: ['Sydney', 'Melbourne', 'Brisbane', 'Adelaide', 'Perth', 'Darwin', 'Townsville', 'Alice Springs'] },
+  { id: 'China', title: 'China', text: 'Air and sea freight partners', routes: ['China'] },
+];
+// Trucks that loop along routes so the map reads as a live network.
+const TRAFFIC = [[0, 7], [2, 9], [4, 11], [6, 8], [3, 10], [7, 12]];
+
 function NetworkMap() {
-  return <div className="fb-network">
+  const [focus, setFocus] = useState(null);
+  const lit = name => !focus || PLACES.find(p => p.id === focus).routes.includes(name);
+  const routeLit = ([a, b]) => !focus || (focus === 'Australia' ? true : [a, b].includes(focus));
+  const root = useRef(null);
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setDrawn(true); io.disconnect(); } }, { threshold: .25 });
+    io.observe(root.current);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={root} className={'fb-network' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
+    <p className="fb-network-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
     <ul className="fb-network-places" aria-label="Where we operate">
-      <li><b>Sydney</b><span>Head depot · Wetherill Park</span></li>
-      <li><b>Melbourne</b><span>Truganina, VIC</span></li>
-      <li><b>Australia-wide</b><span>Metro, interstate and linehaul</span></li>
-      <li><b>China</b><span>Air and sea freight partners</span></li>
+      {PLACES.map(place => <li key={place.id}>
+        <button type="button" className={focus === place.id ? 'is-on' : ''} aria-pressed={focus === place.id}
+          onMouseEnter={() => setFocus(place.id)} onMouseLeave={() => setFocus(null)}
+          onFocus={() => setFocus(place.id)} onBlur={() => setFocus(null)}
+          onClick={() => setFocus(f => f === place.id ? null : place.id)}>
+          <b>{place.title}</b><span>{place.text}</span>
+        </button>
+      </li>)}
     </ul>
-    <svg className="fb-network-map" viewBox="270 20 610 940" role="img" aria-label="Map of China and Australia with Phoenix routes from Sydney and Melbourne across Australia and a sea route from China">
-      <path d={MAP.rest} className="fb-land" />
-      <path d={MAP.cn} className="fb-land fb-land-key" />
-      <path d={MAP.au} className="fb-land fb-land-key" />
-      <path d={arc(CITIES.China, CITIES.Sydney, -.18)} className="fb-route fb-route-sea" pathLength="1" />
-      {ROUTES.map(([a, b], i) => <path key={a + b} d={arc(CITIES[a], CITIES[b])} className="fb-route" pathLength="1" style={{ '--i': i }} />)}
-      {Object.entries(CITIES).map(([name, [x, y]]) => {
-        const key = ['Sydney', 'Melbourne', 'China'].includes(name);
-        return <g key={name} transform={`translate(${x} ${y})`} className={key ? 'fb-pin fb-pin-key' : 'fb-pin'}>
-          {key && <circle r="18" className="fb-pulse" />}
-          <circle r={key ? 8 : 5} />
-          {key && <text x={name === 'Melbourne' ? -14 : 14} y="5" textAnchor={name === 'Melbourne' ? 'end' : 'start'}>{name}</text>}
-        </g>;
-      })}
-    </svg>
+    <div className="fb-network-frame">
+      <svg className="fb-network-map" viewBox="230 -20 700 990" role="img" aria-label="Map of China and Australia with Phoenix road routes across Australia and a sea route from China">
+        <defs>
+          <radialGradient id="fb-fade" cx="55%" cy="55%" r="70%"><stop offset="72%" stopColor="#fff" /><stop offset="100%" stopColor="#fff" stopOpacity="0" /></radialGradient>
+          <mask id="fb-mask"><rect x="230" y="-20" width="700" height="990" fill="url(#fb-fade)" /></mask>
+        </defs>
+        <g mask="url(#fb-mask)">
+          <path d={MAP.rest} className="fb-land" />
+          <path d={MAP.cn} className="fb-land fb-land-key" />
+          <path d={MAP.au} className="fb-land fb-land-au" />
+        </g>
+        <path id="fb-sea" d={arc(CITIES.China, CITIES.Sydney, -.18)} className={'fb-route fb-route-sea' + (lit('China') || lit('Sydney') ? '' : ' is-dim')} />
+        {ROUTES.map(([a, b], i) => <path key={a + b} id={'fb-r' + i} d={arc(CITIES[a], CITIES[b])} className={'fb-route' + (routeLit([a, b]) ? '' : ' is-dim')} pathLength="1" style={{ '--i': i }} />)}
+        {TRAFFIC.map(([route, dur], k) => <circle key={k} r="5" className="fb-traffic">
+          <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(k * 1.3) + 's'} keyPoints={k % 2 ? '1;0' : '0;1'} keyTimes="0;1" calcMode="linear"><mpath href={'#fb-r' + route} /></animateMotion>
+        </circle>)}
+        <g className="fb-ship"><animateMotion dur="16s" repeatCount="indefinite" rotate="auto"><mpath href="#fb-sea" /></animateMotion><rect x="-11" y="-4" width="22" height="8" rx="3" /></g>
+        {Object.entries(CITIES).map(([name, [x, y]]) => {
+          const key = ['Sydney', 'Melbourne', 'China'].includes(name);
+          return <g key={name} transform={`translate(${x} ${y})`} className={'fb-pin' + (key ? ' fb-pin-key' : '') + (lit(name) ? '' : ' is-dim')}>
+            {key && <circle r="18" className="fb-pulse" />}
+            <circle r={key ? 9 : 5} />
+            <text x={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? -14 : 14} y="5" textAnchor={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? 'end' : 'start'} className={key ? '' : 'fb-pin-minor'}>{name}</text>
+          </g>;
+        })}
+      </svg>
+    </div>
   </div>;
 }
 
@@ -111,21 +147,20 @@ function StageRoute() {
     });
   }, [stage]);
   return <div ref={root} className="fb-route-bar" style={{ '--stage': stage }} aria-hidden="true">
-    <span className="fb-route-line"><span className="fb-route-fill" /></span>
+    <span className="fb-route-line"><span className="fb-route-lane" /><span className="fb-route-fill" /></span>
     {STAGE_CARDS.map((id, i) => <span key={id} className={'fb-route-stop' + (i <= stage ? ' is-done' : '')} style={{ '--n': i }} />)}
-    <span className="fb-route-truck">
-      <svg viewBox="0 0 40 24"><path d="M1 4h23v15H1z" fill="#e31b24"/><path d="M24 9h8l7 6v4H24z" fill="#232022"/><circle cx="8" cy="20" r="3.3" fill="#232022" stroke="#fff" strokeWidth="1.4"/><circle cx="31" cy="20" r="3.3" fill="#232022" stroke="#fff" strokeWidth="1.4"/></svg>
-    </span>
+    <span className="fb-route-truck"><img src="/option2/media/truck-top@360.webp" alt="" /></span>
   </div>;
 }
 
 // About: pallets go in, the curtain closes, the truck drives off, all on scroll.
 const CURTAIN = [[41.6, 6], [98.9, 30.5], [98.9, 67.3], [41.6, 69.2]]; // trailer side in % of truck.webp
 function curtainClip(p) {
+  // The curtain is pulled shut from the back of the trailer (right) towards the cab.
   const [tl, tr, br, bl] = CURTAIN;
-  const x = tl[0] + (tr[0] - tl[0]) * p;
-  const yt = tl[1] + (tr[1] - tl[1]) * p, yb = bl[1] + (br[1] - bl[1]) * p;
-  return `polygon(${tl[0]}% ${tl[1]}%, ${x}% ${yt}%, ${x}% ${yb}%, ${bl[0]}% ${bl[1]}%)`;
+  const x = tr[0] - (tr[0] - tl[0]) * p;
+  const yt = tr[1] - (tr[1] - tl[1]) * p, yb = br[1] - (br[1] - bl[1]) * p;
+  return `polygon(${x}% ${yt}%, ${tr[0]}% ${tr[1]}%, ${br[0]}% ${br[1]}%, ${x}% ${yb}%)`;
 }
 function TruckLoad() {
   const stage = useRef(null);
@@ -138,12 +173,12 @@ function TruckLoad() {
     const set = p => {
       const load = Math.min(1, p / .4), close = Math.min(1, Math.max(0, (p - .4) / .25)), drive = Math.max(0, (p - .7) / .3);
       pallets.forEach((pl, i) => {
-        const t = Math.min(1, Math.max(0, load * 3 - i));
-        pl.style.transform = `translate(${(1 - t) * -180}%, 0)`;
+        const t = Math.min(1, Math.max(0, load * 3 - (2 - i))); // front pallet first, loaded from the back
+        pl.style.transform = `translate(${(1 - t) * 220}%, 0)`;
         pl.style.opacity = String(t);
       });
       curtain.style.clipPath = curtainClip(close);
-      vehicle.style.transform = `translateX(${drive * drive * 70}vw)`;
+      vehicle.style.transform = `translateX(${drive * drive * -75}vw)`; // cab faces left, so forward is left
       vehicle.style.opacity = String(1 - Math.max(0, drive - .6) / .4);
     };
     if (reduced()) { set(.66); return; }
@@ -189,7 +224,7 @@ function ValuesPhoto() {
 function IncludePulse() {
   const root = useRef(null);
   useEffect(() => {
-    const list = root.current?.parentElement;
+    const list = root.current?.closest('[data-layer="61:152"]')?.querySelector('[data-layer="61:450"]');
     if (!list) return;
     if (reduced()) { list.setAttribute('data-live', ''); return; }
     const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { list.setAttribute('data-live', ''); io.disconnect(); } }, { threshold: .35 });
@@ -228,9 +263,87 @@ function QuoteForm() {
   </div>;
 }
 
+
+// Home / Why: About Phoenix as a bento (client: the section felt empty).
+const STATS = [['1,200+', 'containers handled a year'], ['960k+', 'boxes processed a year'], ['20+', 'years in cargo and logistics']];
+function AboutBento() {
+  return <div className="fb-about">
+    <div className="fb-about-copy">
+      <h2>About Phoenix</h2>
+      <p>Experience carried forward into a new chapter. Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience.</p>
+      <p>Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
+      <a className="fb-btn" href="/about">About us <span aria-hidden="true">→</span></a>
+    </div>
+    <figure className="fb-about-hero"><img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" /><figcaption>Wetherill Park, Sydney · Head depot</figcaption></figure>
+    <div className="fb-about-amazon">
+      <span className="fb-partner-logo"><AmazonMark size={40} /></span>
+      <p className="fb-partner-title">Amazon Partner Carrier</p>
+      <p className="fb-partner-text">Approved for small-parcel deliveries into fulfilment centres across NSW, QLD and VIC.</p>
+    </div>
+    {STATS.map(([n, l]) => <div key={n} className="fb-about-stat"><b>{n}</b><span>{l}</span></div>)}
+    <figure className="fb-about-wide"><img src={card('rollers-03')} alt="Phoenix curtainsider truck on the motorway at golden hour" loading="lazy" /></figure>
+  </div>;
+}
+
+// About: Our Values as photo cards with a fact strip (client: layout felt sparse).
+const VALUES = [
+  ['Our mission', 'Connect international arrivals, warehousing and Australian transport through coordination and careful freight handling.', 'warehouse-136'],
+  ['How we grow', 'Build long-term relationships, strengthen our Australian operation and keep communication at the centre of our service.', 'warehouse-101'],
+  ['Our foundations', 'Teams in Sydney and Melbourne, an owned fleet, contracted operators and established China–Australia trade connections.', 'rollers-01'],
+];
+function Values() {
+  return <div className="fb-values2">
+    <div className="fb-values2-head">
+      <p className="fb-values2-label">Our values</p>
+      <h2>Carrier capability with the care of a family business.</h2>
+      <p>Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience.</p>
+    </div>
+    <div className="fb-values2-grid">
+      {VALUES.map(([t, d, img], i) => <article key={t} className="fb-value">
+        <img src={card(img)} alt="" loading="lazy" />
+        <div><span className="fb-value-n">0{i + 1}</span><h3>{t}</h3><p>{d}</p></div>
+      </article>)}
+    </div>
+    <dl className="fb-values2-facts">
+      <div><dt>2021</dt><dd>Phoenix Global Logistics founded</dd></div>
+      <div><dt>20+</dt><dd>years in cargo and logistics</dd></div>
+      <div><dt>2</dt><dd>depots, Sydney and Melbourne</dd></div>
+      <div><dt>12</dt><dd>owned vehicles, plus contracted operators</dd></div>
+    </dl>
+  </div>;
+}
+
+// Services: hovering a related service expands it; clicking still opens it.
+function RelatedHover() {
+  const root = useRef(null);
+  useEffect(() => {
+    const row = root.current?.parentElement;
+    if (!row) return;
+    const cards = [...row.querySelectorAll(':scope > [data-related-card]')];
+    if (cards.length < 2) return;
+    const W = 1280, gap = 12, big = 700;
+    const small = (W - big - gap * (cards.length - 1)) / (cards.length - 1);
+    const layout = active => {
+      let x = 0;
+      cards.forEach((c, i) => {
+        const w = i === active ? big : small;
+        c.style.left = x + 'px'; c.style.width = w + 'px';
+        c.toggleAttribute('data-expanded', i === active);
+        x += w + gap;
+      });
+    };
+    layout(0);
+    const enter = i => () => layout(i);
+    const handlers = cards.map((c, i) => { const h = enter(i); c.addEventListener('mouseenter', h); c.addEventListener('focus', h); return h; });
+    return () => cards.forEach((c, i) => { c.removeEventListener('mouseenter', handlers[i]); c.removeEventListener('focus', handlers[i]); });
+  }, []);
+  return <span ref={root} hidden />;
+}
+
 const parts = {
   network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
   'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm,
+  'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover,
 };
 
 export function FeedbackPart({ name }) {

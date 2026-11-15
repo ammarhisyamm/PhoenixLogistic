@@ -38,15 +38,18 @@ const photo = {
 // Components rendered in place of, or after, a layer's own children.
 const replace = {
   '69:1497': 'quote-form',   // Contact: shorter quote form
+  '187:446': 'about-bento',  // Home About: bento with photo, stats and the Amazon card
+  '208:580': 'about-bento',  // Why Phoenix About: same
+  '252:403': 'values',       // About: Our Values as photo cards and a fact strip
 };
+// Sections whose height changes with the new layouts; later sections move up or down to match.
+const sectionHeight = { '187:446': 880, '208:580': 880, '252:403': 1090 };
 const after = {
   '193:854': 'network',        // Home network section: map on the right, places on the left
-  '191:764': 'partner-panel',  // Home About: Amazon partner card in the empty left column
-  '208:581': 'partner-panel',  // Why Phoenix About: same
   '62:893': 'stage-route',     // Tracking: truck moving through the four stages
   '198:545': 'truck-load',     // About: pallets loaded, curtain closes, truck drives off
-  '252:404': 'values-photo',   // About: sticky photo for Our Values
-  '61:450': 'include-pulse',   // Services: live checklist accent
+  '61:153': 'include-pulse',   // Services: checklist status sits under the intro, not in the corner
+  '209:445': 'related-hover',  // Services: hovering a related service makes it the large card
 };
 
 const emailSwap = {
@@ -81,6 +84,23 @@ export function applyFeedback(tree, page) {
     return n;
   }
   const out = adapt(tree);
+  resizeSections(out);
   if (page === 'home' || page === 'services') out.heroVideo = true;
   return out;
+}
+
+function resizeSections(root) {
+  const resized = root.children
+    .filter(section => sectionHeight[section.id] != null && section.bounds)
+    .map(section => ({ id: section.id, y: section.bounds.y, delta: sectionHeight[section.id] - section.bounds.height }));
+  if (!resized.length) return;
+  root.children = root.children.map(section => {
+    const b = section.bounds;
+    if (!b) return section;
+    // Only layers below a resized section move; the fixed header (y 16) stays put.
+    const shift = resized.filter(r => r.y < b.y).reduce((sum, r) => sum + r.delta, 0);
+    const own = resized.find(r => r.id === section.id);
+    return { ...section, bounds: { ...b, y: b.y + shift, height: b.height + (own ? own.delta : 0) } };
+  });
+  root.bounds = { ...root.bounds, height: root.bounds.height + resized.reduce((sum, r) => sum + r.delta, 0) };
 }

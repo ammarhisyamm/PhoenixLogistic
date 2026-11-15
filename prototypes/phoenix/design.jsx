@@ -23,7 +23,8 @@ const words = n => n?.characters ?? kids(n).map(words).join(' ').trim();
 const normalized = (s='') => s.toLowerCase().replace(/[’']/g,'').replace(/\s+/g,' ').trim();
 // Serif display faces read like a cookbook to the client; headings use a bold sans instead.
 const serif = f => /DM Serif|Sawarabi/.test(f||'');
-const font = f => serif(f) ? 'Manrope Variable' : ({Inter:'Inter Variable',Oswald:'Oswald Variable',Manrope:'Manrope Variable',mixed:'Inter Variable'})[f] || f || 'Inter Variable';
+// Client: Manrope across the site.
+const font = f => 'Manrope Variable';
 const weight = s => /semi/i.test(s)?600:/bold/i.test(s)?700:/medium/i.test(s)?500:400;
 const isVector = n => /^(VECTOR|BOOLEAN_OPERATION|LINE|POLYGON|STAR)$/.test(n.type);
 
