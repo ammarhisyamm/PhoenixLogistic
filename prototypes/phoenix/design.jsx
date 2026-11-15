@@ -7,6 +7,7 @@ import process from './data/process.json';
 import { photos } from '../option2/photos';
 import { phoenixPaths } from './routes.mjs';
 import { usePageMotion } from './motion';
+import { FeedbackPart, HeroVideo } from './feedback-ui';
 
 const link = (page, params = {}) => {
  const query = new URLSearchParams(params).toString();
@@ -20,7 +21,9 @@ const rgb = (c,opacity=1) => typeof c==='string' ? 'color-mix(in srgb,'+c+' '+op
 const kids = n => (n?.children??[]).filter(c=>c.styles?.visible!==false);
 const words = n => n?.characters ?? kids(n).map(words).join(' ').trim();
 const normalized = (s='') => s.toLowerCase().replace(/[’']/g,'').replace(/\s+/g,' ').trim();
-const font = f => ({Inter:'Inter Variable',Oswald:'Oswald Variable',mixed:'Inter Variable'})[f] || f || 'Inter Variable';
+// Serif display faces read like a cookbook to the client; headings use a bold sans instead.
+const serif = f => /DM Serif|Sawarabi/.test(f||'');
+const font = f => serif(f) ? 'Manrope Variable' : ({Inter:'Inter Variable',Oswald:'Oswald Variable',Manrope:'Manrope Variable',mixed:'Inter Variable'})[f] || f || 'Inter Variable';
 const weight = s => /semi/i.test(s)?600:/bold/i.test(s)?700:/medium/i.test(s)?500:400;
 const isVector = n => /^(VECTOR|BOOLEAN_OPERATION|LINE|POLYGON|STAR)$/.test(n.type);
 
@@ -126,9 +129,9 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const b=n.bounds,s=n.styles??{},extra=paints[id]??{};
  const layers=kids(n);
  const children=[...layers.filter(c=>c.name==='Site header'),...layers.filter(c=>c.name!=='Site header')];
- const sourceFills=(extra.fills??s.fills??[]).filter(p=>p.visible!==false);
+ const sourceFills=(n.plainCard?[{type:'SOLID',color:'#ffffff'}]:(extra.fills??s.fills??[])).filter(p=>p.visible!==false);
  const fills=n.photoUrl
-   ? [{ type: 'IMAGE', url: n.photoUrl, responsive: n.responsivePhoto }, ...sourceFills.filter(p=>p.type!=='IMAGE')]
+   ? [{ type: 'IMAGE', url: n.photoUrl, responsive: n.responsivePhoto, scaleMode: n.photoFit }, ...sourceFills.filter(p=>p.type!=='IMAGE')]
    : sourceFills;
  const image=fills.some(p=>p.type==='IMAGE');
  const svg=isVector(n)&&assets[id];
@@ -167,9 +170,9 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const numeric=isText&&/^\d[\d,.+%k]*$/i.test(value?.trim()||'');
  const metric=numeric&&name==='Proof / Number';
  const icon=!isText&&children.length>0&&b.width<=72&&b.height<=72&&!button;
- const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',subheading&&'fig-subheading',numeric&&'fig-number',metric&&'fig-stat-value',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta',icon&&'fig-icon'].filter(Boolean).join(' ');
+ const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',subheading&&'fig-subheading',numeric&&'fig-number',metric&&'fig-stat-value',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta',icon&&'fig-icon',isText&&serif(s.fontFamily)&&'fig-display'].filter(Boolean).join(' ');
  const style={'--x':px(b.x),'--y':px(b.y),'--w':px(b.width),'--h':px(b.height),'--gap':px(s.autoLayout?.gap||10),'--ratio':b.width/Math.max(1,b.height),borderRadius:n.type==='ELLIPSE'?'50%':typeof s.cornerRadius==='number'?s.cornerRadius:undefined,overflow:s.clipsContent?'hidden':undefined,opacity:s.opacity??undefined,boxShadow:effect?[px(effect.offset.x),px(effect.offset.y),px(effect.radius),px(effect.spread||0),rgb(effect.color)].join(' '):undefined};
- if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:inline?(currentNavLink?600:400):weight(s.fontStyle),'--text-size':px(s.fontSize||14),'--leading':s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3',textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
+ if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:inline?(currentNavLink?600:400):serif(s.fontFamily)?700:weight(s.fontStyle),'--text-size':px(s.fontSize||14),'--leading':s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3',textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
  const cta=section&&/cta/i.test(name);
  const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero,dark:ctx.dark||hero||footer||cta};
  const variant=(href||actions)&&!tab&&(button||submit||previous||next)?buttonVariant(fills,ctx.dark&&!ctx.header):undefined;
@@ -177,7 +180,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const text=extra.segments?.length?extra.segments.map((q,j)=><span key={j} style={{fontFamily:font(q.fontName?.family),fontWeight:weight(q.fontName?.style),color:q.fills?.[0]?.color?rgb(q.fills[0].color):undefined}}>{q.characters}</span>):(id==='187:418' ? value?.replace('\u2028to ','\u2028To ') : value)?.replaceAll('\u2028','\n');
  const motionSection = section && !header && name!=='smooth fade';
  const heroTitle = heading && ctx.hero && typeof text==='string';
- return <Tag data-variant={variant} data-motion-section={motionSection?'':undefined} data-fill-card={fillCard} data-work-row={serviceWorkRow || undefined} data-related-card={relatedCard || undefined} className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
+ return <Tag data-variant={variant} data-motion-section={motionSection?'':undefined} data-fill-card={fillCard} data-feedback={n.custom||n.after||undefined} data-work-row={serviceWorkRow || undefined} data-related-card={relatedCard || undefined} className={cls} data-layer={id} data-name={name} data-one-line={oneLine||undefined} style={style} id={anchors[id]} href={href}
    aria-label={n.linkLabel ?? (id==='323:1069'?'Logistics services':previous?'Previous process step':next?'Next process step':logo&&href?'Phoenix Global Logistics home':undefined)}
    role={tab?'tab':id==='187:438'?'tablist':carousel||id==='323:1069'?'region':undefined}
    aria-roledescription={carousel?'carousel':undefined}
@@ -194,15 +197,18 @@ function Node({n,parent,root=false,section=false,inactive=false}){
        {fills.map((p,i)=><Paint key={i} p={p} b={b} eager={hero||header||logo}/>)}
        {!!stroke&&edges.some(Boolean)&&<span className="paint fig-stroke" style={{borderColor:rgb(stroke.color,stroke.opacity),borderWidth:edges.map(px).join(' ')}}/>}
      </span>
-     {ctx.header && children.some(child=>child.characters==='Services') ? <ServicesMenu currentPath={ctx.path} /> :
+     {hero&&ctx.heroVideo&&<HeroVideo/>}
+     {n.custom ? <FeedbackPart name={n.custom} n={n} page={ctx.page}/> :
+     ctx.header && children.some(child=>child.characters==='Services') ? <ServicesMenu currentPath={ctx.path} /> :
      field?<Field name={field} node={n} parent={parent}/>:
      id==='187:441'&&ctx.quickQuote?<QuoteStarter/>:
      id==='67:1289'?<div className="fig-radios"><label><input name="frequency" type="radio" value="One-off shipment" defaultChecked/> One-off shipment</label><label><input name="frequency" type="radio" value="Regular contract"/> Regular contract</label></div>:
      id==='119:677'?<ProcessCards n={n}/>:
      <State.Provider value={scope}>{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
    </>}
+   {n.after&&<FeedbackPart name={n.after} n={n} page={ctx.page}/>}
    {relatedCard&&<span className="related-card-label" aria-hidden="true">{n.linkLabel}</span>}
-   {id==='119:727'&&<span className="process-index" aria-live="polite" aria-label={'Step '+(ctx.index+1)+' of 6'}>{String(ctx.index+1).padStart(2,'0')} <span>/ 06</span></span>}
+   {id==='119:727'&&<span className="process-index" aria-live="polite" aria-label={'Step '+(ctx.index+1)+' of '+STEPS}>{String(ctx.index+1).padStart(2,'0')} <span>/ {String(STEPS).padStart(2,'0')}</span></span>}
    {id==='61:858'&&ctx.reference&&<div className="track-result" role="status">For {ctx.reference}, use the link on your booking confirmation or <a href={'mailto:'+transportEmail+'?subject='+encodeURIComponent('Tracking '+ctx.reference)}>email operations</a>.</div>}
  </Tag>;
 }
@@ -226,10 +232,12 @@ function QuoteStarter(){
  </div>;
 }
 
-const processCards=process.children[0].children.filter(c=>c.name==='Card');
+// The Phoenix Red Table step (third card) was removed at the client's request.
+const processCards=process.children[0].children.filter(c=>c.name==='Card').filter((c,i)=>i!==2);
+const STEPS=processCards.length;
 function ProcessCards({n}){
  const ctx=useContext(State);
- return <>{[(ctx.index+5)%6,ctx.index,(ctx.index+1)%6].map((v,i)=>{
+ return <>{[(ctx.index+STEPS-1)%STEPS,ctx.index,(ctx.index+1)%STEPS].map((v,i)=>{
    const card=processCards[v], slot=kids(n)[i].bounds;
    const [photo, copy] = kids(card);
    const photoHeight = i===1 ? 437 : 325;
@@ -283,7 +291,7 @@ export function Design({tree,page,path}){
    const dx=t.clientX-x,dy=t.clientY-y;
    if(Math.abs(dx)>54&&Math.abs(dx)>1.4*Math.abs(dy))step(dx>0?-1:1);
  }
- const step=(delta, animate=true)=>{setDirection(animate?delta:0);setIndex(i=>(i+delta+6)%6)};
+ const step=(delta, animate=true)=>{setDirection(animate?delta:0);setIndex(i=>(i+delta+STEPS)%STEPS)};
  function track(e){
    e.preventDefault();
    const data=new FormData(e.currentTarget);
@@ -303,7 +311,7 @@ export function Design({tree,page,path}){
    trigger.current=e.nativeEvent.submitter;
    setReview({body,target});
  }
- return <State.Provider value={{page,path,quickQuote,setQuickQuote,index,step,direction,track,quoteSubmit,reference,tabKeys,carouselKeys,touchStart,touchEnd}}>
+ return <State.Provider value={{heroVideo:tree.heroVideo,page,path,quickQuote,setQuickQuote,index,step,direction,track,quoteSubmit,reference,tabKeys,carouselKeys,touchStart,touchEnd}}>
    <a className="skip" href="#phoenix-design">Skip to content</a>
    <MobileHeader page={page} path={path}/>
    <main ref={viewport} id="phoenix-design" tabIndex={-1} className="fig-viewport"><Node n={tree} root/></main>
@@ -340,7 +348,7 @@ function MobileHeader({page: currentPage, path}){
    return () => document.removeEventListener('pointerdown', closeOutside);
  }, []);
  return <header className="mobile-header">
-   <a href={link('home')} aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo.png" width="51" height="44" alt=""/></a>
+   <a href={link('home')} aria-label="Phoenix Global Logistics home"><img src="/assets/phoenix-logo-light.png" width="51" height="44" alt=""/></a>
    <a href={link('tracking')} aria-current={currentPage==='tracking'?'page':undefined}>Track</a>
    <a className="mobile-quote" href={link('contact')}>Get a quote</a>
    <details ref={menu} className="mobile-navigation" onKeyDown={event=>{

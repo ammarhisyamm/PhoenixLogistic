@@ -14,7 +14,7 @@ export const serviceIcons = {
   'dangerous-goods': BatteryCharging,
 };
 
-export const stepIcons = [ClipboardText, Barcode, ListChecks, Package, Truck, Signature];
+export const stepIcons = [ClipboardText, Barcode, Package, Truck, Signature];
 
 export const detailIcons = {
   'Approved carrier': SealCheck, 'Built for volume': ChartLineUp, 'Inbound compliance': ShieldCheck,

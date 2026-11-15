@@ -321,7 +321,7 @@ function Forge({ items, cta }) {
 
 const STAGES = [
   ['Depot-in', 'Freight received and scanned into the depot.', 'In depot', 'Mon 07:42 · Wetherill Park'],
-  ['Sorting', 'Goods checked on the Red Table, sorted and allocated for their next move.', 'Sorting', 'Mon 09:15 · Red Table'],
+  ['Sorting', 'Goods checked, sorted and allocated for their next move.', 'Sorting', 'Mon 09:15 · Depot'],
   ['Out for delivery', 'Scanned out at the depot and loaded with a driver for delivery.', 'On the road', 'Tue 06:30 · Linehaul'],
   ['Signed POD', 'Delivery signature recorded as proof of delivery.', 'Delivered', 'Tue 14:08 · Signed'],
 ];
@@ -575,7 +575,7 @@ function Home() {
       <div className="wrap">
         <div className="split-head">
           <Lines className="display display-l" lines={['From office intake', 'to signed delivery.']} />
-          <p data-fade>Depot scans, the Phoenix Red Table check and automated wrapping help identify preparation issues and protect freight before dispatch.</p>
+          <p data-fade>Depot scans, careful checks and automated wrapping help identify preparation issues and protect freight before dispatch.</p>
         </div>
         <StepStack />
       </div>

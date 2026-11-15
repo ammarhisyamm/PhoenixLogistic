@@ -24,12 +24,14 @@ export function applyServiceTemplate(tree, service) {
     ['61:439', '61:441', '61:443'].forEach((id, index) => { text[id] = service.tags[index]; });
   }
   const cover = photos.serviceHero[service.slug];
-  const detailPhotos = [photos.services[service.slug], photos.quality, photos.ops];
+  // Each service gets its own three How-we-work photos (client asked for the repeated ones to change).
+  const detailPhotos = photos.serviceDetails[service.slug];
   const images = {
     '209:446': photos.services[related[0].slug],
     '209:451': photos.services[related[1].slug],
     '209:453': photos.services[related[2].slug],
-    ...(!amazon && { '61:96': cover, '61:542': detailPhotos[0], '209:474': detailPhotos[1], '209:480': detailPhotos[2] }),
+    '61:542': detailPhotos[0], '209:474': detailPhotos[1], '209:480': detailPhotos[2],
+    ...(!amazon && { '61:96': cover }),
   };
   const links = Object.fromEntries(['209:446', '209:450', '209:452'].map((id, index) => [id, related[index]]));
   function adapt(node) {

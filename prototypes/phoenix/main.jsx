@@ -2,17 +2,20 @@ import { useLayoutEffect } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import '@fontsource-variable/inter/wght.css';
 import '@fontsource-variable/oswald';
+import '@fontsource-variable/manrope';
 import '@fontsource/sawarabi-mincho/latin-400.css';
 import '@fontsource/dm-serif-display/400.css';
 import { Design } from './design';
 import { phoenixPaths } from './routes.mjs';
 import { photos } from '../option2/photos';
 import { applyServiceTemplate, serviceForPath } from './service-template';
+import { applyFeedback } from './feedback';
 import './style.css';
 import './motion.css';
 import './polish.css';
 import './experience.css';
 import './mobile.css';
+import './feedback.css';
 
 const pages = import.meta.glob('./data/{home,services,tracking,contact,about,why}.json', { import: 'default' });
 export function designPageForPath(path) {
@@ -21,6 +24,10 @@ export function designPageForPath(path) {
 }
 
 export async function loadDesign(page, path) {
+  return applyFeedback(await loadBaseDesign(page, path), page);
+}
+
+async function loadBaseDesign(page, path) {
   const tree = await pages['./data/' + page + '.json']();
   if (page === 'services') return applyServiceTemplate(tree, serviceForPath(path ?? phoenixPaths.services));
   if (page !== 'why') return tree;

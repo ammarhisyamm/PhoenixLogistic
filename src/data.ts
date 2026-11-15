@@ -3,10 +3,11 @@ export type Service = {
   intro: string; tags: string[]; includes: string[]; image: string; imageAlt: string;
   audience: string; department: 'transport' | 'import'; details: { title: string; text: string }[];
 };
-export const transportEmail = 'transport@phoenixgloballogistics.com.au';
-export const importEmail = 'import@phoenixgloballogistics.com.au';
+// Client feedback 14 Nov: operations mailboxes.
+export const transportEmail = 'ops@phoenixgloballogistics.com.au';
+export const importEmail = 'ops6@phoenixgloballogistics.com.au';
 export const company = {
-  abn: '11 649 618 244', sydneyAddress: '1–7 Cavasinni Pl, Wetherill Park, NSW 2164', officeHours: '08:00–17:30', warehouseHours: '06:00–17:30',
+  abn: '11 649 618 244', sydneyAddress: '1–7 Cavasinni Pl, Wetherill Park, NSW 2164', melbourneAddress: 'Warehouse D, 5 Logic Court, Truganina VIC 3029', officeHours: '08:00–17:30', warehouseHours: '06:00–17:30',
   clientLogin: 'https://portal.transvirtual.com/Public/Home/Login',
 };
 export const trackingUrlTemplate = import.meta.env.VITE_TRANSVIRTUAL_TRACKING_URL || '';
@@ -80,7 +81,6 @@ export const legacyServiceSlugs: Record<string,string> = {
 export const qualitySteps = [
   {title:'Office intake',text:'Import documents and shipment information are prepared before freight arrives.',icon:'document'},
   {title:'Depot-in scan',text:'Incoming freight is unloaded, sorted and recorded against its consignment.',icon:'warehouse'},
-  {title:'Phoenix Red Table',text:'Hands-on quality checks help identify handling and preparation issues.',icon:'parcel'},
   {title:'Wrap & prepare',text:'Automated stretch wrapping helps secure goods for their next move.',icon:'container'},
   {title:'Depot-out scan',text:'Dispatch movements are scanned as drivers load the freight.',icon:'truck'},
   {title:'Signed proof of delivery',text:'Customer signatures complete the delivery record in Transvirtual.',icon:'pin'},
