@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter, StaticRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { createRoot, hydrateRoot } from 'react-dom/client';
+import { BrowserRouter, StaticRouter, Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { ArrowUpRight, ArrowsOut, CaretDown, CheckCircle, Crosshair, EnvelopeSimple } from '@phosphor-icons/react';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/manrope';
@@ -10,7 +10,7 @@ import { photos } from './photos';
 import { MAP } from './mapData';
 import { detailIcons, sectorIcons, serviceIcons, stageIcons, stepIcons, valueIcons } from './icons';
 import { Boat, ClipboardText, Globe, Package, Plant, Truck, Users, Warehouse } from '@phosphor-icons/react';
-import { coverThen, isStatic, scrollToEl, useCursor, usePageMotion } from './motion';
+import { isStatic, scrollToEl, useCursor, usePageMotion } from './motion';
 import './option2.css';
 import './responsive.css';
 
@@ -188,12 +188,12 @@ function Header() {
         </div>
         <MegaMenu open={mega} onClose={() => setMega(false)} />
         <nav id="menu" aria-label="Mobile navigation" onClick={event => { if (event.target.closest('a')) setOpen(false); }} className={'menu' + (open ? ' is-open' : '')} hidden={!open}>
-          <Link to="/" style={{ '--i': 0 }}>Home</Link>
-          <details style={{ '--i': 1 }}>
+          <Link to="/">Home</Link>
+          <details>
             <summary>Services<CaretDown size={18} aria-hidden="true" /></summary>
             <div className="menu-services">{services.map(s => <Link key={s.slug} to={'/services/' + s.slug}><Icon as={serviceIcons[s.slug]} size={22} />{s.title}</Link>)}</div>
           </details>
-          {[...nav, ['Track a shipment', '/tracking']].map(([label, to], i) => <Link key={to} to={to} style={{ '--i': i + 2 }}>{label}</Link>)}
+          {[...nav, ['Track a shipment', '/tracking']].map(([label, to]) => <Link key={to} to={to}>{label}</Link>)}
         </nav>
       </div>
     </header>
@@ -506,6 +506,33 @@ function HeroFilm() {
   </>;
 }
 
+function HomeServices() {
+  const [activeService, setActiveService] = useState(services[0].slug);
+
+  return <section className="home-services" aria-labelledby="home-services-title">
+    <div className="wrap">
+      <h2 id="home-services-title" className="display">
+        Six services, one team <span>accountable for your freight</span>
+      </h2>
+      <p className="home-services-intro">From international arrivals and inbound preparation to storage, transport and delivery.</p>
+      <ul className="home-services-list">
+        {services.map(service => <li key={service.slug}>
+          <Link
+            className={'home-service' + (activeService === service.slug ? ' is-active' : '')}
+            to={'/services/' + service.slug}
+            onPointerEnter={event => { if (event.pointerType !== 'touch') setActiveService(service.slug); }}
+            onFocus={() => setActiveService(service.slug)}
+          >
+            <Arrow />
+            <span className="home-service-name">{service.title}</span>
+            <img className="home-service-photo" src={photos.services[service.slug]} alt="" loading="lazy" />
+          </Link>
+        </li>)}
+      </ul>
+    </div>
+  </section>;
+}
+
 function Home() {
   return <>
     <section className="hero" data-hero>
@@ -534,20 +561,7 @@ function Home() {
 
     <Drive text="Our own fleet of 12 vehicles and more than 20 contracted operators keep metro, interstate and linehaul freight moving." cta={<Button to="/services/road-freight-and-transport" variant="ghost">Road freight</Button>} />
 
-    <section className="services-h" data-horizontal>
-      <div className="services-h-head wrap">
-        <Lines className="display display-l" lines={['Six services,', 'one team accountable', 'for your freight.']} />
-        <p data-fade>From international arrivals and inbound preparation to storage, transport and delivery.</p>
-      </div>
-      <div className="h-track">
-        {services.map(s => <Link className="h-card" to={'/services/' + s.slug} key={s.slug} data-cursor="View">
-          <figure className="photo"><img src={photos.services[s.slug]} alt={s.imageAlt} loading="lazy" /></figure>
-          <h3>{s.title}</h3>
-          <p>{s.description}</p>
-          <span className="h-more">View service <Arrow /></span>
-        </Link>)}
-      </div>
-    </section>
+    <HomeServices />
 
     <section className="expand" data-expand>
       <div className="expand-media"><img src={photos.aerial} alt={photos.aerialAlt} loading="lazy" /></div>
@@ -867,45 +881,9 @@ function Page({ children }) {
   return <main id="main" key={pathname}>{children}</main>;
 }
 
-const PAGE_NAMES = { '/': 'Home', '/why-phoenix': 'Why Phoenix', '/about': 'About', '/contact': 'Contact', '/tracking': 'Tracking', '/privacy': 'Privacy Policy', '/terms': 'Terms of Carriage' };
-function pageName(to) {
-  if (to.startsWith('/services/')) return services.find(s => '/services/' + s.slug === to)?.shortTitle || 'Services';
-  return PAGE_NAMES[to] || 'Phoenix';
-}
-
-// Internal links play the curtain before the route changes.
-function Transitions() {
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
+function Cursor() {
   useCursor();
-  useEffect(() => {
-    const click = e => {
-      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      const a = e.target.closest?.('a[href]');
-      if (!a || a.target || a.hasAttribute('download')) return;
-      const url = new URL(a.href, location.href);
-      if (url.origin !== location.origin || !url.pathname.startsWith(BASE)) return;
-      const to = url.pathname.slice(BASE.length) || '/';
-      e.preventDefault();
-      e.stopPropagation();
-      if (to === pathname) {
-        if (url.hash) scrollToEl(document.querySelector(url.hash));
-        else scrollToEl(document.body, 0);
-        return;
-      }
-      coverThen(() => navigate(to + url.search + url.hash), pageName(to));
-    };
-    document.addEventListener('click', click, true);
-    return () => document.removeEventListener('click', click, true);
-  }, [navigate, pathname]);
-  return <>
-    <div className="curtain" aria-hidden="true">
-      <div className="curtain-panel" />
-      <div className="curtain-inner"><img className="curtain-mark" src="/assets/phoenix-logo-light.png" alt="" width="64" height="55" /><p className="curtain-label" /></div>
-      <span className="curtain-bar" />
-    </div>
-    <div className="cursor" aria-hidden="true" />
-  </>;
+  return <div className="cursor" aria-hidden="true" />;
 }
 
 // `url` is only passed while prerendering: each route is rendered to HTML at build time so the
@@ -914,7 +892,7 @@ export function App({ url }) {
   const Router = url ? StaticRouter : BrowserRouter;
   return <Router basename={BASE} {...(url ? { location: url } : {})}>
     <a className="skip" href="#main">Skip to content</a>
-    <Transitions />
+    <Cursor />
     <Header />
     <Routes>
       <Route path="/" element={<Page><Home /></Page>} />
@@ -932,9 +910,9 @@ export function App({ url }) {
   </Router>;
 }
 
-// The prerendered markup gives the first paint; the client then renders over it (same markup,
-// so nothing visibly changes) instead of hydrating, which keeps GSAP's DOM changes out of React's way.
 if (typeof document !== 'undefined') {
   const root = document.getElementById('root');
-  if (root) createRoot(root).render(<App />);
+  const path = location.pathname.replace(/\/$/, '');
+  if (root?.dataset.optionRoute === path) hydrateRoot(root, <App />);
+  else if (root) createRoot(root).render(<App />);
 }

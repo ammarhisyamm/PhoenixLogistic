@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
@@ -27,84 +27,42 @@ export function scrollToEl(el, offset = -110) {
   else window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + offset, behavior: 'smooth' });
 }
 
-// Page curtain: a dark panel rises with the logo and the next page's name,
-// a red bar runs along the bottom, and the panel lifts once the new page is in.
-let curtainTl = null;
-let safety = 0;
-export function coverThen(fn, label = '') {
-  const el = document.querySelector('.curtain');
-  if (!el || isStatic()) { fn(); return; }
-  const text = el.querySelector('.curtain-label');
-  if (text) text.textContent = label;
-  curtainTl?.kill();
-  clearTimeout(safety);
-  el.classList.add('is-on');
-  curtainTl = gsap.timeline()
-    .set(el, { visibility: 'visible' })
-    .fromTo(el.querySelector('.curtain-panel'), { yPercent: 100 }, { yPercent: 0, duration: 0.55, ease: 'power3.inOut' })
-    .fromTo(el.querySelectorAll('.curtain-inner > *'), { yPercent: 80, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.45, ease: 'power3.out', stagger: 0.06 }, 0.25)
-    .fromTo(el.querySelector('.curtain-bar'), { scaleX: 0 }, { scaleX: 0.7, duration: 0.6, ease: 'power2.out' }, 0.1)
-    .add(() => {
-      fn();
-      // If the route does not change (same page), never leave the curtain down.
-      safety = setTimeout(lift, 700);
-    });
-}
-function lift() {
-  const el = document.querySelector('.curtain');
-  clearTimeout(safety);
-  if (!el || !el.classList.contains('is-on')) return 0;
-  el.classList.remove('is-on');
-  curtainTl?.kill();
-  curtainTl = gsap.timeline()
-    .to(el.querySelector('.curtain-bar'), { scaleX: 1, duration: 0.25, ease: 'power2.out' })
-    .to(el.querySelectorAll('.curtain-inner > *'), { yPercent: -80, opacity: 0, duration: 0.3, ease: 'power2.in', stagger: 0.04 }, 0.1)
-    .to(el.querySelector('.curtain-panel'), { yPercent: -100, duration: 0.7, ease: 'power3.inOut' }, 0.2)
-    .to(el.querySelector('.curtain-bar'), { opacity: 0, duration: 0.3 }, 0.3)
-    .set(el, { visibility: 'hidden' })
-    .set(el.querySelector('.curtain-bar'), { opacity: 1, scaleX: 0 });
-  return 0.5;
-}
-
 // Runs once per page render. Every effect is opt-in through a data attribute,
 // so markup stays readable and content is fully visible without JavaScript
 // or with reduced motion.
 export function usePageMotion(key) {
+  const previousPage = useRef(key);
   useLayoutEffect(() => {
-    if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
-    window.scrollTo(0, 0);
-    if (isStatic()) {
-      const c = document.querySelector('.curtain');
-      if (c) { c.style.visibility = 'hidden'; c.classList.remove('is-on'); }
-      return undefined;
+    if (previousPage.current !== key) {
+      if (lenis) lenis.scrollTo(0, { immediate: true, force: true });
+      else window.scrollTo({ top: 0, behavior: 'instant' });
     }
-    const wait = lift();
+    previousPage.current = key;
+    if (isStatic()) return undefined;
     const mm = gsap.matchMedia();
     const ctx = gsap.context(() => {
       mm.add('(min-width: 1000px)', () => {
         // Headline lines wipe from dim to full colour while rising a touch.
         gsap.utils.toArray('[data-lines]').forEach(el => {
           const lines = el.querySelectorAll('.ln > span');
-          const hero = el.closest('[data-hero]');
-          const tl = gsap.timeline({ delay: hero ? wait + 0.1 : 0, scrollTrigger: hero ? undefined : { trigger: el, start: 'top 85%' } });
+          if (el.getBoundingClientRect().top < innerHeight) return;
+          const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 85%' } });
           tl.fromTo(lines, { '--p': 0 }, { '--p': 100, duration: 1.3, ease: 'power1.inOut', stagger: 0.12 }, 0)
             .from(lines, { yPercent: 40, duration: 1.2, ease, stagger: 0.12 }, 0);
         });
 
         // Copy and buttons fade up as they arrive.
-        // On the very first load the hero copy is already painted from the prerendered HTML, so it
-        // only rises into place (never hidden again): the largest paint does not wait for scripts.
         gsap.utils.toArray('[data-fade]').forEach(el => {
-          const hero = el.closest('[data-hero]');
+          if (el.getBoundingClientRect().top < innerHeight) return;
           gsap.from(el, {
-            y: 32, opacity: hero && !wait ? 1 : 0, duration: 1, ease: 'power3.out', delay: (Number(el.dataset.fade) || 0) + (hero ? wait : 0),
-            scrollTrigger: hero ? undefined : { trigger: el, start: 'top 88%' },
+            y: 32, opacity: 0, duration: 1, ease: 'power3.out', delay: Number(el.dataset.fade) || 0,
+            scrollTrigger: { trigger: el, start: 'top 88%' },
           });
         });
 
         // Card groups arrive in batches, one after another.
         gsap.utils.toArray('[data-stagger]').forEach(el => {
-          const items = gsap.utils.toArray(el.children);
+          const items = gsap.utils.toArray(el.children).filter(item => item.getBoundingClientRect().top >= innerHeight);
           gsap.set(items, { y: 80, opacity: 0 });
           ScrollTrigger.batch(items, { start: 'top 90%', once: true, onEnter: batch => gsap.to(batch, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', stagger: 0.12, overwrite: true }) });
         });
@@ -114,7 +72,7 @@ export function usePageMotion(key) {
       mm.add('(max-width: 999px)', () => {
         const targets = gsap.utils.toArray('[data-fade], [data-stagger] > *, .forge-grid');
         targets.forEach(el => {
-          if (el.closest('[data-hero]')) return;
+          if (el.getBoundingClientRect().top < innerHeight) return;
           gsap.from(el, {
             y: 12, opacity: 0.85, duration: 0.36, ease: 'power2.out', clearProps: 'transform,opacity',
             scrollTrigger: { trigger: el, start: 'top 94%', once: true },
@@ -143,9 +101,8 @@ export function usePageMotion(key) {
           });
         });
 
-        // Hero media settles in, then dims and sinks as the reader leaves it.
+        // Hero media drifts only as the reader leaves the section.
         gsap.utils.toArray('[data-hero-media]').forEach(el => {
-          gsap.fromTo(el, { scale: 1.15 }, { scale: 1, duration: 2.4, ease, delay: wait });
           gsap.to(el, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: el.closest('section'), start: 'top top', end: 'bottom top', scrub: true } });
         });
       });
@@ -197,21 +154,6 @@ export function usePageMotion(key) {
         return () => {
           document.querySelectorAll('.drive-words').forEach(words => { words.style.clipPath = ''; });
         };
-      });
-
-      // Horizontal service track, pinned on wide screens. Photos slide inside their frames.
-      mm.add('(min-width: 1000px)', () => {
-        gsap.utils.toArray('[data-horizontal]').forEach(section => {
-          const track = section.querySelector('.h-track');
-          const distance = () => track.scrollWidth - window.innerWidth + 64;
-          const tween = gsap.to(track, {
-            x: () => -distance(), ease: 'none',
-            scrollTrigger: { trigger: section, start: 'top top', end: () => '+=' + distance(), scrub: 0.6, pin: true, invalidateOnRefresh: true },
-          });
-          track.querySelectorAll('.h-card img').forEach(img => {
-            gsap.fromTo(img, { xPercent: 10, scale: 1.2 }, { xPercent: -10, scale: 1.2, ease: 'none', scrollTrigger: { trigger: img.closest('.h-card'), containerAnimation: tween, start: 'left right', end: 'right left', scrub: true } });
-          });
-        });
       });
 
       // A full-bleed photo grows from a framed card to the whole screen.

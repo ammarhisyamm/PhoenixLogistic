@@ -13,10 +13,10 @@
   background: var(--fill, #232022);
   transform: scaleY(0);
   transform-origin: bottom;
-  transition: transform 320ms var(--ease-out);
+  transition: transform 200ms var(--ease-out);
 }
 .fig-button[data-variant] .fig-text { transition: color 220ms var(--ease-out); }
-.fig-button[data-variant] .fig-svg { transition: filter 220ms var(--ease-out), translate 260ms var(--ease-out); }
+.fig-button[data-variant] .fig-svg { transition: filter 220ms var(--ease-out), translate 140ms var(--ease-out); }
 .fig-button[data-variant="primary"] { --fill: #a3121a; }
 .fig-button[data-variant="dark"] { --fill: var(--red); }
 .fig-button[data-variant="light"] { --fill: #232022; }
@@ -40,51 +40,92 @@
 .mobile-quote { transition: background-color 200ms var(--ease-out); }
 @media (hover: hover) and (pointer: fine) { .mobile-quote:hover { background: #a3121a; } }
 
-/* Carousel "previous" arrow is a mirrored copy of the next arrow. */
-[data-layer="119:729"] { left: 12px; top: 12px; rotate: 180deg; }
+/* The exported Previous asset already points left. */
+[data-layer="119:729"] { left: 12px; top: 12px; }
 
-/* ---------- Industry cards: the red icon square expands to fill the card ---------- */
-:is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"])::before {
-  opacity: 1;
-  transform: none;
-  clip-path: inset(0 calc(100% - var(--icon-box, 56px)) calc(100% - var(--icon-box, 56px)) 0);
-  background: var(--red);
-  transition: clip-path 420ms var(--ease-out);
+/* The same red rectangle expands on industry cards and tracking stages. */
+.fig-node[data-fill-card] {
+  overflow: hidden;
+  --card-accent: var(--red);
+  --fill-size: 56px;
+  --fill-inset: 0px;
 }
-[data-name="Type-Card"] { --icon-box: 0px; }
-[data-layer="187:610"]::before { background: #b8131b; }
-[data-layer="62:903"]::before { background: #861017; }
-@media (hover: hover) and (pointer: fine) {
-  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]):hover::before { clip-path: inset(0 0 0 0); }
-  :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"]) .fig-text { transition: color 260ms var(--ease-out) 60ms; }
+.fig-node[data-fill-card="tracking"] {
+  --card-accent: #b8121b;
+  --fill-size: 64px;
+  --fill-inset: 20px;
 }
+.fig-node[data-fill-card] > .paint-group { z-index: -2; }
+.fig-node[data-fill-card]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--card-accent);
+  clip-path: inset(var(--fill-inset) calc(100% - var(--fill-size) - var(--fill-inset))
+    calc(100% - var(--fill-size) - var(--fill-inset)) var(--fill-inset));
+  opacity: 0;
+  transition: clip-path 360ms var(--ease-out), opacity 180ms var(--ease-out);
+}
+/* Both source frames show an example of the expanded hover state. */
+[data-layer="187:610"] > .paint-group > .paint { background: #fff !important; }
+:where([data-layer="187:610"]) [data-name="Sector / Title"] { color: #232022 !important; }
+[data-layer="190:463"] { display: none !important; }
 
-
-/* ---------- Footer & inline links: underline grows from the left ---------- */
+/* Signed POD is shown in its hover state in the source design. */
+[data-layer="62:903"] > .paint-group > .paint { background: #fff !important; }
+[data-layer="62:903"] > .paint-group > .fig-stroke { border-color: #e6dfdd !important; }
+[data-layer="62:903"] > [data-name="Icon"] > .paint-group > .paint { background: #fff !important; }
+[data-layer="62:903"] > [data-name="Icon"] { outline: 1px solid #e6dfdd; outline-offset: -1px; }
+[data-layer="62:903"] [data-name="Heading"] > .fig-text:first-of-type { color: #232022 !important; }
+[data-layer="62:903"] [data-name="Heading"] > .fig-text + .fig-text { color: #3f3c3d !important; }
 @media (hover: hover) and (pointer: fine) {
-  .fig-footer a.fig-text:hover, a.fig-text:not(.fig-header a):hover { text-decoration: none; }
-  a.fig-text:not(.fig-header a) {
-    background: linear-gradient(currentColor, currentColor) no-repeat 0 100% / 0 1px;
-    transition: background-size 260ms var(--ease-out), color 200ms var(--ease-out);
+  .fig-node[data-fill-card]:hover::before {
+    clip-path: inset(0);
+    opacity: 1;
   }
-  a.fig-text:not(.fig-header a):hover { background-size: 100% 1px; }
+  .fig-node[data-fill-card] .fig-text { transition: color 200ms var(--ease-out); }
+  .fig-node[data-fill-card]:hover .fig-text,
+  [data-layer="62:903"]:hover [data-name="Heading"] > .fig-text { color: #fff !important; }
+  .fig-node[data-fill-card="tracking"]:hover > [data-name="Icon"] { background: white; }
+  .fig-node[data-fill-card="tracking"]:hover > [data-name="Icon"] .fig-text { color: #232022 !important; }
+}
+@media (max-width: 999px) {
+  .fig-node[data-fill-card="tracking"] { --fill-inset: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fig-node[data-fill-card]::before, .fig-node[data-fill-card] .fig-text { transition: none; }
+}
+
+/* Keep the underline on the text, even when the link spans a row or card. */
+:is(.fig-header a.fig-text, .mobile-header a, .services-menu li a)[aria-current="page"],
+.services-menu summary[aria-current="location"] > span {
+  font-weight: 600;
+}
+:is(.fig-header a.fig-text, .mobile-header nav > a, .mobile-header > a:not(.mobile-quote))[aria-current="page"],
+.services-menu summary[aria-current="location"] > span,
+:is(a.fig-text, .services-menu li a, .mobile-header nav > a):focus-visible,
+.services-menu summary:focus-visible > span,
+a:focus-visible :is([data-name="View service"], [data-name="Service / Title"]) {
+  text-decoration: underline;
+  text-underline-offset: .22em;
+  text-decoration-thickness: 1px;
+}
+.fig-header a.fig-text[aria-current="page"], .services-menu summary[aria-current="location"] > span {
+  text-decoration-color: var(--red);
+}
+@media (hover: hover) and (pointer: fine) {
+  :is(a.fig-text, .services-menu li a, .mobile-header nav > a):hover,
+  .services-menu summary:hover > span,
+  a:hover :is([data-name="View service"], [data-name="Service / Title"]) {
+    text-decoration: underline;
+    text-underline-offset: .22em;
+    text-decoration-thickness: 1px;
+  }
+  .fig-header a.fig-text:hover, .services-menu summary:hover > span { text-decoration-color: var(--red); }
   .fig-footer a.fig-text:hover { color: #fff !important; }
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  /* Page hero: slower fade from black and a gentler settle. */
-  .fig-hero > .paint-group { background: #000; }
-  .fig-hero > .paint-group img[data-loaded] { animation: hero-settle 1400ms var(--ease-out) both; }
-  .fig-hero .hero-line > span { animation: headline-arrival 900ms 160ms var(--ease-out) both; }
-  .fig-hero .hero-line:nth-child(2) > span { animation-delay: 260ms; }
-  .fig-hero .hero-line:nth-child(3) > span { animation-delay: 360ms; }
-
-  /* Delivery-stage cards light up in sequence. */
-  [data-route-current] { transition: outline-color 240ms var(--ease-out); }
-}
-
-@keyframes hero-settle { from { opacity: 0; scale: 1.08; } to { opacity: 1; scale: 1; } }
-@keyframes headline-arrival { from { opacity: 0; translate: 0 .9em; } to { opacity: 1; translate: 0 0; } }
 
 /* ---------- Floating header: compacts and casts a shadow once the page scrolls ---------- */
 .fig-header { transition: box-shadow 300ms var(--ease-out), translate 300ms var(--ease-out); }
@@ -104,10 +145,6 @@
   :is([data-name^="Sector / "]:not(.fig-text), [data-name="Type-Card"])::before { transition: none; }
 }
 
-/* Hold the hero entrance until the loading screen lifts. */
-.booting :is(.fig-hero, .fig-hero *, .fig-header, .mobile-header),
-.booting .fig-hero::before { animation-play-state: paused !important; }
-
 /* Icons keep their drawn geometry on small screens instead of stacking their vector parts. */
 @media (max-width: 999px) {
   .fig-node.fig-icon { display: block !important; position: relative; width: var(--w) !important; height: var(--h) !important; flex: none; }
@@ -117,8 +154,5 @@
 /* Desktop: the floating header stays with the reader. */
 @media (min-width: 1000px) {
   .fig-header { position: fixed; z-index: 20; }
-}
-@media (max-width: 999px) {
-  [data-layer="187:609"] > .fig-node > .fig-icon:first-child { margin: -12px 0 0 -12px; }
 }
 [data-layer="198:556"], [data-layer="198:556"] > .paint-group, [data-layer="198:556"] .image-paint { overflow: visible !important; }

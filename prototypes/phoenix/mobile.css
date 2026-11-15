@@ -1,0 +1,320 @@
+/* Reflow exported design layers into content-sized groups on smaller screens. */
+@media (max-width: 999px) {
+  .mobile-header {
+    margin: 8px;
+    padding: 4px 8px;
+    gap: clamp(8px, 2vw, 16px);
+    border: 1px solid #e6dfdd;
+    border-radius: 8px;
+  }
+  .mobile-header > a,
+  .mobile-navigation > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .mobile-quote { white-space: nowrap; padding-inline: 12px; border-radius: 4px; }
+  .mobile-navigation > summary {
+    cursor: pointer;
+    list-style: none;
+    border-radius: 4px;
+  }
+  .mobile-navigation > summary::-webkit-details-marker { display: none; }
+  .mobile-navigation .mobile-menu-close,
+  .mobile-navigation[open] .mobile-menu-open { display: none; }
+  .mobile-navigation[open] .mobile-menu-close { display: block; }
+  .mobile-navigation[open] > summary { background: #f3efee; }
+  .mobile-navigation > nav {
+    position: absolute;
+    inset-inline: -1px;
+    inset-block-start: calc(100% + 5px);
+    max-block-size: calc(100dvh - 84px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: grid;
+    gap: 4px;
+    padding: 8px;
+    border: 1px solid #e6dfdd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 16px 32px #23202224;
+  }
+  .mobile-navigation nav > a,
+  .mobile-navigation .services-menu summary {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  .mobile-navigation nav > [aria-current="page"],
+  .mobile-navigation .services-menu[open] summary { background: #f5f2f1; }
+  .mobile-navigation .services-menu summary { justify-content: space-between; }
+  .mobile-navigation .services-menu ul { border: 0; padding: 4px 0 4px 12px; }
+  .mobile-navigation .services-menu li a { border-radius: 4px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-navigation[open] > nav,
+    .mobile-navigation .services-menu[open] > ul { animation: mobile-disclosure 180ms var(--ease-out) both; }
+    .mobile-navigation .services-menu summary::after { transition: rotate 180ms var(--ease-out); }
+  }
+
+  .fig-root > .fig-section { gap: 24px; }
+  .fig-text { line-height: 1.45; overflow-wrap: break-word; }
+  .fig-heading { font-size: clamp(28px, 6.4vw, 48px); line-height: 1.14; }
+  .fig-hero h1 { font-size: clamp(32px, 7.5vw, 52px); line-height: 1.12; }
+  .fig-hero [data-name="Button / Request a quote"] > .fig-text { font-size: 16px; }
+  .fig-hero [data-name^="Credential / Amazon"] { flex-wrap: nowrap; }
+  .fig-hero [data-name="Credential / Copy"] { min-inline-size: 0; flex: 1; }
+  .fig-hero [data-name="Credential / Copy"] > .fig-text { inline-size: 100%; }
+  [data-layer="187:420"] > .fig-shape { display: none; }
+
+  /* Group the CTA and its arrow as one readable label inside every service card. */
+  [data-name="Carousel track"] > a { flex-basis: min(calc(100% - 40px), 389px); }
+  [data-name="Carousel track"] [data-name="H More"] {
+    inline-size: fit-content;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  [data-name="Carousel track"] [data-name="View service"] { inline-size: auto; white-space: nowrap; }
+  [data-name="Carousel track"] [data-name="Photo"] { inline-size: 100%; }
+  [data-name="Carousel track"] [data-name="Photo"] .fig-photo { inline-size: 100%; }
+  [data-name="Carousel track"] [data-name="Heading"] { text-wrap: balance; line-height: 1.18; }
+
+  /* At phone widths, the industry list reads like five related items. */
+  [data-layer="187:609"].fig-node { display: grid; inline-size: 100%; gap: 8px; }
+  [data-layer="187:609"] > [data-fill-card].fig-node {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    inline-size: 100%;
+    min-block-size: 68px;
+    gap: 12px;
+    padding: 12px;
+    --fill-size: 44px;
+    --fill-inset: 12px;
+  }
+  [data-layer="187:609"] > [data-fill-card] > .fig-icon:first-child {
+    inline-size: 44px !important;
+    block-size: 44px !important;
+  }
+  [data-layer="187:609"] > [data-fill-card] > .fig-icon:first-child > .fig-node {
+    top: 6px !important;
+    left: 6px !important;
+  }
+  [data-layer="187:609"] [data-name="Sector / Title"] {
+    inline-size: 100%;
+    font-size: clamp(18px, 3.5vw, 24px);
+    line-height: 1.18;
+  }
+
+  /* Service hero tags and inclusion rows flex around their own text. */
+  [data-layer="61:445"].fig-node { inline-size: 100%; gap: 8px; }
+  [data-layer="61:445"] > [data-name^="Tag / "].fig-node {
+    inline-size: max-content;
+    max-inline-size: 100%;
+    padding: 6px 12px;
+  }
+  [data-name="Tag / Label"] { inline-size: auto !important; white-space: normal; overflow-wrap: normal; }
+  [data-layer="61:450"].fig-node { inline-size: 100%; gap: 12px; }
+  [data-layer="61:450"] > [data-name="Checklist"].fig-node {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    inline-size: 100%;
+  }
+  [data-name="Checklist"] > .fig-text { inline-size: 100%; padding-block-start: 2px; }
+
+  /* Desktop-only dividers and placeholders must not reserve vertical space. */
+  :is([data-layer="179:1246"], [data-layer="129:370"]) > .fig-shape,
+  [data-name="placeholder"] { display: none !important; }
+  [data-layer="179:1246"].fig-node { inline-size: 100%; gap: 16px; }
+  [data-layer="179:1246"] > [data-name^="Proof / "] > .fig-text { display: none; }
+  [data-layer="179:1246"] > [data-name^="Proof / "]:not(.fig-text) { padding: 0; }
+  [data-layer="179:1246"] > [data-name^="Proof / "]:not(.fig-text) + .fig-shape + [data-name^="Proof / "] {
+    border-block-start: 1px solid #e6dfdd;
+    padding-block-start: 16px;
+  }
+
+  /* Give every related service a readable caption and the same photo crop. */
+  [data-layer="209:445"].fig-node {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    inline-size: 100%;
+    gap: 12px;
+  }
+  [data-related-card].fig-node {
+    display: flex;
+    justify-content: flex-end;
+    inline-size: 100%;
+    min-block-size: 156px;
+    aspect-ratio: 16 / 9;
+    padding: 16px;
+    overflow: hidden;
+    background: #232022;
+  }
+  [data-related-card] > .fig-node:not(.fig-photo) { display: none; }
+  [data-related-card] > .fig-photo { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; z-index: -2; }
+  [data-related-card] .image-paint img { inset: 0 !important; width: 100% !important; height: 100% !important; object-fit: cover; }
+  [data-related-card] .paint-group > .paint:not(.image-paint) { display: none; }
+  [data-related-card]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(0deg, #151215ed, #15121500 82%);
+  }
+  .related-card-label { display: block; color: white; font: 600 clamp(16px, 3.6vw, 24px)/1.2 'Inter Variable', sans-serif; }
+
+  /* Keep the quote panel's label, field, and hint aligned across all input types. */
+  [data-layer="67:1360"].fig-node,
+  [data-layer="67:1060"].fig-node,
+  [data-layer="67:1061"].fig-node,
+  #quote-form .fig-node:not(.fig-text,.fig-shape) { inline-size: 100%; min-inline-size: 0; }
+  [data-layer="67:1060"].fig-node { padding: 16px; gap: 20px; }
+  #quote-form.fig-node { gap: 16px; }
+  #quote-form .fig-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  #quote-form [data-name="Text field"] { gap: 8px; }
+  #quote-form [data-name="Label"] { inline-size: auto; }
+  #quote-form .fig-field select { padding-inline-end: 28px; }
+  #quote-form .fig-radios { flex-wrap: wrap; gap: 4px 16px; }
+  #quote-form .fig-radios label { min-block-size: 44px; }
+
+  [data-layer="61:264"] [data-work-row] { gap: 16px; }
+  [data-layer="61:264"] [data-work-row] > .fig-photo { inline-size: 100%; aspect-ratio: 4 / 3; }
+  :is([data-layer="209:465"], [data-layer="209:476"], [data-layer="209:482"]) {
+    font-size: clamp(22px, 4.5vw, 28px);
+    line-height: 1.2;
+  }
+
+  [data-layer="61:858"].fig-node [data-name="Frame 20"],
+  [data-layer="61:858"].fig-node [data-name="Frame 26"],
+  [data-layer="61:858"].fig-node [data-name="Text field"],
+  [data-layer="61:858"].fig-node .fig-field,
+  [data-layer="61:862"].fig-button { inline-size: 100%; }
+  [data-layer="61:858"].fig-node [data-name="Frame 20"] { flex-direction: column; align-items: stretch; gap: 8px; }
+
+  .fig-footer [data-name="Footer / Four columns"].fig-node { gap: 24px; }
+  .fig-footer [data-name="Brand / Phoenix home link"] .image-paint img,
+  .fig-footer [data-name="WeChat / Source QR code"] .image-paint img {
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+  .fig-footer [data-name="Contact / WeChat"].fig-node {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .fig-footer [data-name="Contact / WeChat"] > .fig-photo { flex: 0 0 80px; }
+  .fig-footer [data-name="Contact / WeChat"] > .fig-text { flex: 1; }
+}
+
+@media (min-width: 640px) and (max-width: 999px) {
+  [data-layer="187:609"].fig-node { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  [data-layer="179:1246"].fig-node { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  [data-layer="179:1246"] > [data-name^="Proof / "]:not(.fig-text) + .fig-shape + [data-name^="Proof / "] {
+    border-block-start: 0;
+    padding-block-start: 0;
+  }
+  [data-layer="209:445"].fig-node { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fig-footer [data-name="Footer / Four columns"].fig-node {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    inline-size: 100% !important;
+  }
+}
+
+@keyframes mobile-disclosure {
+  from { opacity: 0; translate: 0 -4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* A shared phone type scale keeps exported desktop sizes from crowding mobile. */
+@media (max-width: 999px) {
+  .fig-root > .fig-section {
+    gap: clamp(20px, 5vw, 28px);
+    padding-block: clamp(40px, 9vw, 64px);
+  }
+  .fig-text {
+    font-size: clamp(.875rem, 4vw, 1.0625rem) !important;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+  }
+  .fig-heading {
+    font-size: clamp(1.875rem, 8vw, 2.375rem) !important;
+    line-height: 1.12 !important;
+    text-wrap: balance;
+  }
+  .fig-hero .fig-heading {
+    font-size: clamp(2rem, 8.6vw, 2.5rem) !important;
+    line-height: 1.1 !important;
+  }
+  .fig-subheading {
+    font-size: clamp(1.25rem, 5.4vw, 1.5rem) !important;
+    line-height: 1.22 !important;
+    text-wrap: balance;
+  }
+  .fig-number {
+    font-size: 1.375rem !important;
+    line-height: 1.2 !important;
+    font-variant-numeric: tabular-nums;
+  }
+  .fig-stat-value {
+    font-size: clamp(2.25rem, 9vw, 2.75rem) !important;
+    line-height: 1.05 !important;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Give every tap target one label size and a stable minimum height. */
+  .fig-node:is(button, a).fig-button {
+    min-height: 48px;
+    padding: 12px 16px;
+  }
+  .fig-button > .fig-text,
+  .quick-quote button,
+  .mobile-quote {
+    font-size: 1rem !important;
+    line-height: 1.25 !important;
+  }
+  .quick-quote button { min-height: 48px; }
+
+  /* Keep the process controls circular and evenly sized beside their counter. */
+  [data-layer="119:728"],
+  [data-layer="119:731"] {
+    flex: 0 0 48px !important;
+    inline-size: 48px !important;
+    block-size: 48px !important;
+    min-block-size: 48px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+  }
+  [data-layer="119:728"] > .paint-group,
+  [data-layer="119:731"] > .paint-group { border-radius: 50%; }
+  [data-layer="119:727"].fig-node { gap: 12px; }
+  .process-index { font-size: .875rem; font-variant-numeric: tabular-nums; }
+
+  /* One clear step per row is easier to scan than four narrow cards. */
+  [data-layer="62:893"].fig-node {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  [data-layer="62:893"] > .fig-node {
+    min-height: 0;
+    padding: 16px;
+    gap: 12px;
+  }
+  [data-layer="62:893"] [data-name="Heading"] .fig-subheading {
+    font-size: 1.25rem !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 999px) {
+  [data-layer="62:893"].fig-node { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -2,7 +2,7 @@ export type PageCover = { src: string; alt: string; position?: string };
 
 export const pageCovers: Record<string, PageCover> = {
   "/": { src: '/assets/cover-home.webp', alt: "Phoenix freight truck leaving a warehouse loading bay", position: '60% center' },
-  "/why-phoenix": { src: '/assets/cover-why-phoenix.webp', alt: "Warehouse operator scanning a carton at a red inspection bench", position: '65% center' },
+  "/why-phoenix": { src: '/option2/photos/drone-11.webp', alt: "Aerial view of the depot, trailers and loading bays", position: '65% center' },
   "/about": { src: '/assets/cover-about.webp', alt: "Phoenix logistics colleagues coordinating a work schedule at the depot", position: '72% center' },
   "/tracking": { src: '/assets/cover-tracking.webp', alt: "Dispatcher matching a parcel barcode with a digital shipment record", position: '65% center' },
   "/services/amazon-fba-logistics": { src: '/assets/cover-amazon-fba.webp', alt: "Warehouse worker applying a barcode label to an inbound carton", position: '65% center' },

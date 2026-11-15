@@ -2,7 +2,6 @@ import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createServer } from 'vite';
 import { createElement } from 'react';
-import { phoenixPaths } from '../prototypes/phoenix/routes.mjs';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
 const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
@@ -11,17 +10,23 @@ try {
   const { render, pageCoverImage, pageMeta, siteOrigin, staticPaths } = await server.ssrLoadModule('/src/prerender.tsx');
   const phoenixTemplate = await readFile('dist/index.html', 'utf8');
   const legacyTemplate = await readFile('dist/legacy.html', 'utf8');
-  const phoenixRoutes = new Set(Object.values(phoenixPaths));
+  const { renderToString } = await import('react-dom/server');
+  const { App: PhoenixApp, designPageForPath, loadDesign } = await server.ssrLoadModule('/prototypes/phoenix/main.jsx');
   for (const route of [...staticPaths, '/404']) {
     const meta = pageMeta(route);
-    let html = (phoenixRoutes.has(route) ? phoenixTemplate : legacyTemplate)
+    const designPage = designPageForPath(route);
+    let html = (designPage ? phoenixTemplate : legacyTemplate)
       .replace('<html lang="en-AU">', `<html lang="${route === '/zh' ? 'zh-Hans' : 'en-AU'}">`)
       .replace(/<title>.*?<\/title>/, `<title>${escape(meta.title)}</title>`)
       .replace(/<meta name="description" content="[^"]*"\s*\/?\s*>/, `<meta name="description" content="${escape(meta.description)}" />`)
       .replace(/<meta property="og:title" content="[^"]*"\s*\/?\s*>/, `<meta property="og:title" content="${escape(meta.title)}" />`)
       .replace(/<meta property="og:description" content="[^"]*"\s*\/?\s*>/, `<meta property="og:description" content="${escape(meta.description)}" />`)
       .replace(/<meta property="og:image" content="[^"]*"\s*\/?\s*>/, `<meta property="og:image" content="${escape(pageCoverImage(route))}" />`);
-    if (!phoenixRoutes.has(route)) {
+    if (designPage) {
+      const tree = await loadDesign(designPage, route);
+      const body = renderToString(createElement(PhoenixApp, { tree, page: designPage, path: route })).replace(/^(<link [^>]*\/>)+/, '');
+      html = html.replace('<div id="root"></div>', () => `<div id="root" data-phoenix-route="${route}">${body}</div>`);
+    } else {
       html = html.replace('<div id="root"></div>', `<div id="root" data-prerender-path="${route}">${render(route)}</div>`);
     }
     const extraHead = route === '/404' ? '<meta name="robots" content="noindex" />' : `<link rel="canonical" href="${siteOrigin}${route === '/' ? '/' : route}" /><meta property="og:url" content="${siteOrigin}${route}" />`;
@@ -38,13 +43,12 @@ try {
   await writeFile('dist/robots.txt', `User-agent: *\nAllow: /\nSitemap: ${siteOrigin}/sitemap.xml\n`);
   // Prerender each Option 2 route so its content is available on direct visits.
   const option2 = await readFile('dist/option-2/index.html', 'utf8');
-  const { renderToString } = await import('react-dom/server');
   const { App: Option2App } = await server.ssrLoadModule('/prototypes/option2/main.jsx');
   // React 19 prepends <link rel="preload"> hints for images to the markup; inside #root they would
   // break hydration, so they are dropped (the hero image carries fetchpriority="high" instead).
   const option2Page = route => {
     const body = renderToString(createElement(Option2App, { url: '/option-2' + (route ? '/' + route : '') })).replace(/^(<link [^>]*\/>)+/, '');
-    const html = option2.replace('<div id="root"></div>', `<div id="root">${body}</div>`);
+    const html = option2.replace('<div id="root"></div>', `<div id="root" data-option-route="/option-2${route ? "/" + route : ""}">${body}</div>`);
     if (route !== 'privacy' && route !== 'terms') return html;
     const meta = pageMeta('/' + route);
     return html.replace(/<title>.*?<\/title>/, `<title>${escape(meta.title)}</title>`)
