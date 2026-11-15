@@ -18,7 +18,7 @@
   .fig-root .fig-header.fig-header > [data-name="Actions"] { left: auto; right: 14px; }
   .fig-header [data-name="Nav"] .fig-text, .fig-header .services-menu summary { color: #f4efee !important; }
   .fig-header [data-name="Nav"] a.fig-text[aria-current="page"],
-  .fig-header .services-menu summary[aria-current="location"] > span { color: var(--red) !important; }
+  .fig-header .services-menu summary[aria-current="location"] > span { color: #fff !important; }
   .fig-header .services-menu summary svg, .fig-header [data-name="CaretDown"] img { filter: invert(1); }
   .fig-header [data-name="Actions"] .fig-button { border-radius: var(--r-btn); overflow: hidden; }
   .fig-header [data-name="Actions"] .fig-button[data-variant^="ghost"] > .paint-group > .paint { background: transparent !important; }
@@ -183,7 +183,7 @@
 [data-layer="129:308"] > .paint-group > .fig-stroke { border-color: transparent !important; }
 [data-layer="129:308"], [data-layer="129:308"] > .paint-group { border-radius: var(--r-card); overflow: hidden; }
 [data-layer="129:308"] .fig-text { color: #fff !important; }
-[data-layer="129:308"] [data-name="Rectangle 3"], [data-layer="129:308"] [data-name="Rectangle 4"], [data-layer="129:308"] [data-name="Stroke"] { opacity: .3; }
+[data-layer="129:308"] [data-name="Rectangle 3"], [data-layer="129:308"] [data-name="Rectangle 4"], [data-layer="129:308"] [data-name="Stroke"] { display: none !important; }
 [data-layer="129:308"] [data-name="Frame 1171275662"] > .paint-group > .paint { background: #fff !important; }
 
 /* ---------- Mobile ---------- */
@@ -430,22 +430,6 @@ body { font-family: 'Manrope Variable', sans-serif; }
 @keyframes fb-rollers { to { background-position: 22px 0; } }
 @media (max-width: 999px) { .fb-conveyor { height: 190px; } .fb-belt-track { bottom: 78px; } .fb-belt { bottom: 58px; } }
 
-/* Why Phoenix: the process carousel becomes the page's dark, stand-out band (reference: United Carriers' milestone section). */
-@media (min-width: 1000px) {
-  [data-layer="113:434"] { margin: 0 24px; border-radius: 34px; overflow: hidden; }
-}
-[data-layer="113:434"] > .paint-group > .paint { background: radial-gradient(70% 55% at 50% 0%, #e31b2440, transparent 70%), #161415 !important; }
-[data-layer="113:434"] .fig-text { color: #f4efee !important; }
-[data-layer="113:434"] [data-layer="113:438"] .fig-text, [data-layer="113:434"] .process-swap .fig-text:not(:first-of-type) { color: #ffffffb3 !important; }
-[data-layer="113:434"] :is([data-layer="119:735"], [data-layer="119:737"]) { display: none !important; }
-@media (min-width: 1000px) { [data-layer="113:434"] [data-layer="119:677"]::before, [data-layer="113:434"] [data-layer="119:677"]::after { content: ''; position: absolute; top: 0; bottom: 0; width: 700px; z-index: 3; pointer-events: none; }
-[data-layer="113:434"] [data-layer="119:677"]::before { left: 0; background: linear-gradient(90deg, #161415 45%, #16141500); }
-[data-layer="113:434"] [data-layer="119:677"]::after { right: 0; background: linear-gradient(-90deg, #161415 45%, #16141500); } }
-[data-layer="113:434"] [data-layer="119:728"] > .paint-group > * { background: transparent !important; border-color: #ffffff4d !important; }
-[data-layer="113:434"] [data-layer="119:731"] > .paint-group > * { background: var(--red) !important; border-color: var(--red) !important; }
-[data-layer="113:434"] :is([data-layer="119:728"], [data-layer="119:731"]) img { filter: invert(1) brightness(2); }
-[data-layer="113:434"] .fig-photo { box-shadow: 0 30px 60px -30px #000; }
-
 /* Mobile pass (owner, round 3): 20px inner padding on cards, no squeezed labels, consistent gaps. */
 @media (max-width: 999px) {
   [data-layer="187:609"] > [data-fill-card] { gap: 16px !important; padding: 12px 16px 12px 12px !important; }
@@ -466,3 +450,85 @@ body { font-family: 'Manrope Variable', sans-serif; }
   [data-layer="127:273"] { padding: 16px 20px 20px !important; gap: 16px !important; }
   [data-layer="127:274"] { padding: 0 !important; }
 }
+
+/* ---------- Round 4 (owner, 15 Nov night) ---------- */
+/* Corners back to square everywhere; only buttons keep the soft radius (and get a better hover). */
+:root { --r-sm: 0px; --r-card: 0px; }
+@media (min-width: 1000px) {
+  .fig-root .fig-header.fig-header, .fig-root .fig-header.fig-header > .paint-group { border-radius: 4px !important; }
+}
+.fig-header.fig-header, .fig-header > .paint-group, .fig-header > .paint-group > * { border-radius: 4px !important; }
+.fig-field, .fig-field > .paint-group, .fig-field > .paint-group > *, .fb-quote :is(input, select, textarea) { border-radius: 0 !important; }
+[data-name="Tag / Receiving"], [data-name^="Tag /"] > .paint-group, .fb-live, .fb-network-live, .fb-about-hero figcaption,
+.fb-network-places button, .fb-route-line, .svc-mega-list a, .fig-header .svc-mega-list a, .svc-mega-media { border-radius: 0 !important; }
+.svc-mega { clip-path: inset(0 0 100% 0); }
+.svc-mega.is-open { clip-path: inset(0 0 0 0); }
+
+/* Buttons: soft corners, a quick lift on hover, a press state and a red glow on the primary. */
+.fig-button[data-variant], .fb-btn { transition: translate 220ms cubic-bezier(.23,1,.32,1), box-shadow 220ms cubic-bezier(.23,1,.32,1), scale 120ms ease-out; }
+.fig-button[data-variant="primary"] { box-shadow: 0 1px 0 #ffffff33 inset, 0 8px 18px -12px #e31b24b3; }
+@media (hover: hover) and (pointer: fine) {
+  .fig-button[data-variant]:hover, .fb-btn:hover { translate: 0 -2px; box-shadow: 0 14px 26px -16px #23202299; }
+  .fig-button[data-variant="primary"]:hover { box-shadow: 0 1px 0 #ffffff33 inset, 0 16px 30px -14px #e31b24cc; }
+  .fig-header .fig-button[data-variant]:hover { box-shadow: 0 10px 22px -14px #000000b3; }
+}
+.fig-button[data-variant]:active, .fb-btn:active { translate: 0 0; scale: .97; box-shadow: none; }
+.fig-button[data-variant]:focus-visible, .fb-btn:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { .fig-button[data-variant], .fb-btn { transition: none; } .fig-button[data-variant]:hover { translate: none; } }
+
+/* Active navigation reads white on the dark bar, with a white underline. */
+.fig-header a.fig-text[aria-current="page"], .services-menu summary[aria-current="location"] > span { text-decoration-color: #fff; }
+.fig-header [data-name="Nav"] a.fig-text[aria-current="page"] { color: #fff !important; }
+
+/* Network map: land tinted from the section's own ink so it sits in the pink wash, edges faded out. */
+.fb-land { fill: #23202212; }
+.fb-land-key { fill: #2320221c; }
+.fb-land-au { fill: #b8121b1f; }
+@media (min-width: 1000px) { .fb-network-frame { left: 740px; top: 0; width: 620px; height: 780px; } }
+/* Contact operations: QR sits on a clean white square (the art has its own rounded corners). */
+[data-layer="132:399"], [data-layer="132:399"] > .paint-group { background: #fff !important; }
+[data-layer="132:399"] .fig-stroke { border-color: transparent !important; }
+
+/* About Phoenix (home + why): heading up top, one bento column aligned to the stats (top 120 → 1108). */
+@media (min-width: 1000px) {
+  :is([data-layer="187:447"], [data-layer="208:584"]) { top: 0 !important; }
+  :is([data-layer="192:824"], [data-layer="208:583"]) { display: none !important; }
+  .fb-partner { top: 120px; width: 626px; height: 988px; }
+  .fb-partner-sticky { height: 100%; grid-template-rows: 1fr 400px; gap: 16px; }
+}
+.fb-partner-hero { position: relative; margin: 0; min-height: 0; overflow: hidden; }
+.fb-partner .fb-partner-hero img { width: 100%; height: 100%; object-fit: cover; object-position: 48% 50%; }
+.fb-partner-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #121011a6, transparent 40%); pointer-events: none; }
+.fb-partner-hero figcaption { position: absolute; z-index: 1; left: 24px; bottom: 22px; color: #fff; font: 600 15px/1.3 'Manrope Variable', sans-serif; letter-spacing: .01em; }
+.fb-partner-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; min-height: 0; }
+.fb-partner .fb-partner-row img { width: 100%; height: 100%; object-fit: cover; }
+.fb-partner-row .fb-partner-card { flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 28px; background: var(--red); }
+.fb-partner-row .fb-partner-logo { width: 64px; height: 64px; }
+.fb-partner-row .fb-partner-title { font-size: 24px; }
+.fb-partner-row .fb-partner-text { color: #ffffffd9; }
+@media (max-width: 999px) {
+  .fb-partner-sticky { display: grid; gap: 12px; }
+  .fb-partner .fb-partner-hero img { aspect-ratio: 4 / 3; height: auto; }
+  .fb-partner-row { grid-template-columns: 1fr; }
+  .fb-partner .fb-partner-row img { aspect-ratio: 4 / 3; height: auto; }
+  .fb-partner-row .fb-partner-card { gap: 20px; padding: 22px; }
+}
+
+/* About truck: lit cargo bay with HD freight (same drawing language as the footer conveyor). */
+.fb-truck-inside { background: #161415; }
+.fb-truck-inside::before { content: none; }
+.fb-bay { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fb-truck .fb-pallet { background: none; box-shadow: none; border-radius: 0; left: var(--l); width: var(--w); height: var(--h); bottom: var(--b); filter: drop-shadow(0 10px 8px #00000080); }
+.fb-truck .fb-pallet::after { content: none; }
+.fb-load { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.fb-load-0 { --l: 44.5%; --w: 18%; --h: 46%; --b: 30.6%; }
+.fb-load-1 { --l: 63.5%; --w: 16%; --h: 38%; --b: 31.4%; }
+.fb-load-2 { --l: 80.5%; --w: 14%; --h: 26%; --b: 32.2%; }
+
+/* Home services: heading and card row ride down with the scroll while the row moves sideways. */
+@media (min-width: 1000px) {
+  [data-layer="187:477"] > .fig-node { translate: 0 var(--pin, 0px); }
+  [data-layer="187:477"] [data-layer="323:1069"] { scroll-snap-type: none !important; scroll-behavior: auto !important; }
+}
+@media (min-width: 1000px) { [data-layer="187:478"] { width: 720px !important; } }
+@media (max-width: 999px) { .fb-partner .fb-partner-row img { display: none; } }
