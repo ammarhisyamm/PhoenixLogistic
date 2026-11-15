@@ -235,15 +235,85 @@ function IncludePulse() {
 }
 
 // Footer: a slim conveyor of cartons, a container and DG-labelled boxes in place of the link columns.
+// Footer: detailed vector parcels on a roller conveyor (client: small parcels should look more real).
+function Barcode({ x, y, w, h }) {
+  const bars = [2, 1, 1, 3, 1, 2, 1, 1, 2, 3, 1, 1, 2, 1, 3, 1];
+  let cx = x;
+  const unit = w / bars.reduce((a, b) => a + b + 1, 0);
+  return <g fill="#2b2526">{bars.map((b, i) => { const r = <rect key={i} x={cx} y={y} width={b * unit} height={h} />; cx += (b + 1) * unit; return r; })}</g>;
+}
+function Carton({ w = 64, h = 54, tape = true, label = true, fragile = false }) {
+  return <svg className="fb-parcel" width={w} height={h + 8} viewBox={`0 0 ${w} ${h + 8}`}>
+    <defs>
+      <linearGradient id={`cb${w}${h}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9b384" /><stop offset=".55" stopColor="#c69a66" /><stop offset="1" stopColor="#a87d4e" /></linearGradient>
+    </defs>
+    <path d={`M0 8 L8 0 H${w} V${h} L${w - 8} ${h + 8} H0 Z`} fill="#8f6a41" />
+    <rect x="0" y="8" width={w - 8} height={h} rx="2" fill={`url(#cb${w}${h})`} />
+    <path d={`M0 8 L8 0 H${w} L${w - 8} 8 Z`} fill="#e4c597" />
+    <path d={`M${w - 8} 8 L${w} 0 V${h} L${w - 8} ${h + 8} Z`} fill="#9c7447" />
+    {tape && <>
+      <rect x={(w - 8) / 2 - 5} y="8" width="10" height={h} fill="#d8262e" opacity=".92" />
+      <path d={`M${(w - 8) / 2 - 5 + 2} 8 L${(w - 8) / 2 + 2 + 3} 0 H${(w - 8) / 2 + 13} L${(w - 8) / 2 + 5} 8 Z`} fill="#ef4249" />
+      <rect x={(w - 8) / 2 - 5} y="8" width="10" height={h} fill="url(#fb-sheen)" />
+    </>}
+    {label && <g>
+      <rect x="5" y={h - 14} width={(w - 8) / 2 - 13} height="16" rx="1.5" fill="#fbf8f4" />
+      <Barcode x={7} y={h - 11} w={(w - 8) / 2 - 17} h={6} />
+      <rect x="7" y={h - 3} width={(w - 8) / 2 - 22} height="1.6" fill="#9a908c" />
+    </g>}
+    {fragile && <g fill="none" stroke="#5b4129" strokeWidth="1.4" strokeLinecap="round"><path d={`M${w - 22} 22 v-8 m-3 3 l3 -3 l3 3`} /><path d={`M${w - 15} 22 v-8 m-3 3 l3 -3 l3 3`} /></g>}
+  </svg>;
+}
+function DgParcel() {
+  return <svg className="fb-parcel" width="62" height="64" viewBox="0 0 62 64">
+    <path d="M0 8 L8 0 H62 V56 L54 64 H0 Z" fill="#8f6a41" />
+    <rect x="0" y="8" width="54" height="56" rx="2" fill="url(#cb6456)" />
+    <path d="M0 8 L8 0 H62 L54 8 Z" fill="#e4c597" />
+    <path d="M54 8 L62 0 V56 L54 64 Z" fill="#9c7447" />
+    <g transform="translate(27 36) rotate(45)"><rect x="-13" y="-13" width="26" height="26" rx="1.5" fill="#fff" stroke="#1d1a1b" strokeWidth="1.6" />
+      <g stroke="#1d1a1b" strokeWidth="1.2">{[-8, -4, 0].map(o => <line key={o} x1={-10} y1={o} x2={10} y2={o} transform="rotate(-45)" />)}</g></g>
+    <text x="27" y="47" textAnchor="middle" fontSize="8" fontWeight="700" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
+  </svg>;
+}
+function WrappedPallet() {
+  return <svg className="fb-parcel" width="92" height="78" viewBox="0 0 92 78">
+    <rect x="2" y="68" width="84" height="5" fill="#b78a57" /><rect x="2" y="73" width="10" height="5" fill="#9c7447" /><rect x="39" y="73" width="10" height="5" fill="#9c7447" /><rect x="76" y="73" width="10" height="5" fill="#9c7447" />
+    {[[4, 40, 26, 28], [31, 40, 26, 28], [58, 40, 26, 28], [10, 14, 34, 26], [45, 14, 34, 26]].map(([x, y, w, h], i) => <g key={i}>
+      <rect x={x} y={y} width={w} height={h} rx="1.5" fill="url(#cb6456)" stroke="#9c7447" strokeWidth=".8" />
+      <rect x={x} y={y + h * .38} width={w} height="3" fill="#d8262e" opacity=".85" />
+    </g>)}
+    <path d="M2 12 H86 V68 H2 Z" fill="url(#fb-wrap)" />
+    <path d="M6 20 L84 30 M4 44 L86 52 M6 58 L82 64" stroke="#ffffff6e" strokeWidth="1.2" />
+  </svg>;
+}
+function MiniContainer() {
+  return <svg className="fb-parcel" width="168" height="72" viewBox="0 0 168 72">
+    <defs><linearGradient id="fb-ctr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e5333b" /><stop offset="1" stopColor="#a5141b" /></linearGradient></defs>
+    <path d="M0 8 L8 0 H168 V62 L160 70 H0 Z" fill="#7d0f14" />
+    <rect x="0" y="8" width="160" height="62" rx="2" fill="url(#fb-ctr)" />
+    <path d="M0 8 L8 0 H168 L160 8 Z" fill="#ef5359" />
+    {Array.from({ length: 22 }, (_, i) => <rect key={i} x={6 + i * 6.8} y="12" width="3" height="54" fill="#00000026" />)}
+    <rect x="0" y="8" width="160" height="4" fill="#ffffff2e" /><rect x="0" y="66" width="160" height="4" fill="#00000033" />
+    <rect x="4" y="12" width="2" height="54" fill="#5f0b0f" /><rect x="154" y="12" width="2" height="54" fill="#5f0b0f" />
+    <text x="80" y="44" textAnchor="middle" fontSize="13" fontWeight="700" letterSpacing="-.3" fill="#ffffffe6" fontFamily="Geist Variable, sans-serif">PHOENIX</text>
+    <text x="146" y="22" textAnchor="end" fontSize="5.5" fill="#ffffffb3" fontFamily="monospace">PHXU 204871 2</text>
+  </svg>;
+}
 function Conveyor() {
-  const items = ['box', 'box-tall', 'dg', 'container', 'box', 'box-wrap', 'dg', 'box-tall', 'container', 'box'];
+  const items = ['box', 'tall', 'dg', 'container', 'box', 'pallet', 'dg', 'tall', 'container', 'box'];
+  const draw = t => t === 'dg' ? <DgParcel /> : t === 'container' ? <MiniContainer /> : t === 'pallet' ? <WrappedPallet /> : t === 'tall' ? <Carton w={52} h={70} fragile /> : <Carton />;
   return <div className="fb-conveyor" aria-hidden="true">
+    <svg width="0" height="0" style={{ position: 'absolute' }}><defs>
+      <linearGradient id="cb6456" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9b384" /><stop offset=".55" stopColor="#c69a66" /><stop offset="1" stopColor="#a87d4e" /></linearGradient>
+      <linearGradient id="fb-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".28" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+      <linearGradient id="fb-wrap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".34" /><stop offset=".5" stopColor="#fff" stopOpacity=".08" /><stop offset="1" stopColor="#fff" stopOpacity=".26" /></linearGradient>
+    </defs></svg>
     <div className="fb-belt-track">
       {[0, 1].map(k => <div key={k} className="fb-belt-run">
-        {items.map((t, i) => <span key={i} className={'fb-item fb-' + t}>{t === 'dg' && <i>9</i>}</span>)}
+        {items.map((t, i) => <span key={i} className="fb-item">{draw(t)}</span>)}
       </div>)}
     </div>
-    <span className="fb-belt" />
+    <span className="fb-belt"><span className="fb-belt-rollers" /></span>
     <p className="fb-conveyor-caption">Freight moving across Australia, every day.</p>
   </div>;
 }
@@ -323,7 +393,9 @@ function RelatedHover() {
     if (cards.length < 2) return;
     const W = 1280, gap = 12, big = 700;
     const small = (W - big - gap * (cards.length - 1)) / (cards.length - 1);
+    const desktop = matchMedia('(min-width: 1000px)');
     const layout = active => {
+      if (!desktop.matches) { cards.forEach(c => { c.style.left = ''; c.style.width = ''; c.removeAttribute('data-expanded'); }); return; }
       let x = 0;
       cards.forEach((c, i) => {
         const w = i === active ? big : small;
@@ -333,9 +405,11 @@ function RelatedHover() {
       });
     };
     layout(0);
+    const onChange = () => layout(0);
+    desktop.addEventListener('change', onChange);
     const enter = i => () => layout(i);
     const handlers = cards.map((c, i) => { const h = enter(i); c.addEventListener('mouseenter', h); c.addEventListener('focus', h); return h; });
-    return () => cards.forEach((c, i) => { c.removeEventListener('mouseenter', handlers[i]); c.removeEventListener('focus', handlers[i]); });
+    return () => { desktop.removeEventListener('change', onChange); cards.forEach((c, i) => { c.removeEventListener('mouseenter', handlers[i]); c.removeEventListener('focus', handlers[i]); }); };
   }, []);
   return <span ref={root} hidden />;
 }

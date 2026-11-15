@@ -5,6 +5,8 @@ import assets from './data/assets.json';
 import paints from './data/paints.json';
 import process from './data/process.json';
 import { photos } from '../option2/photos';
+import { serviceIcons } from '../option2/icons';
+import { ArrowUpRight } from '@phosphor-icons/react';
 import { phoenixPaths } from './routes.mjs';
 import { usePageMotion } from './motion';
 import { FeedbackPart, HeroVideo } from './feedback-ui';
@@ -200,7 +202,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
      </span>
      {hero&&ctx.heroVideo&&<HeroVideo/>}
      {n.custom ? <FeedbackPart name={n.custom} n={n} page={ctx.page}/> :
-     ctx.header && children.some(child=>child.characters==='Services') ? <ServicesMenu currentPath={ctx.path} /> :
+     ctx.header && children.some(child=>child.characters==='Services') ? <ServicesMenu currentPath={ctx.path} mega /> :
      field?<Field name={field} node={n} parent={parent}/>:
      id==='187:441'&&ctx.quickQuote?<QuoteStarter/>:
      id==='67:1289'?<div className="fig-radios"><label><input name="frequency" type="radio" value="One-off shipment" defaultChecked/> One-off shipment</label><label><input name="frequency" type="radio" value="Regular contract"/> Regular contract</label></div>:
@@ -324,18 +326,52 @@ export function Design({tree,page,path}){
  </State.Provider>;
 }
 
-function ServicesMenu({ currentPath }) {
- return <details className="services-menu" onKeyDown={event => {
+function ServicesMenu({ currentPath, mega }) {
+ const root = useRef(null);
+ const [active, setActive] = useState(services[0].slug);
+ const [open, setOpen] = useState(false);
+ // Desktop: the Option 2 mega menu (list with icons and a photo that follows the hovered service),
+ // laid out under the full header bar rather than under the Services label.
+ const place = () => {
+   const el = root.current, header = el?.closest('.fig-header');
+   if (!mega || !el || !header) return;
+   const h = header.getBoundingClientRect(), d = el.getBoundingClientRect(), k = h.width / header.offsetWidth || 1;
+   el.style.setProperty('--mega-x', (h.left - d.left) / k + 'px');
+   el.style.setProperty('--mega-y', (h.bottom - d.top) / k + 10 + 'px');
+   el.style.setProperty('--mega-w', header.offsetWidth + 'px');
+ };
+ useEffect(() => {
+   if (!mega) return;
+   const close = event => { if (root.current?.open && !root.current.contains(event.target)) root.current.open = false; };
+   document.addEventListener('pointerdown', close);
+   return () => document.removeEventListener('pointerdown', close);
+ }, [mega]);
+ const current = services.find(s => s.slug === active);
+ return <details ref={root} className={'services-menu' + (mega ? ' has-mega' : '')} onToggle={event => { setOpen(event.currentTarget.open); place(); }} onKeyDown={event => {
    if (event.key !== 'Escape' || !event.currentTarget.open) return;
    event.stopPropagation();
    event.currentTarget.open = false;
    event.currentTarget.querySelector('summary').focus();
  }}>
    <summary aria-current={services.some(service => currentPath==='/services/'+service.slug)?'location':undefined}><span>Services</span></summary>
-   <ul>{services.map(service => {
+   {mega ? <div className={'svc-mega' + (open ? ' is-open' : '')}>
+     <ul className="svc-mega-list">{services.map((service, i) => {
+       const path = '/services/' + service.slug, Ico = serviceIcons[service.slug];
+       return <li key={path} style={{ '--i': i }}><a href={path} aria-current={path===currentPath?'page':undefined} className={active===service.slug?'is-active':undefined}
+         onPointerEnter={() => setActive(service.slug)} onFocus={() => setActive(service.slug)}>
+         {Ico && <Ico size={26} weight={active===service.slug?'fill':'light'} aria-hidden="true" />}
+         <span>{service.title}</span>
+         <ArrowUpRight className="svc-mega-go" size={18} aria-hidden="true" />
+       </a></li>;
+     })}</ul>
+     <a className="svc-mega-media" href={'/services/' + current.slug} tabIndex={-1} aria-hidden="true">
+       {services.map(s => <img key={s.slug} src={photos.services[s.slug]} alt="" className={s.slug===active?'is-on':undefined} loading="lazy" />)}
+       <span className="svc-mega-caption"><b>{current.shortTitle}</b><small>{current.description}</small></span>
+     </a>
+   </div> : <ul>{services.map(service => {
      const path = '/services/' + service.slug;
      return <li key={path}><a href={path} aria-current={path===currentPath?'page':undefined}>{service.title}</a></li>;
-   })}</ul>
+   })}</ul>}
  </details>;
 }
 

@@ -38,14 +38,14 @@ const photo = {
 // Components rendered in place of, or after, a layer's own children.
 const replace = {
   '69:1497': 'quote-form',   // Contact: shorter quote form
-  '187:446': 'about-bento',  // Home About: bento with photo, stats and the Amazon card
-  '208:580': 'about-bento',  // Why Phoenix About: same
-  '252:403': 'values',       // About: Our Values as photo cards and a fact strip
 };
 // Sections whose height changes with the new layouts; later sections move up or down to match.
-const sectionHeight = { '187:446': 880, '208:580': 880, '252:403': 1090 };
+const sectionHeight = {};
 const after = {
   '193:854': 'network',        // Home network section: map on the right, places on the left
+  '191:764': 'partner-panel',  // Home About: photo and Amazon partner card fill the left column
+  '208:581': 'partner-panel',  // Why Phoenix About: same
+  '252:404': 'values-photo',   // About: Our Values photo and facts in the left column
   '62:893': 'stage-route',     // Tracking: truck moving through the four stages
   '198:545': 'truck-load',     // About: pallets loaded, curtain closes, truck drives off
   '61:153': 'include-pulse',   // Services: checklist status sits under the intro, not in the corner
