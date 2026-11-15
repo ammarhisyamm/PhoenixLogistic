@@ -139,6 +139,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const image=fills.some(p=>p.type==='IMAGE');
  const svg=isVector(n)&&assets[id];
  const isText=n.type==='TEXT';
+ const rollText=isText&&/^button(\s|$|\/)/i.test(parent?.name||'');
  const cardArrow=parent?.name==='Icon / H More'&&n.type==='VECTOR';
  const header=name==='Site header';
  const footer=section&&/footer/i.test(name);
@@ -195,7 +196,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
    type={tag==='button'?submit?'submit':'button':undefined}
    onClick={tab?()=>ctx.setQuickQuote(id==='187:440'):previous?event=>ctx.step(-1,event.detail!==0):next?event=>ctx.step(1,event.detail!==0):undefined}
    onSubmit={form?trackForms.has(id)?ctx.track:ctx.quoteSubmit:undefined}>
-   {isText?(heroTitle?text.split('\n').map((line,i,all)=><span className="hero-line" key={i}><span>{line}{i<all.length-1?' ':null}</span></span>):text):cardArrow?<svg viewBox="0 0 10 8" className="fig-svg" aria-hidden="true"><path d="M0 4h9M5.5.5 9 4 5.5 7.5" fill="none" stroke="currentColor" /></svg>:svg?<img src={assetURL(svg.file)} alt="" width={b.width} height={b.height} className="fig-svg"/>:<>
+   {isText&&rollText&&!heroTitle?<span className="btn-roll"><span>{text}</span><span aria-hidden="true">{text}</span></span>:isText?(heroTitle?text.split('\n').map((line,i,all)=><span className="hero-line" key={i}><span>{line}{i<all.length-1?' ':null}</span></span>):text):cardArrow?<svg viewBox="0 0 10 8" className="fig-svg" aria-hidden="true"><path d="M0 4h9M5.5.5 9 4 5.5 7.5" fill="none" stroke="currentColor" /></svg>:svg?<img src={assetURL(svg.file)} alt="" width={b.width} height={b.height} className="fig-svg"/>:<>
      <span className="paint-group" aria-hidden="true">
        {fills.map((p,i)=><Paint key={i} p={p} b={b} eager={hero||header||logo}/>)}
        {!!stroke&&edges.some(Boolean)&&<span className="paint fig-stroke" style={{borderColor:rgb(stroke.color,stroke.opacity),borderWidth:edges.map(px).join(' ')}}/>}
@@ -207,7 +208,7 @@ function Node({n,parent,root=false,section=false,inactive=false}){
      id==='187:441'&&ctx.quickQuote?<QuoteStarter/>:
      id==='67:1289'?<div className="fig-radios"><label><input name="frequency" type="radio" value="One-off shipment" defaultChecked/> One-off shipment</label><label><input name="frequency" type="radio" value="Regular contract"/> Regular contract</label></div>:
      id==='119:677'?<ProcessCards n={n}/>:
-     <State.Provider value={scope}>{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
+     <State.Provider value={scope}>{id==='187:477'?<div className="pin-stage">{children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</div>:children.map(c=><Node key={c.id} n={c} parent={n} section={root||c.name==='Site header'} inactive={inactive||!!href||tag==='button'}/>)}</State.Provider>}
    </>}
    {n.after&&<FeedbackPart name={n.after} n={n} page={ctx.page}/>}
    {relatedCard&&<span className="related-card-label" aria-hidden="true">{n.linkLabel}</span>}

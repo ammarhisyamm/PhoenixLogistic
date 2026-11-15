@@ -21,11 +21,14 @@ export function HeroVideo() {
     const v = video.current;
     if (!v) return;
     if (reduced()) { v.pause(); return; }
-    v.play().catch(() => {});
+    // Play only while the hero is on screen; decoding off screen costs frames elsewhere on the page.
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); });
+    io.observe(v);
+    return () => io.disconnect();
   }, []);
+  // H.264 first: hardware-decoded almost everywhere (AV1 falls back to slow software decoding on many laptops).
   return <span className="hero-video" aria-hidden="true">
     <video ref={video} muted loop playsInline preload="metadata" poster="/option2/media/cine-poster.webp">
-      <source src="/option2/media/cine-720.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
       <source src="/option2/media/cine-540.mp4" type="video/mp4" />
     </video>
     <span className="hero-video-shade" />
@@ -54,7 +57,20 @@ const PLACES = [
   { id: 'China', title: 'China', text: 'Air and sea freight partners', routes: ['China'] },
 ];
 // Trucks that loop along routes so the map reads as a live network.
-const TRAFFIC = [[0, 7], [2, 9], [4, 11], [6, 8], [3, 10], [7, 12]];
+
+// Pause looping CSS and SVG animations while their block is off screen (keeps scrolling smooth).
+function useOffscreenPause(ref) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      el.toggleAttribute('data-offscreen', !e.isIntersecting);
+      el.querySelectorAll('svg').forEach(svg => { try { e.isIntersecting ? svg.unpauseAnimations() : svg.pauseAnimations(); } catch { /* not an SMIL root */ } });
+    }, { rootMargin: '200px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+}
 
 function NetworkMap() {
   const [focus, setFocus] = useState(null);
@@ -67,6 +83,7 @@ function NetworkMap() {
     io.observe(root.current);
     return () => io.disconnect();
   }, []);
+  useOffscreenPause(root);
   return <div ref={root} className={'fb-network' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
     <p className="fb-network-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
     <ul className="fb-network-places" aria-label="Where we operate">
@@ -79,33 +96,21 @@ function NetworkMap() {
         </button>
       </li>)}
     </ul>
-    <div className="fb-network-frame">
+    <div className="fb-network-frame"><div className="fb-network-stage">
+      <img className="fb-network-land" src="/option2/media/network-land.webp" alt="" width="700" height="990" loading="lazy" decoding="async" />
+      {['China', 'Sydney', 'Melbourne'].map(name => <span key={name} className={'fb-pulse-dot' + (lit(name) ? '' : ' is-dim')} style={{ left: (CITIES[name][0] - 230) / 7 + '%', top: (CITIES[name][1] + 20) / 9.9 + '%' }} aria-hidden="true" />)}
       <svg className="fb-network-map" viewBox="230 -20 700 990" role="img" aria-label="Map of China and Australia with Phoenix road routes across Australia and a sea route from China">
-        <defs>
-          <radialGradient id="fb-fade" cx="55%" cy="55%" r="70%"><stop offset="72%" stopColor="#fff" /><stop offset="100%" stopColor="#fff" stopOpacity="0" /></radialGradient>
-          <mask id="fb-mask"><rect x="230" y="-20" width="700" height="990" fill="url(#fb-fade)" /></mask>
-        </defs>
-        <g mask="url(#fb-mask)">
-          <path d={MAP.rest} className="fb-land" />
-          <path d={MAP.cn} className="fb-land fb-land-key" />
-          <path d={MAP.au} className="fb-land fb-land-au" />
-        </g>
         <path id="fb-sea" d={arc(CITIES.China, CITIES.Sydney, -.18)} className={'fb-route fb-route-sea' + (lit('China') || lit('Sydney') ? '' : ' is-dim')} />
         {ROUTES.map(([a, b], i) => <path key={a + b} id={'fb-r' + i} d={arc(CITIES[a], CITIES[b])} className={'fb-route' + (routeLit([a, b]) ? '' : ' is-dim')} pathLength="1" style={{ '--i': i }} />)}
-        {TRAFFIC.map(([route, dur], k) => <circle key={k} r="5" className="fb-traffic">
-          <animateMotion dur={dur + 's'} repeatCount="indefinite" begin={(k * 1.3) + 's'} keyPoints={k % 2 ? '1;0' : '0;1'} keyTimes="0;1" calcMode="linear"><mpath href={'#fb-r' + route} /></animateMotion>
-        </circle>)}
-        <g className="fb-ship"><animateMotion dur="16s" repeatCount="indefinite" rotate="auto"><mpath href="#fb-sea" /></animateMotion><rect x="-11" y="-4" width="22" height="8" rx="3" /></g>
         {Object.entries(CITIES).map(([name, [x, y]]) => {
           const key = ['Sydney', 'Melbourne', 'China'].includes(name);
           return <g key={name} transform={`translate(${x} ${y})`} className={'fb-pin' + (key ? ' fb-pin-key' : '') + (lit(name) ? '' : ' is-dim')}>
-            {key && <circle r="18" className="fb-pulse" />}
             <circle r={key ? 9 : 5} />
             <text x={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? -14 : 14} y="5" textAnchor={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? 'end' : 'start'} className={key ? '' : 'fb-pin-minor'}>{name}</text>
           </g>;
         })}
       </svg>
-    </div>
+    </div></div>
   </div>;
 }
 
@@ -113,12 +118,18 @@ function NetworkMap() {
 function PartnerPanel() {
   return <div className="fb-partner">
     <div className="fb-partner-sticky">
-      <img src={card('rollers-03')} alt="Phoenix curtainsider truck on the motorway at golden hour" loading="lazy" />
-      <div className="fb-partner-card">
-        <span className="fb-partner-logo"><AmazonMark size={44} /></span>
-        <div>
-          <p className="fb-partner-title">Amazon Partner Carrier</p>
-          <p className="fb-partner-text">Approved for small-parcel deliveries into Amazon fulfilment centres across NSW, QLD and VIC.</p>
+      <figure className="fb-partner-hero">
+        <img src={card('rollers-03')} alt="Phoenix curtainsider truck on the motorway at golden hour" loading="lazy" />
+        <figcaption>Linehaul fleet · Sydney ⇄ Melbourne</figcaption>
+      </figure>
+      <div className="fb-partner-row">
+        <img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" />
+        <div className="fb-partner-card">
+          <span className="fb-partner-logo"><AmazonMark size={40} /></span>
+          <div>
+            <p className="fb-partner-title">Amazon Partner Carrier</p>
+            <p className="fb-partner-text">Approved for small-parcel deliveries into Amazon fulfilment centres across NSW, QLD and VIC.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -199,11 +210,92 @@ function TruckLoad() {
     <div className="fb-truck-vehicle">
       <img src="/option2/media/truck.webp" alt="" className="fb-truck-base" />
       <span className="fb-truck-inside">
-        {[0, 1, 2].map(i => <span key={i} className="fb-pallet" style={{ '--n': i }} />)}
+        <TruckInterior />
+        <span className="fb-pallet fb-load-0"><LoadPallet id="a" /></span>
+        <span className="fb-pallet fb-load-1"><LoadStack /></span>
+        <span className="fb-pallet fb-load-2"><LoadPallet id="c" tall={false} /></span>
       </span>
       <img src="/option2/media/truck.webp" alt="" className="fb-truck-curtain" />
     </div>
   </div>;
+}
+
+// About truck: a lit cargo bay (ribs, ceiling light, timber floor) drawn over the curtainsider's opening.
+const BAY = { x0: 381, x1: 907, top0: 31.5, top1: 160, floor0: 363, floor1: 353 };
+const bayAt = t => ({ x: BAY.x0 + (BAY.x1 - BAY.x0) * t, top: BAY.top0 + (BAY.top1 - BAY.top0) * t, floor: BAY.floor0 + (BAY.floor1 - BAY.floor0) * t });
+function TruckInterior() {
+  const ribs = Array.from({ length: 10 }, (_, i) => bayAt(i / 9));
+  const deck = 14;
+  return <svg className="fb-bay" viewBox="0 0 917 525" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="bay-wall" x1="0" x2="1"><stop offset="0" stopColor="#3a3435" /><stop offset=".45" stopColor="#262223" /><stop offset="1" stopColor="#121011" /></linearGradient>
+      <linearGradient id="bay-shade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#000" stopOpacity=".55" /><stop offset=".25" stopColor="#000" stopOpacity="0" /><stop offset=".8" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".5" /></linearGradient>
+      <radialGradient id="bay-light" cx=".5" cy="0" r=".9"><stop offset="0" stopColor="#fff4dc" stopOpacity=".55" /><stop offset=".35" stopColor="#ffe9c2" stopOpacity=".16" /><stop offset="1" stopColor="#ffe9c2" stopOpacity="0" /></radialGradient>
+      <linearGradient id="bay-floor" x1="0" x2="1"><stop offset="0" stopColor="#8a6440" /><stop offset=".6" stopColor="#5e432b" /><stop offset="1" stopColor="#3a2a1c" /></linearGradient>
+      <linearGradient id="bay-rib" x1="0" x2="1"><stop offset="0" stopColor="#000" stopOpacity=".5" /><stop offset=".4" stopColor="#5a5253" /><stop offset=".6" stopColor="#7a7071" /><stop offset="1" stopColor="#000" stopOpacity=".35" /></linearGradient>
+    </defs>
+    <rect width="917" height="525" fill="url(#bay-wall)" />
+    {[.18, .52, .84].map(t => { const b = bayAt(t); return <ellipse key={t} cx={b.x} cy={b.top + 6} rx={150 - t * 60} ry={(b.floor - b.top) * .9} fill="url(#bay-light)" />; })}
+    {ribs.map((r, i) => <polygon key={i} points={`${r.x - 4},${r.top} ${r.x + 4},${r.top} ${r.x + 4},${r.floor} ${r.x - 4},${r.floor}`} fill="url(#bay-rib)" opacity={1 - i * .06} />)}
+    {[.33, .62].map(k => <polyline key={k} points={`${BAY.x0},${BAY.top0 + (BAY.floor0 - BAY.top0) * k} ${BAY.x1},${BAY.top1 + (BAY.floor1 - BAY.top1) * k}`} stroke="#8a8081" strokeOpacity=".35" strokeWidth="3" fill="none" />)}
+    {[.18, .52, .84].map(t => { const b = bayAt(t); return <rect key={t} x={b.x - 26 + t * 8} y={b.top + 2} width={52 - t * 16} height="4" rx="2" fill="#fff8e8" opacity=".9" />; })}
+    <rect width="917" height="525" fill="url(#bay-shade)" />
+    <polygon points={`${BAY.x0},${BAY.floor0 - deck} ${BAY.x1},${BAY.floor1 - deck * .7} ${BAY.x1},${BAY.floor1 + 4} ${BAY.x0},${BAY.floor0 + 4}`} fill="url(#bay-floor)" />
+    {Array.from({ length: 4 }, (_, i) => { const k = (i + 1) / 5; return <line key={i} x1={BAY.x0} y1={BAY.floor0 - deck + deck * k} x2={BAY.x1} y2={BAY.floor1 - deck * .7 + deck * .7 * k} stroke="#2a1c11" strokeOpacity=".55" strokeWidth=".8" />; })}
+    <line x1={BAY.x0} y1={BAY.floor0 - deck} x2={BAY.x1} y2={BAY.floor1 - deck * .7} stroke="#c9a476" strokeOpacity=".6" strokeWidth="1.2" />
+  </svg>;
+}
+const TONES = ['#d4ab7a', '#c99f6c', '#dcb787', '#c2955f', '#d0a671'];
+function Box3d({ x, y, w, h, d = 7, tone = 0, tape = true, label = false, dg = false }) {
+  const base = TONES[tone % TONES.length];
+  return <g>
+    <path d={`M${x} ${y} l${d} ${-d} h${w} v${h} l${-d} ${d} Z`} fill="#7d5a36" />
+    <rect x={x} y={y} width={w} height={h} fill={base} />
+    <rect x={x} y={y} width={w} height={h} fill="url(#ld-box)" />
+    <path d={`M${x} ${y} l${d} ${-d} h${w} l${-d} ${d} Z`} fill="#ecd2a9" />
+    <path d={`M${x + w} ${y} l${d} ${-d} v${h} l${-d} ${d} Z`} fill="#a27a4c" />
+    {tape && <><rect x={x} y={y + h * .42} width={w} height={Math.max(3, h * .09)} fill="#d8262e" /><rect x={x} y={y + h * .42} width={w} height="1" fill="#ff7b80" opacity=".6" /></>}
+    {label && <g><rect x={x + 4} y={y + h - 15} width={Math.min(26, w * .45)} height="11" fill="#fbf8f4" /><Barcode x={x + 6} y={y + h - 13} w={Math.min(26, w * .45) - 4} h={4.5} /></g>}
+    {dg && <g transform={`translate(${x + w * .7} ${y + h * .7}) rotate(45)`}><rect x="-6" y="-6" width="12" height="12" fill="#fff" stroke="#1d1a1b" strokeWidth="1" /><rect x="-6" y="-6" width="12" height="5" fill="#d8262e" /></g>}
+    <rect x={x} y={y} width={w} height=".8" fill="#fff" opacity=".35" />
+  </g>;
+}
+function PalletBase({ w }) {
+  return <g>
+    <ellipse cx={w / 2} cy="198" rx={w * .52} ry="3" fill="#000" opacity=".55" />
+    <rect x="0" y="182" width={w} height="5" fill="#c79d68" /><rect x="0" y="182" width={w} height="1.2" fill="#ecc993" />
+    {[0, w / 2 - 9, w - 18].map(x => <g key={x}><rect x={x} y="187" width="18" height="9" fill="#9d7547" /><rect x={x} y="187" width="18" height="2" fill="#6e5032" opacity=".7" /></g>)}
+    <rect x="0" y="194" width={w} height="3" fill="#b0874f" />
+  </g>;
+}
+function LoadDefs() {
+  return <defs>
+    <linearGradient id="ld-box" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".18" /><stop offset=".5" stopColor="#fff" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".22" /></linearGradient>
+    <linearGradient id="ld-wrap" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity=".42" /><stop offset=".18" stopColor="#fff" stopOpacity=".12" /><stop offset=".55" stopColor="#fff" stopOpacity=".05" /><stop offset=".8" stopColor="#fff" stopOpacity=".2" /><stop offset="1" stopColor="#fff" stopOpacity=".08" /></linearGradient>
+  </defs>;
+}
+function LoadPallet({ id, tall = true }) {
+  const w = 150, rows = tall ? 3 : 2, rh = 52, top = 182 - rows * rh;
+  return <svg className="fb-load" viewBox="0 -12 160 212" preserveAspectRatio="xMidYMax meet">
+    <LoadDefs />
+    <PalletBase w={w} />
+    {Array.from({ length: rows }, (_, r) => [0, 1, 2].map(c => <Box3d key={id + r + c} x={2 + c * 49} y={top + r * rh} w={48} h={rh - 1} tone={r * 3 + c + (tall ? 0 : 2)} tape={(r + c) % 2 === 0} label={r === rows - 1 && c === 0} />))}
+    <path d={`M0 ${top - 7} h${w + 7} V182 H0 Z`} fill="url(#ld-wrap)" />
+    {[.2, .45, .7, .9].map(k => <path key={k} d={`M0 ${top + (182 - top) * k} C ${w * .4} ${top + (182 - top) * (k - .05)}, ${w * .7} ${top + (182 - top) * (k + .04)}, ${w} ${top + (182 - top) * (k - .02)}`} stroke="#fff" strokeOpacity=".28" strokeWidth="1" fill="none" />)}
+    <rect x="1" y={top - 6} width="2.5" height={188 - top} fill="#fff" opacity=".45" />
+    <g transform={`translate(${w - 54} ${top + 10})`}><rect width="44" height="16" fill="#e31b24" /><text x="22" y="11" textAnchor="middle" fontSize="8" fontWeight="700" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".4">PHOENIX</text></g>
+  </svg>;
+}
+function LoadStack() {
+  return <svg className="fb-load" viewBox="0 -12 160 212" preserveAspectRatio="xMidYMax meet">
+    <LoadDefs />
+    <ellipse cx="78" cy="197" rx="80" ry="3" fill="#000" opacity=".55" />
+    <Box3d x={2} y={128} w={74} h={68} tone={1} label />
+    <Box3d x={78} y={136} w={72} h={60} tone={3} tape={false} label />
+    <Box3d x={10} y={76} w={60} h={51} tone={2} dg tape={false} />
+    <Box3d x={74} y={92} w={62} h={43} tone={4} />
+    <Box3d x={26} y={40} w={52} h={35} tone={0} />
+  </svg>;
 }
 
 // About: Our Values gets a sticky photo with the depot caption.
@@ -300,9 +392,11 @@ function MiniContainer() {
   </svg>;
 }
 function Conveyor() {
+  const root = useRef(null);
+  useOffscreenPause(root);
   const items = ['box', 'tall', 'dg', 'container', 'box', 'pallet', 'dg', 'tall', 'container', 'box'];
   const draw = t => t === 'dg' ? <DgParcel /> : t === 'container' ? <MiniContainer /> : t === 'pallet' ? <WrappedPallet /> : t === 'tall' ? <Carton w={52} h={70} fragile /> : <Carton />;
-  return <div className="fb-conveyor" aria-hidden="true">
+  return <div ref={root} className="fb-conveyor" aria-hidden="true">
     <svg width="0" height="0" style={{ position: 'absolute' }}><defs>
       <linearGradient id="cb6456" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9b384" /><stop offset=".55" stopColor="#c69a66" /><stop offset="1" stopColor="#a87d4e" /></linearGradient>
       <linearGradient id="fb-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".28" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
@@ -414,10 +508,45 @@ function RelatedHover() {
   return <span ref={root} hidden />;
 }
 
+// Home services: the section pins while the card row scrolls sideways to its end, then the page moves on.
+export const SERVICES_PIN = 1100; // extra section height (Figma px) that the sideways scroll consumes
+function ServicesPin() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const section = ref.current?.parentElement;
+    const track = section?.querySelector('[data-layer="323:1069"]');
+    if (!section || !track) return;
+    const desktop = matchMedia('(min-width: 1000px)');
+    let raf = 0;
+    // The stage itself is CSS sticky (no scroll-linked transforms); only the row's scrollLeft follows the page.
+    const update = () => {
+      raf = 0;
+      if (!desktop.matches) return;
+      const r = section.getBoundingClientRect();
+      const zoom = r.width / section.offsetWidth || 1;
+      const extra = SERVICES_PIN * zoom, content = r.height - extra;
+      const start = Math.max(0, content - innerHeight);
+      const pinned = Math.min(extra, Math.max(0, -r.top - start));
+      const max = track.scrollWidth - track.clientWidth;
+      const left = Math.round((pinned / extra) * max);
+      if (Math.abs(track.scrollLeft - left) > .5) track.scrollLeft = left;
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { addEventListener('scroll', onScroll, { passive: true }); update(); }
+      else removeEventListener('scroll', onScroll);
+    });
+    io.observe(section);
+    addEventListener('resize', onScroll);
+    return () => { io.disconnect(); removeEventListener('scroll', onScroll); removeEventListener('resize', onScroll); cancelAnimationFrame(raf); };
+  }, []);
+  return <span ref={ref} className="fb-services-pin" hidden />;
+}
+
 const parts = {
   network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
   'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm,
-  'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover,
+  'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover, 'services-pin': ServicesPin,
 };
 
 export function FeedbackPart({ name }) {
