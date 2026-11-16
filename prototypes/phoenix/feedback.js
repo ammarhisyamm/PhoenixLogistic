@@ -7,6 +7,8 @@ const card = name => `/option2/photos/${name}@1200.webp`;
 
 // Copy changes by node id.
 const text = {
+  '187:607': 'The Logistics Behind Australian Business.',
+  '187:608': 'Operational experience across e-commerce, retail, FMCG, renewable energy and industrial freight.',
   // Home: proof figures (client: ~1,200 containers and close to 1 million boxes a year).
   '192:831': '1,200+', '192:836': '960k+',
   '179:1250': '1,200+', '179:1255': '960k+',
@@ -48,15 +50,16 @@ const replace = {
   '191:764': 'home-about',  // Home About, rebuilt clean (round 6)
   '208:581': 'home-about',  // Why Phoenix About: same layout, its own photos
   '69:1497': 'quote-form',   // Contact: shorter quote form
+  '187:609': 'sectors',      // Home (round 9): five industry cards
   '129:308': 'ops-cards',    // Why Phoenix: contact operations as platform cards (round 6)
 };
 // Sections whose height changes with the new layouts; later sections move up or down to match.
-const sectionHeight = { '66:952': 1344 - 290, '187:477': 884 + 1100, '193:854': 1300, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
+const sectionHeight = { '187:605': 660, '66:952': 1344 - 290, '187:477': 884 + 1100, '193:854': 1300, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
 const after = {
   '193:854': 'network',        // Home network section: map on the right, places on the left
   '252:404': 'values-photo',   // About: Our Values photo and facts in the left column
   '62:893': 'stage-route',     // Tracking: truck moving through the four stages
-  '198:545': 'truck-load',     // About: pallets loaded, curtain closes, truck drives off
+  '198:545': 'belt-scene',     // About (round 9): realistic belt conveyor in place of the truck
   '61:153': 'include-pulse',   // Services: checklist status sits under the intro, not in the corner
   '187:477': 'services-pin',    // Home services: pin while the cards scroll sideways
   '209:445': 'related-hover',  // Services: hovering a related service makes it the large card
@@ -84,7 +87,7 @@ export function applyFeedback(tree, page) {
     if (replace[n.id]) n.custom = replace[n.id];
     if (after[n.id]) n.after = after[n.id];
     // Footer: services and operations columns make way for the conveyor animation.
-    if (n.name === 'Footer / Services') n.custom = 'conveyor';
+    if (n.name === 'Footer / Services') n.custom = 'footer-nav';
     if (n.name === 'Footer / Operations & tracking') n.styles = { ...n.styles, visible: false };
     // Melbourne depot address on the contact page.
     if (n.characters === 'Victoria' && page === 'contact') n.characters = 'Warehouse D, 5 Logic Court, Truganina VIC 3029';

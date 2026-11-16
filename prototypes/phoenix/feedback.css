@@ -988,3 +988,69 @@ body { font-family: 'Geist Variable', sans-serif; }
 .fb-dm-card:not(#_) span { font-size: 8.5px; }
 .fb-dm-card:not(#_) small { font-size: 7.5px; }
 @media (max-width: 999px) { .fb-dm-callout { display: none; } }
+
+/* ===== Round 9 ===== */
+/* About: realistic belt conveyor, full width, in place of the truck */
+.fb-scene { position: absolute; left: 0; top: 392px; width: 1440px; height: 445px; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); }
+.fb-scene-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.fb-scene-run { animation: fb-scene-run 52s linear infinite; }
+.fb-scene-cleats { animation: fb-scene-cleat .795s linear infinite; }
+@keyframes fb-scene-run { from { transform: translateX(-1700px); } to { transform: translateX(0); } }
+@keyframes fb-scene-cleat { from { transform: translateX(0); } to { transform: translateX(26px); } }
+[data-offscreen] .fb-scene-run, [data-offscreen] .fb-scene-cleats { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .fb-scene-run, .fb-scene-cleats { animation: none; } .fb-scene-run { transform: translateX(-120px); } }
+@media (max-width: 999px) { .fb-scene { position: relative; left: auto; top: auto; width: 190%; margin: 24px -45% 0; height: auto; aspect-ratio: 1440 / 445; } }
+
+/* Home: industry cards */
+[data-layer="187:607"]:not(#_) { --w: 640px !important; }
+[data-layer="187:608"]:not(#_) { --x: 860px !important; --w: 420px !important; }
+[data-layer="187:609"]:not(#_) { --h: 340px !important; overflow: visible !important; }
+.fb-sectors { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.fb-sector { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 340px; padding: 24px 24px 28px; background: #fff; border: 1px solid #e6e0e0; border-radius: 6px; overflow: hidden; isolation: isolate;
+  transition: background-color .45s cubic-bezier(.16,1,.3,1), border-color .45s, transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s; }
+.fb-sector::before { content: ''; position: absolute; inset: auto 0 0; height: 0; background: #232022; z-index: -1; transition: height .55s cubic-bezier(.65,0,.35,1); }
+.fb-sector-top { display: flex; align-items: center; justify-content: space-between; }
+.fb-sector-no { font: 500 13px/1 'Geist Mono', ui-monospace, monospace; letter-spacing: .04em; color: #8a8284; transition: color .45s; }
+.fb-sector-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 8px; background: #fbeeee; color: var(--red, #e31b24); transition: background-color .45s, color .45s, transform .55s cubic-bezier(.34,1.56,.64,1); }
+.fb-sector-body { display: flex; flex-direction: column; gap: 14px; }
+.fb-sector h3 { margin: 0; font: 600 22px/1.2 'Geist Variable', sans-serif; letter-spacing: -.4px; color: #232022; text-wrap: balance; transition: color .45s; }
+.fb-sector i { display: block; width: 24px; height: 2px; background: var(--red, #e31b24); transition: width .55s cubic-bezier(.16,1,.3,1); }
+.fb-sector p { margin: 0; font: 400 14px/1.55 'Geist Variable', sans-serif; color: #6c6466; text-wrap: pretty; transition: color .45s; }
+@media (hover: hover) {
+  .fb-sector:hover { border-color: #232022; transform: translateY(-6px); box-shadow: 0 24px 48px -28px #23202280; }
+  .fb-sector:hover::before { height: 100%; }
+  .fb-sector:hover h3 { color: #fff; }
+  .fb-sector:hover p { color: #ffffffb3; }
+  .fb-sector:hover .fb-sector-no { color: #ffffff80; }
+  .fb-sector:hover .fb-sector-icon { background: var(--red, #e31b24); color: #fff; transform: rotate(-6deg) scale(1.06); }
+  .fb-sector:hover i { width: 56px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fb-sectors .fb-sector { opacity: 0; translate: 0 28px; transition: opacity .7s ease, translate .9s cubic-bezier(.16,1,.3,1), background-color .45s, border-color .45s, transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s; transition-delay: calc(var(--i) * 90ms), calc(var(--i) * 90ms), 0s, 0s, 0s, 0s; }
+  .fb-sectors.is-in .fb-sector { opacity: 1; translate: 0 0; }
+}
+@media (max-width: 999px) {
+  [data-layer="187:609"]:not(#_) { height: auto !important; }
+  .fb-sectors { position: relative; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fb-sector { min-height: 220px; padding: 18px; }
+  .fb-sector:last-child { grid-column: 1 / -1; min-height: 0; }
+  .fb-sector h3 { font-size: 18px; }
+  .fb-sector-icon { width: 44px; height: 44px; }
+}
+@media (max-width: 420px) { .fb-sectors { grid-template-columns: 1fr; } .fb-sector { min-height: 0; gap: 28px; } }
+
+/* Footer: quick navigation */
+.fb-fnav { position: absolute; left: 0; top: 0; width: 620px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.fb-fnav p { margin: 0 0 18px; font: 500 13px/1 'Geist Variable', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #ffffff80; }
+.fb-fnav ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.fb-fnav a { display: inline-flex; align-items: center; gap: 6px; font: 400 16px/1.4 'Geist Variable', sans-serif; color: #fff; text-decoration: none; }
+.fb-fnav a span { background: linear-gradient(var(--red, #e31b24), var(--red, #e31b24)) 0 100% / 0 1px no-repeat; transition: background-size .4s cubic-bezier(.16,1,.3,1); padding-bottom: 2px; }
+.fb-fnav a svg { opacity: 0; translate: -4px 2px; color: var(--red, #e31b24); transition: opacity .3s, translate .4s cubic-bezier(.16,1,.3,1); }
+.fb-fnav a:is(:hover, :focus-visible) span { background-size: 100% 1px; }
+.fb-fnav a:is(:hover, :focus-visible) svg { opacity: 1; translate: 0 0; }
+.fb-fnav a:focus-visible { outline: 2px solid var(--red, #e31b24); outline-offset: 3px; }
+@media (max-width: 999px) { .fb-fnav { position: relative; width: 100%; gap: 24px; margin: 8px 0 16px; } .fb-fnav a { font-size: 15px; } }
+.fb-sector h3 { min-height: 2.4em; display: flex; align-items: flex-end; }
+.fb-sector p { min-height: 4.65em; }
+[data-layer="187:650"]:not(#_) { --w: 620px !important; overflow: visible !important; }

@@ -5,6 +5,7 @@ import { company, services, transportEmail } from '../../src/data';
 import { MAP } from '../option2/mapData';
 import { photos } from '../option2/photos';
 import { FreightDefs, Box, Pallet, Film, Container } from './freight-art';
+import { ShoppingCart, Storefront, Basket, SolarPanel, Factory, ArrowUpRight } from '@phosphor-icons/react';
 
 const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const card = name => `/option2/photos/${name}@1200.webp`;
@@ -471,6 +472,112 @@ function Conveyor() {
   </div>;
 }
 
+// About (round 9): the footer conveyor, moved here and made more realistic. A belt conveyor in
+// brushed aluminium with a rubber belt, legs and soft floor shadow; cartons, a wrapped pallet and
+// a DG parcel ride across with contact shadows. One SVG, so it scales cleanly on mobile.
+const BELT = { F: 300, Dx: 60, Dy: 43, rail: 30, floor: 424, W: 1440 };
+const RUN = 1700;
+function SceneItem({ kind, x }) {
+  const lift = `translate(${x + BELT.Dx * .32} ${BELT.F - BELT.Dy * .32})`;
+  const shadow = (w) => <ellipse cx={w / 2 + 10} cy="1" rx={w * .56} ry="6" fill="#000" opacity=".42" filter="url(#bs-soft)" />;
+  if (kind === 'pallet') return <g transform={lift}>{shadow(178)}
+    <Pallet x={0} y={-15} w={170} d={14} />
+    {[0, 1].map(r => [0, 1, 2].map(c => <Box key={r + '' + c} x={1 + c * 56.5} y={-15 - (r + 1) * 50} w={55.5} h={49.6} d={14} tone={r * 3 + c} tape={(r + c) % 2 ? 'clear' : 'red'} label={r === 0 && c === 0} />))}
+    <Film x={0} y={-116} w={170} h={101} d={14} />
+  </g>;
+  if (kind === 'stack') return <g transform={lift}>{shadow(118)}
+    <Box x={0} y={-82} w={112} h={82} d={14} tone={1} tape="clear" label marks />
+    <Box x={14} y={-144} w={86} h={62} d={14} tone={3} tape="red" />
+  </g>;
+  if (kind === 'tall') return <g transform={lift}>{shadow(90)}<Box x={0} y={-132} w={86} h={132} d={14} tone={4} tape="clear" label marks fragile /></g>;
+  if (kind === 'dg') return <g transform={lift}>{shadow(104)}<Box x={0} y={-92} w={104} h={92} d={14} tone={2} tape="clear" dg label /></g>;
+  return <g transform={lift}>{shadow(124)}<Box x={0} y={-100} w={124} h={100} d={14} tone={0} tape="red" label marks /></g>;
+}
+function BeltScene() {
+  const root = useRef(null);
+  useOffscreenPause(root);
+  const { F, Dx, Dy, rail, floor, W } = BELT;
+  const items = [['box', 40], ['pallet', 330], ['tall', 680], ['stack', 930], ['dg', 1210], ['box', 1450]];
+  const legs = [150, 640, 1130];
+  const belt = `M0 ${F}L${Dx} ${F - Dy}H${W + Dx}L${W} ${F}Z`;
+  return <div ref={root} className="fb-scene" aria-hidden="true">
+    <FreightDefs />
+    <svg viewBox={`0 0 ${W} 445`} className="fb-scene-svg">
+      <defs>
+        <filter id="bs-soft" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="5" /></filter>
+        <filter id="bs-floor" x="-10%" y="-300%" width="120%" height="700%"><feGaussianBlur stdDeviation="10" /></filter>
+        <linearGradient id="bs-belt" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#2e2a2b" /><stop offset="1" stopColor="#1c1a1b" /></linearGradient>
+        <linearGradient id="bs-rail" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f4f2f1" /><stop offset=".18" stopColor="#d9d5d3" /><stop offset=".55" stopColor="#bdb7b5" /><stop offset=".8" stopColor="#a39d9b" /><stop offset="1" stopColor="#7d7775" /></linearGradient>
+        <linearGradient id="bs-leg" x1="0" x2="1"><stop offset="0" stopColor="#8d8785" /><stop offset=".35" stopColor="#e3dfdd" /><stop offset=".6" stopColor="#bdb7b5" /><stop offset="1" stopColor="#77716f" /></linearGradient>
+        <linearGradient id="bs-light" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".1" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+        <clipPath id="bs-belt-clip"><path d={belt} /></clipPath>
+      </defs>
+      <ellipse cx={W / 2} cy={floor + 4} rx={W * .52} ry="10" fill="#3a2a2c" opacity=".28" filter="url(#bs-floor)" />
+      {legs.map(x => <g key={'b' + x}><rect x={x + Dx - 6} y={F - Dy} width="10" height={floor - F + Dy - 10} fill="url(#bs-leg)" opacity=".7" /></g>)}
+      <rect x={Dx} y={F - Dy - 7} width={W} height="8" fill="url(#bs-rail)" />
+      <path d={belt} fill="url(#bs-belt)" />
+      <g clipPath="url(#bs-belt-clip)"><g className="fb-scene-cleats">
+        {Array.from({ length: Math.ceil((W + Dx) / 26) + 2 }, (_, i) => <path key={i} d={`M${i * 26 - 26} ${F}l${Dx} ${-Dy}`} stroke="#fff" strokeOpacity=".05" strokeWidth="1.2" />)}
+      </g></g>
+      <path d={belt} fill="url(#bs-light)" />
+      <path d={`M${Dx} ${F - Dy}H${W + Dx}`} stroke="#000" strokeOpacity=".35" />
+      <g className="fb-scene-run">
+        {[0, RUN].map(o => <g key={o} transform={`translate(${o} 0)`}>{items.map(([k, x], i) => <SceneItem key={i} kind={k} x={x} />)}</g>)}
+      </g>
+      <rect x="0" y={F} width={W} height={rail} fill="url(#bs-rail)" />
+      <rect x="0" y={F + 11} width={W} height="5" fill="#000" opacity=".16" />
+      <rect x="0" y={F + 16} width={W} height="1" fill="#fff" opacity=".5" />
+      <rect x="0" y={F} width={W} height="1.2" fill="#fff" opacity=".9" />
+      {Array.from({ length: 12 }, (_, i) => <circle key={i} cx={60 + i * 120} cy={F + 23} r="2.6" fill="#6f6967" stroke="#f1eeed" strokeWidth=".8" />)}
+      {legs.map(x => <g key={x}>
+        <rect x={x - 9} y={F + rail} width="18" height={floor - F - rail} fill="url(#bs-leg)" />
+        <rect x={x - 9} y={F + rail} width="18" height="6" fill="#000" opacity=".18" />
+        <rect x={x - 16} y={floor - 6} width="32" height="7" rx="1.5" fill="#4a4544" />
+      </g>)}
+    </svg>
+  </div>;
+}
+
+// Home (round 9): industries as five equal cards. White by default, black with a red icon on hover.
+const SECTORS = [
+  ['E-Commerce & Fulfilment', 'Inbound, pick and pack, and Amazon FBA prep for online sellers.', ShoppingCart],
+  ['Retail & Wholesale', 'Store replenishment and pallet distribution, metro and interstate.', Storefront],
+  ['FMCG & Consumer Goods', 'Fast-moving stock received, stored and delivered on schedule.', Basket],
+  ['Solar & Renewable Energy', 'Panels, inverters and battery freight, including dangerous goods.', SolarPanel],
+  ['Industrial & Manufacturing', 'Heavy pallets, parts and raw materials moved by road.', Factory],
+];
+function Sectors() {
+  const root = useRef(null);
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    if (reduced()) { el.classList.add('is-in'); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add('is-in'); io.disconnect(); } }, { threshold: .2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <ul ref={root} className="fb-sectors">
+    {SECTORS.map(([title, text, Icon], i) => <li key={title} className="fb-sector" style={{ '--i': i }}>
+      <div className="fb-sector-top"><span className="fb-sector-no">0{i + 1}</span><span className="fb-sector-icon"><Icon size={26} weight="light" /></span></div>
+      <div className="fb-sector-body"><h3>{title}</h3><i aria-hidden="true" /><p>{text}</p></div>
+    </li>)}
+  </ul>;
+}
+
+// Footer (round 9): quick navigation back, short and simple.
+const FOOT_NAV = [
+  ['Services', [['Amazon FBA', '/services/amazon-fba-logistics'], ['Warehousing & 3PL', '/services/warehousing-and-3pl'], ['Road freight', '/services/road-freight-and-transport'], ['International freight', '/services/international-freight'], ['Customs clearance', '/services/customs-clearance'], ['Dangerous goods', '/services/dangerous-goods']]],
+  ['Company', [['Why Phoenix', '/why-phoenix'], ['About us', '/about'], ['Contact', '/contact'], ['Track a shipment', '/tracking'], ['Get a quote', '/contact']]],
+];
+function FooterNav() {
+  return <nav className="fb-fnav" aria-label="Footer">
+    {FOOT_NAV.map(([head, links]) => <div key={head}>
+      <p>{head}</p>
+      <ul>{links.map(([label, href]) => <li key={label}><a href={href}><span>{label}</span><ArrowUpRight size={14} weight="bold" aria-hidden="true" /></a></li>)}</ul>
+    </div>)}
+  </nav>;
+}
+
 // Contact: a shorter quote form (client: name, company and country, phone, services, freight type, notes).
 const freightTypes = ['Pallets', 'Cartons / loose cargo', 'Full container (20ft or 40ft)', 'Amazon FBA shipment', 'Dangerous goods', 'Other'];
 // Contact (round 7): select in the shadcn/ui style. A trigger with a chevron, a floating list with
@@ -701,7 +808,7 @@ function OpsCards() {
 
 const parts = {
   'home-about': HomeAbout, 'ops-cards': OpsCards, network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
-  'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm,
+  'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm, 'belt-scene': BeltScene, sectors: Sectors, 'footer-nav': FooterNav,
   'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover, 'services-pin': ServicesPin,
 };
 
