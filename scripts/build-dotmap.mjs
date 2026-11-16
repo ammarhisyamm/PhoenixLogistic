@@ -3,7 +3,7 @@
 import * as topo from 'topojson-client';
 import { readFileSync, writeFileSync } from 'fs';
 const load = f => JSON.parse(readFileSync('node_modules/world-atlas/' + f));
-const W = [40, 180], N = 56, S = -48, STEP = 1.25;
+const W = [40, 180], N = 74, S = -48, STEP = 1.25;
 const c = load('countries-50m.json');
 const feats = topo.feature(c, c.objects.countries).features;
 const polysOf = g => g.type === 'Polygon' ? [g.coordinates] : g.coordinates;

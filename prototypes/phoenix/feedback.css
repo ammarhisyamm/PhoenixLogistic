@@ -971,3 +971,20 @@ body { font-family: 'Geist Variable', sans-serif; }
   [data-layer="69:1497"]:not(#_) { --h: 572px !important; }
   [data-layer="69:1498"]:not(#_) { --y: 604px !important; }
 }
+
+/* Round 8b: the map sits on a globe-like dome (as Our Global Presence). The arc clips the
+   far edge of the map instead of a flat cut; the callout lives above it, unclipped. */
+.fb-dm-dome { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 110% 180% at 50% 184%, #fff 0, #fffafa 60%, #fff6f6 99.4%, transparent 100%);
+  filter: drop-shadow(0 -8px 24px #2320221a); }
+.fb-dm:not(#_) {
+  -webkit-mask-image: radial-gradient(ellipse 110% 180% at 50% 184%, #000 98.6%, transparent 99.4%);
+  mask-image: radial-gradient(ellipse 110% 180% at 50% 184%, #000 98.6%, transparent 99.4%);
+  -webkit-mask-composite: source-over; mask-composite: add; }
+.fb-dm-top { overflow: visible; z-index: 2; }
+.fb-dm-card.is-left { text-align: right; }
+.fb-dm-card:not(#_) { gap: 2px; padding: 8px 10px; }
+.fb-dm-card:not(#_) b { font-size: 11px; }
+.fb-dm-card:not(#_) span { font-size: 8.5px; }
+.fb-dm-card:not(#_) small { font-size: 7.5px; }
+@media (max-width: 999px) { .fb-dm-callout { display: none; } }

@@ -96,8 +96,8 @@ function DotMap({ focus, setFocus }) {
   const [map, setMap] = useState(null);
   useEffect(() => { let live = true; loadDots().then(d => live && setMap(d)).catch(() => {}); return () => { live = false; }; }, []);
   if (!map) return <div className="fb-dm-wrap" aria-hidden="true" />;
-  const G = 10, top = (map.north - 50) / map.step * G;
-  const W = map.cols * G, H = 95 / map.step * G, P = PERSP * W;
+  const G = 10, top = (map.north - 72) / map.step * G;
+  const W = map.cols * G, H = 117 / map.step * G, P = PERSP * W;
   const at = ([lon, lat]) => [(lon - map.west) / map.step * G + G / 2, (map.north - lat) / map.step * G + G / 2 - top];
   const sTop = P / (P + H * Math.sin(TILT));
   const Hvis = H * Math.cos(TILT) * sTop + 16, Ww = W / BLEED, off = (W - Ww) / 2;
@@ -108,8 +108,10 @@ function DotMap({ focus, setFocus }) {
   const [cx, cy] = at(GEO.China), [sx, sy] = at(GEO.Sydney), [mx, my] = at(GEO.Melbourne);
   const pins = ['China', 'Sydney', 'Melbourne'];
   const callout = focus && proj(at(GEO[focus]));
-  const lead = focus === 'China' ? 24 : 64;
+  const lead = focus === 'China' ? 40 : 64;
+  const flip = callout && callout[0] > W / 2 + Ww * .12;
   return <div className="fb-dm-wrap" style={{ aspectRatio: `${Ww} / ${Hvis}` }}>
+    <div className="fb-dm-dome" aria-hidden="true" />
     <div className="fb-dm">
       <svg className="fb-dm-plane" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: `${W} / ${H}`, '--persp': `${PERSP * BLEED * 100}cqw`, '--tilt': `${TILT}rad` }} role="img" aria-label="Map of Phoenix Global Logistics locations in China and Australia">
         <g className="fb-dm-dots">
@@ -132,8 +134,8 @@ function DotMap({ focus, setFocus }) {
       {callout && <g className="fb-dm-callout" key={focus} transform={`translate(${callout[0]} ${callout[1] - 44})`}>
         <line x1="0" y1="0" x2="0" y2={-lead} />
         <circle cx="0" cy={-lead} r="3.5" />
-        <foreignObject x={focus === 'China' ? -300 : 10} y={-lead - 80} width="290" height="110">
-          <div className={'fb-dm-card' + (focus === 'China' ? ' is-left' : '')}>
+        <foreignObject x={flip ? -196 : 8} y={-lead - 56} width="188" height="76">
+          <div className={'fb-dm-card' + (flip ? ' is-left' : '')}>
             <b>{PIN_INFO[focus][0]}</b><span>{PIN_INFO[focus][1]}</span><small>{PIN_INFO[focus][2]}</small>
           </div>
         </foreignObject>
