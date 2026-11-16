@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { company, services } from '../../src/data';
 import { MAP } from '../option2/mapData';
 import { photos } from '../option2/photos';
+import { FreightDefs, Box, Pallet, Film, Container } from './freight-art';
 
 const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const card = name => `/option2/photos/${name}@1200.webp`;
@@ -72,6 +73,244 @@ function useOffscreenPause(ref) {
   }, [ref]);
 }
 
+// Home: the network as a 3D globe on a 2D canvas, projected by hand (orthographic) so a frame
+// costs ~1ms. Land, borders and Australia come from world-atlas, pre-simplified into
+// /option2/media/globe.json by scripts/build-globe.mjs. Drag to spin; the places list turns the
+// globe to that place. The loop only runs while the globe is on screen.
+const GEO = {
+  China: [121.47, 31.23], Sydney: [151.21, -33.87], Melbourne: [144.96, -37.81], Brisbane: [153.03, -27.47],
+  Adelaide: [138.6, -34.93], Perth: [115.86, -31.95], Darwin: [130.84, -12.46], Townsville: [146.8, -19.26],
+  'Alice Springs': [133.88, -23.7],
+};
+const KEY_PINS = ['China', 'Sydney', 'Melbourne'];
+const VIEW = { null: [-136, 2], Sydney: [-150, 24], Melbourne: [-144, 28], Australia: [-134, 22], China: [-122, -16] };
+const ZOOM = { null: 1, Sydney: 1.14, Melbourne: 1.14, Australia: 1.06, China: 1.08 };
+const LEFT_LABEL = ['Melbourne', 'Adelaide', 'Perth'];
+const RAD = Math.PI / 180;
+const unit = (lon, lat) => { const c = Math.cos(lat * RAD); return [c * Math.cos(lon * RAD), c * Math.sin(lon * RAD), Math.sin(lat * RAD)]; };
+const toXYZ = flat => { const out = new Float32Array(flat.length * 1.5); for (let i = 0, j = 0; i < flat.length; i += 2, j += 3) { const u = unit(flat[i], flat[i + 1]); out[j] = u[0]; out[j + 1] = u[1]; out[j + 2] = u[2]; } return out; };
+const slerp = (a, b, t) => {
+  const d = Math.acos(Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])), s = Math.sin(d) || 1;
+  const ka = Math.sin((1 - t) * d) / s, kb = Math.sin(t * d) / s;
+  return [a[0] * ka + b[0] * kb, a[1] * ka + b[1] * kb, a[2] * ka + b[2] * kb];
+};
+// A ring's bounding cap, so rings on the far side are skipped without projecting them.
+const capOf = xyz => {
+  let x = 0, y = 0, z = 0; for (let i = 0; i < xyz.length; i += 3) { x += xyz[i]; y += xyz[i + 1]; z += xyz[i + 2]; }
+  const n = Math.hypot(x, y, z) || 1; x /= n; y /= n; z /= n;
+  let min = 1; for (let i = 0; i < xyz.length; i += 3) min = Math.min(min, x * xyz[i] + y * xyz[i + 1] + z * xyz[i + 2]);
+  return { c: [x, y, z], r: Math.acos(Math.max(-1, min)) };
+};
+let globeData = null;
+const loadGlobe = () => globeData ??= fetch('/option2/media/globe.json').then(r => r.json()).then(d => {
+  const polys = list => list.map(p => { const rings = p.map(toXYZ); return { rings, cap: capOf(rings[0]) }; });
+  const grat = [];
+  for (let lon = -180; lon < 180; lon += 15) { const f = []; for (let lat = -80; lat <= 80; lat += 2) f.push(lon, lat); grat.push(toXYZ(f)); }
+  for (let lat = -75; lat <= 75; lat += 15) { const f = []; for (let lon = -180; lon <= 180; lon += 2) f.push(lon, lat); grat.push(toXYZ(f)); }
+  return { land: polys(d.land), au: polys(d.au), borders: d.borders.map(toXYZ), grat };
+});
+
+function NetworkGlobe({ focus, lit, routeLit }) {
+  const canvas = useRef(null);
+  const state = useRef({});
+  Object.assign(state.current, { focus, lit, routeLit });
+  useEffect(() => {
+    const cv = canvas.current;
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const still = reduced();
+    let data = null, raf = 0, visible = false, alive = true, w = 0, h = 0, dpr = 1;
+    const rot = [...VIEW.null], vel = [0, 0];
+    let zoom = 1, drag = null, idleAt = -1e4;
+    const t0 = performance.now();
+    const pins = Object.fromEntries(Object.entries(GEO).map(([k, [lon, lat]]) => [k, unit(lon, lat)]));
+    const routes = [['China', 'Sydney', true], ...ROUTES.map(([a, b]) => [a, b, false])].map(([a, b, sea]) => {
+      const A = pins[a], B = pins[b], d = Math.acos(A[0] * B[0] + A[1] * B[1] + A[2] * B[2]);
+      const N = sea ? 90 : 36, lift = sea ? 0.3 : 0.015 + d * 0.32;
+      const pts = Array.from({ length: N + 1 }, (_, j) => { const u = j / N, p = slerp(A, B, u), k = 1 + lift * Math.sin(Math.PI * u); return [p[0] * k, p[1] * k, p[2] * k]; });
+      return { a, b, sea, pts, N };
+    });
+
+    const resize = () => {
+      const r = cv.getBoundingClientRect();
+      const z = cv.offsetWidth ? r.width / cv.offsetWidth : 1;
+      dpr = Math.min(3, Math.max(1, (devicePixelRatio || 1) * z));
+      w = cv.offsetWidth; h = cv.offsetHeight;
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    };
+    const ro = new ResizeObserver(() => { resize(); if (!raf) draw(performance.now()); });
+    ro.observe(cv);
+    resize();
+
+    function draw(now) {
+      if (!data || !w) return;
+      const s = state.current, t = (now - t0) / 1000, key = s.focus ?? 'null';
+      const target = VIEW[key] || VIEW.null, sway = still || s.focus ? 0 : Math.sin(t / 6) * 10;
+      if (!drag) {
+        rot[0] += vel[0]; rot[1] += vel[1]; vel[0] *= 0.9; vel[1] *= 0.9;
+        if (now - idleAt > 1600) { rot[0] += (target[0] + sway - rot[0]) * 0.05; rot[1] += (target[1] - rot[1]) * 0.05; }
+      }
+      rot[1] = Math.max(-70, Math.min(70, rot[1]));
+      zoom += ((ZOOM[key] || 1) - zoom) * 0.06;
+
+      const R = Math.min(w, h) * 0.46 * zoom, cx = w / 2, cy = h / 2;
+      const cl = Math.cos(rot[0] * RAD), sl = Math.sin(rot[0] * RAD), cp = Math.cos(rot[1] * RAD), sp = Math.sin(rot[1] * RAD);
+      // Rotated: X across, Y up, D toward the viewer (D > 0 is the near side).
+      const rotate = (x, y, z) => { const x1 = x * cl - y * sl, y1 = x * sl + y * cl; return [y1, z * cp + x1 * sp, x1 * cp - z * sp]; };
+      const depth = v => { const x1 = v[0] * cl - v[1] * sl; return x1 * cp - v[2] * sp; };
+      // One ring, clipped at the horizon: the hidden part is replaced by the shorter arc of the rim.
+      const ring = xyz => {
+        const n = xyz.length / 3, P = new Array(n);
+        let start = -1;
+        for (let i = 0; i < n; i++) { P[i] = rotate(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]); if (start < 0 && P[i][2] > 0) start = i; }
+        if (start < 0) return;
+        const rimAt = (a, b) => { const k = a[2] / (a[2] - b[2]); const X = a[0] + (b[0] - a[0]) * k, Y = a[1] + (b[1] - a[1]) * k, m = Math.hypot(X, Y) || 1; return [X / m, Y / m]; };
+        let exitAng = 0, prev = P[start];
+        ctx.moveTo(cx + R * prev[0], cy - R * prev[1]);
+        for (let s2 = 1; s2 <= n; s2++) {
+          const q = P[(start + s2) % n];
+          if (prev[2] > 0 && q[2] > 0) ctx.lineTo(cx + R * q[0], cy - R * q[1]);
+          else if (prev[2] > 0) { const [X, Y] = rimAt(prev, q); ctx.lineTo(cx + R * X, cy - R * Y); exitAng = Math.atan2(-Y, X); }
+          else if (q[2] > 0) {
+            const [X, Y] = rimAt(prev, q), a1 = Math.atan2(-Y, X);
+            let d = a1 - exitAng; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+            ctx.arc(cx, cy, R, exitAng, a1, d < 0);
+            ctx.lineTo(cx + R * q[0], cy - R * q[1]);
+          }
+          prev = q;
+        }
+        ctx.closePath();
+      };
+      const fill = (list, style) => {
+        ctx.beginPath();
+        for (const { rings, cap } of list) {
+          if (Math.acos(Math.max(-1, Math.min(1, depth(cap.c)))) - cap.r > Math.PI / 2) continue;
+          for (const xyz of rings) ring(xyz);
+        }
+        ctx.fillStyle = style; ctx.fill();
+      };
+      const lines = (list, style, width) => {
+        ctx.beginPath();
+        for (const xyz of list) {
+          let pen = false;
+          for (let i = 0; i < xyz.length; i += 3) {
+            const [X, Y, D] = rotate(xyz[i], xyz[i + 1], xyz[i + 2]);
+            if (D < 0.02) { pen = false; continue; }
+            pen ? ctx.lineTo(cx + R * X, cy - R * Y) : ctx.moveTo(cx + R * X, cy - R * Y); pen = true;
+          }
+        }
+        ctx.strokeStyle = style; ctx.lineWidth = width; ctx.stroke();
+      };
+      const disc = r => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); };
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      // Contact shadow and a faint red halo.
+      ctx.save(); ctx.translate(cx, cy + R * 1.03); ctx.scale(1, 0.12);
+      let g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.85); g.addColorStop(0, '#23202226'); g.addColorStop(1, '#23202200');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 0.85, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      g = ctx.createRadialGradient(cx, cy, R * 0.98, cx, cy, R * 1.1); g.addColorStop(0, '#e31b241f'); g.addColorStop(1, '#e31b2400');
+      ctx.fillStyle = g; disc(R * 1.1); ctx.fill();
+      // Ocean, lit from the upper left.
+      g = ctx.createRadialGradient(cx - R * 0.4, cy - R * 0.45, R * 0.05, cx - R * 0.1, cy - R * 0.1, R * 1.15);
+      g.addColorStop(0, '#ffffff'); g.addColorStop(0.5, '#f6f2f1'); g.addColorStop(1, '#e4dbd9');
+      ctx.fillStyle = g; disc(R); ctx.fill();
+      lines(data.grat, '#23202212', 0.7);
+      fill(data.land, '#c9bcb8');
+      lines(data.borders, '#faf6f5cc', 0.6);
+      const auOn = s.lit('Sydney') || s.lit('Melbourne') || s.focus === 'Australia';
+      fill(data.au, auOn ? '#dcb1ad' : '#cdbcb9');
+      // Shade toward the rim so the ball reads round, then a crisp rim line.
+      g = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.4, R * 0.15, cx, cy, R);
+      g.addColorStop(0, '#ffffff38'); g.addColorStop(0.55, '#ffffff00'); g.addColorStop(0.85, '#2320220f'); g.addColorStop(1, '#23202238');
+      ctx.fillStyle = g; disc(R); ctx.fill();
+      ctx.strokeStyle = '#23202224'; ctx.lineWidth = 1; ctx.stroke();
+
+      // Routes lifted off the surface; a comet with a white head runs along each.
+      const scr = ([x, y, z]) => { const [X, Y, D] = rotate(x, y, z); const vis = D > 0 || X * X + Y * Y > 1; return [cx + R * X, cy - R * Y, vis]; };
+      ctx.lineCap = 'round';
+      routes.forEach(({ a, b, sea, pts, N }, i) => {
+        const on = sea ? s.lit('China') || s.lit('Sydney') : s.routeLit([a, b]);
+        const P = pts.map(scr);
+        ctx.globalAlpha = on ? 1 : 0.15;
+        const path = (from, to) => { ctx.beginPath(); let pen = false; for (let j = from; j <= to; j++) { const [x, y, v] = P[j]; if (!v) { pen = false; continue; } pen ? ctx.lineTo(x, y) : ctx.moveTo(x, y); pen = true; } };
+        if (sea) ctx.setLineDash([3, 5]);
+        path(0, N); ctx.strokeStyle = sea ? '#e31b24cc' : '#e31b2470'; ctx.lineWidth = sea ? 1.6 : 1.5; ctx.stroke();
+        ctx.setLineDash([]);
+        if (on && !still) {
+          const phase = (t * (sea ? 0.12 : 0.24) + i * 0.37) % 1, span = N * (sea ? 0.25 : 0.4);
+          const head = phase * (N + span), tail = head - span;
+          for (let j = Math.max(1, Math.ceil(tail)); j <= Math.min(N, Math.floor(head)); j++) {
+            if (!P[j - 1][2] || !P[j][2]) continue;
+            const f = (j - tail) / span;
+            ctx.beginPath(); ctx.moveTo(P[j - 1][0], P[j - 1][1]); ctx.lineTo(P[j][0], P[j][1]);
+            ctx.strokeStyle = `rgba(227,27,36,${f.toFixed(3)})`; ctx.lineWidth = 1 + f * 2.2; ctx.stroke();
+          }
+          const hj = Math.floor(head);
+          if (hj <= N && hj >= 0 && P[hj][2]) {
+            ctx.beginPath(); ctx.arc(P[hj][0], P[hj][1], 3.4, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#e31b24'; ctx.stroke();
+          }
+        }
+        ctx.globalAlpha = 1;
+      });
+
+      // Pins and labels, fading out toward the rim.
+      Object.entries(pins).forEach(([name, v]) => {
+        const [X, Y, D] = rotate(v[0], v[1], v[2]);
+        if (D <= 0.05) return;
+        const isKey = KEY_PINS.includes(name), x = cx + R * X, y = cy - R * Y;
+        ctx.globalAlpha = Math.min(1, (D - 0.05) / 0.25) * (s.lit(name) ? 1 : 0.22);
+        if (isKey && !still) {
+          const ph = (t * 0.5 + name.length * 0.13) % 1;
+          ctx.beginPath(); ctx.arc(x, y, 6 + ph * 20, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(227,27,36,${(0.3 * (1 - ph)).toFixed(3)})`; ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(x, y, isKey ? 6 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = isKey ? '#e31b24' : '#232022'; ctx.fill();
+        ctx.lineWidth = isKey ? 2.5 : 1.8; ctx.strokeStyle = '#fff'; ctx.stroke();
+        if (!isKey && R < 230) { ctx.globalAlpha = 1; return; }
+        const left = LEFT_LABEL.includes(name), lx = x + (left ? -1 : 1) * (isKey ? 12 : 8);
+        ctx.font = isKey ? "700 15px 'Manrope Variable', sans-serif" : "600 12px 'Manrope Variable', sans-serif";
+        ctx.textAlign = left ? 'right' : 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+        ctx.lineWidth = 4; ctx.strokeStyle = '#faf6f5e6'; ctx.strokeText(name, lx, y);
+        ctx.fillStyle = isKey ? '#232022' : '#5c5557'; ctx.fillText(name, lx, y);
+        ctx.globalAlpha = 1;
+      });
+    }
+
+    const loop = () => {
+      if (raf || !visible || !data) return;
+      const tick = now => { raf = 0; draw(now); if (visible && (!still || drag)) raf = requestAnimationFrame(tick); };
+      raf = requestAnimationFrame(tick);
+    };
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (!visible) { cancelAnimationFrame(raf); raf = 0; return; }
+      if (data) loop(); else loadGlobe().then(d => { if (alive) { data = d; draw(performance.now()); loop(); } });
+    }, { rootMargin: '300px 0px' });
+    io.observe(cv);
+
+    // Drag to spin, with a little inertia; it eases back to the network after a pause.
+    const down = e => { drag = { x: e.clientX, y: e.clientY, id: e.pointerId }; vel[0] = vel[1] = 0; cv.setPointerCapture?.(e.pointerId); cv.classList.add('is-dragging'); loop(); };
+    const move = e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const k = 70 / Math.max(120, Math.min(w, h) * 0.46);
+      const dx = (e.clientX - drag.x) * k, dy = (e.clientY - drag.y) * k;
+      rot[0] += dx; rot[1] -= dy; vel[0] = dx * 0.5; vel[1] = -dy * 0.5;
+      drag.x = e.clientX; drag.y = e.clientY;
+    };
+    const up = () => { if (!drag) return; drag = null; idleAt = performance.now(); cv.classList.remove('is-dragging'); };
+    cv.addEventListener('pointerdown', down); cv.addEventListener('pointermove', move);
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    // Re-render once when the focus changes under reduced motion (no loop then).
+    state.current.kick = () => { if (still && data) { rot[0] = (VIEW[state.current.focus ?? 'null'] || VIEW.null)[0]; rot[1] = (VIEW[state.current.focus ?? 'null'] || VIEW.null)[1]; zoom = ZOOM[state.current.focus ?? 'null'] || 1; draw(performance.now()); } };
+    return () => { alive = false; io.disconnect(); ro.disconnect(); cancelAnimationFrame(raf); cv.removeEventListener('pointerdown', down); cv.removeEventListener('pointermove', move); cv.removeEventListener('pointerup', up); cv.removeEventListener('pointercancel', up); };
+  }, []);
+  useEffect(() => { state.current.kick?.(); }, [focus]);
+  return <canvas ref={canvas} className="fb-globe" role="img" aria-label="Globe showing Phoenix routes across Australia and the sea lane from China. Drag to spin." />;
+}
+
 function NetworkMap() {
   const [focus, setFocus] = useState(null);
   const lit = name => !focus || PLACES.find(p => p.id === focus).routes.includes(name);
@@ -96,21 +335,7 @@ function NetworkMap() {
         </button>
       </li>)}
     </ul>
-    <div className="fb-network-frame"><div className="fb-network-stage">
-      <img className="fb-network-land" src="/option2/media/network-land.webp" alt="" width="700" height="990" loading="lazy" decoding="async" />
-      {['China', 'Sydney', 'Melbourne'].map(name => <span key={name} className={'fb-pulse-dot' + (lit(name) ? '' : ' is-dim')} style={{ left: (CITIES[name][0] - 230) / 7 + '%', top: (CITIES[name][1] + 20) / 9.9 + '%' }} aria-hidden="true" />)}
-      <svg className="fb-network-map" viewBox="230 -20 700 990" role="img" aria-label="Map of China and Australia with Phoenix road routes across Australia and a sea route from China">
-        <path id="fb-sea" d={arc(CITIES.China, CITIES.Sydney, -.18)} className={'fb-route fb-route-sea' + (lit('China') || lit('Sydney') ? '' : ' is-dim')} />
-        {ROUTES.map(([a, b], i) => <path key={a + b} id={'fb-r' + i} d={arc(CITIES[a], CITIES[b])} className={'fb-route' + (routeLit([a, b]) ? '' : ' is-dim')} pathLength="1" style={{ '--i': i }} />)}
-        {Object.entries(CITIES).map(([name, [x, y]]) => {
-          const key = ['Sydney', 'Melbourne', 'China'].includes(name);
-          return <g key={name} transform={`translate(${x} ${y})`} className={'fb-pin' + (key ? ' fb-pin-key' : '') + (lit(name) ? '' : ' is-dim')}>
-            <circle r={key ? 9 : 5} />
-            <text x={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? -14 : 14} y="5" textAnchor={name === 'Melbourne' || name === 'Adelaide' || name === 'Perth' ? 'end' : 'start'} className={key ? '' : 'fb-pin-minor'}>{name}</text>
-          </g>;
-        })}
-      </svg>
-    </div></div>
+    <div className="fb-network-frame"><NetworkGlobe focus={focus} lit={lit} routeLit={routeLit} /></div>
   </div>;
 }
 
@@ -210,6 +435,7 @@ function TruckLoad() {
     <div className="fb-truck-vehicle">
       <img src="/option2/media/truck.webp" alt="" className="fb-truck-base" />
       <span className="fb-truck-inside">
+        <FreightDefs />
         <TruckInterior />
         <span className="fb-pallet fb-load-0"><LoadPallet id="a" /></span>
         <span className="fb-pallet fb-load-1"><LoadStack /></span>
@@ -245,56 +471,24 @@ function TruckInterior() {
     <line x1={BAY.x0} y1={BAY.floor0 - deck} x2={BAY.x1} y2={BAY.floor1 - deck * .7} stroke="#c9a476" strokeOpacity=".6" strokeWidth="1.2" />
   </svg>;
 }
-const TONES = ['#d4ab7a', '#c99f6c', '#dcb787', '#c2955f', '#d0a671'];
-function Box3d({ x, y, w, h, d = 7, tone = 0, tape = true, label = false, dg = false }) {
-  const base = TONES[tone % TONES.length];
-  return <g>
-    <path d={`M${x} ${y} l${d} ${-d} h${w} v${h} l${-d} ${d} Z`} fill="#7d5a36" />
-    <rect x={x} y={y} width={w} height={h} fill={base} />
-    <rect x={x} y={y} width={w} height={h} fill="url(#ld-box)" />
-    <path d={`M${x} ${y} l${d} ${-d} h${w} l${-d} ${d} Z`} fill="#ecd2a9" />
-    <path d={`M${x + w} ${y} l${d} ${-d} v${h} l${-d} ${d} Z`} fill="#a27a4c" />
-    {tape && <><rect x={x} y={y + h * .42} width={w} height={Math.max(3, h * .09)} fill="#d8262e" /><rect x={x} y={y + h * .42} width={w} height="1" fill="#ff7b80" opacity=".6" /></>}
-    {label && <g><rect x={x + 4} y={y + h - 15} width={Math.min(26, w * .45)} height="11" fill="#fbf8f4" /><Barcode x={x + 6} y={y + h - 13} w={Math.min(26, w * .45) - 4} h={4.5} /></g>}
-    {dg && <g transform={`translate(${x + w * .7} ${y + h * .7}) rotate(45)`}><rect x="-6" y="-6" width="12" height="12" fill="#fff" stroke="#1d1a1b" strokeWidth="1" /><rect x="-6" y="-6" width="12" height="5" fill="#d8262e" /></g>}
-    <rect x={x} y={y} width={w} height=".8" fill="#fff" opacity=".35" />
-  </g>;
-}
-function PalletBase({ w }) {
-  return <g>
-    <ellipse cx={w / 2} cy="198" rx={w * .52} ry="3" fill="#000" opacity=".55" />
-    <rect x="0" y="182" width={w} height="5" fill="#c79d68" /><rect x="0" y="182" width={w} height="1.2" fill="#ecc993" />
-    {[0, w / 2 - 9, w - 18].map(x => <g key={x}><rect x={x} y="187" width="18" height="9" fill="#9d7547" /><rect x={x} y="187" width="18" height="2" fill="#6e5032" opacity=".7" /></g>)}
-    <rect x="0" y="194" width={w} height="3" fill="#b0874f" />
-  </g>;
-}
-function LoadDefs() {
-  return <defs>
-    <linearGradient id="ld-box" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".18" /><stop offset=".5" stopColor="#fff" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".22" /></linearGradient>
-    <linearGradient id="ld-wrap" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity=".42" /><stop offset=".18" stopColor="#fff" stopOpacity=".12" /><stop offset=".55" stopColor="#fff" stopOpacity=".05" /><stop offset=".8" stopColor="#fff" stopOpacity=".2" /><stop offset="1" stopColor="#fff" stopOpacity=".08" /></linearGradient>
-  </defs>;
-}
 function LoadPallet({ id, tall = true }) {
   const w = 150, rows = tall ? 3 : 2, rh = 52, top = 182 - rows * rh;
   return <svg className="fb-load" viewBox="0 -12 160 212" preserveAspectRatio="xMidYMax meet">
-    <LoadDefs />
-    <PalletBase w={w} />
-    {Array.from({ length: rows }, (_, r) => [0, 1, 2].map(c => <Box3d key={id + r + c} x={2 + c * 49} y={top + r * rh} w={48} h={rh - 1} tone={r * 3 + c + (tall ? 0 : 2)} tape={(r + c) % 2 === 0} label={r === rows - 1 && c === 0} />))}
-    <path d={`M0 ${top - 7} h${w + 7} V182 H0 Z`} fill="url(#ld-wrap)" />
-    {[.2, .45, .7, .9].map(k => <path key={k} d={`M0 ${top + (182 - top) * k} C ${w * .4} ${top + (182 - top) * (k - .05)}, ${w * .7} ${top + (182 - top) * (k + .04)}, ${w} ${top + (182 - top) * (k - .02)}`} stroke="#fff" strokeOpacity=".28" strokeWidth="1" fill="none" />)}
-    <rect x="1" y={top - 6} width="2.5" height={188 - top} fill="#fff" opacity=".45" />
-    <g transform={`translate(${w - 54} ${top + 10})`}><rect width="44" height="16" fill="#e31b24" /><text x="22" y="11" textAnchor="middle" fontSize="8" fontWeight="700" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".4">PHOENIX</text></g>
+    <ellipse cx={w / 2 + 4} cy="198" rx={w * .54} ry="3.2" fill="#000" opacity=".6" />
+    <Pallet x={1} y={182} w={w} d={7} />
+    {Array.from({ length: rows }, (_, r) => [0, 1, 2].map(c => <Box key={id + r + c} x={2 + c * 49.5} y={top + r * rh} w={48.5} h={rh - .5} d={7} tone={r * 3 + c + (tall ? 0 : 2)} tape={(r + c) % 3 === 0 ? 'red' : 'clear'} label={r === rows - 1 && c !== 1} marks={r === 0 && c === 2} />))}
+    <Film x={1} y={top - 1} w={w + 1} h={183 - top} d={7} />
+    <g transform={`translate(${w - 52} ${top + 12})`}><rect width="44" height="15" fill="#e31b24" /><rect width="44" height=".6" fill="#ff8a8f" /><text x="22" y="10.4" textAnchor="middle" fontSize="7.6" fontWeight="700" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".5">PHOENIX</text></g>
   </svg>;
 }
 function LoadStack() {
   return <svg className="fb-load" viewBox="0 -12 160 212" preserveAspectRatio="xMidYMax meet">
-    <LoadDefs />
-    <ellipse cx="78" cy="197" rx="80" ry="3" fill="#000" opacity=".55" />
-    <Box3d x={2} y={128} w={74} h={68} tone={1} label />
-    <Box3d x={78} y={136} w={72} h={60} tone={3} tape={false} label />
-    <Box3d x={10} y={76} w={60} h={51} tone={2} dg tape={false} />
-    <Box3d x={74} y={92} w={62} h={43} tone={4} />
-    <Box3d x={26} y={40} w={52} h={35} tone={0} />
+    <ellipse cx="80" cy="197" rx="82" ry="3.2" fill="#000" opacity=".6" />
+    <Box x={2} y={128} w={72} h={69} d={7} tone={1} tape="red" label marks />
+    <Box x={78} y={136} w={70} h={61} d={7} tone={3} tape="clear" label />
+    <Box x={10} y={76} w={58} h={51.5} d={7} tone={2} dg tape="clear" />
+    <Box x={74} y={92} w={60} h={43.5} d={7} tone={4} tape="red" marks fragile />
+    <Box x={26} y={40} w={50} h={35.5} d={7} tone={0} tape="clear" />
   </svg>;
 }
 
@@ -328,83 +522,50 @@ function IncludePulse() {
 
 // Footer: a slim conveyor of cartons, a container and DG-labelled boxes in place of the link columns.
 // Footer: detailed vector parcels on a roller conveyor (client: small parcels should look more real).
-function Barcode({ x, y, w, h }) {
-  const bars = [2, 1, 1, 3, 1, 2, 1, 1, 2, 3, 1, 1, 2, 1, 3, 1];
-  let cx = x;
-  const unit = w / bars.reduce((a, b) => a + b + 1, 0);
-  return <g fill="#2b2526">{bars.map((b, i) => { const r = <rect key={i} x={cx} y={y} width={b * unit} height={h} />; cx += (b + 1) * unit; return r; })}</g>;
-}
-function Carton({ w = 64, h = 54, tape = true, label = true, fragile = false }) {
-  return <svg className="fb-parcel" width={w} height={h + 8} viewBox={`0 0 ${w} ${h + 8}`}>
-    <defs>
-      <linearGradient id={`cb${w}${h}`} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9b384" /><stop offset=".55" stopColor="#c69a66" /><stop offset="1" stopColor="#a87d4e" /></linearGradient>
-    </defs>
-    <path d={`M0 8 L8 0 H${w} V${h} L${w - 8} ${h + 8} H0 Z`} fill="#8f6a41" />
-    <rect x="0" y="8" width={w - 8} height={h} rx="2" fill={`url(#cb${w}${h})`} />
-    <path d={`M0 8 L8 0 H${w} L${w - 8} 8 Z`} fill="#e4c597" />
-    <path d={`M${w - 8} 8 L${w} 0 V${h} L${w - 8} ${h + 8} Z`} fill="#9c7447" />
-    {tape && <>
-      <rect x={(w - 8) / 2 - 5} y="8" width="10" height={h} fill="#d8262e" opacity=".92" />
-      <path d={`M${(w - 8) / 2 - 5 + 2} 8 L${(w - 8) / 2 + 2 + 3} 0 H${(w - 8) / 2 + 13} L${(w - 8) / 2 + 5} 8 Z`} fill="#ef4249" />
-      <rect x={(w - 8) / 2 - 5} y="8" width="10" height={h} fill="url(#fb-sheen)" />
-    </>}
-    {label && <g>
-      <rect x="5" y={h - 14} width={(w - 8) / 2 - 13} height="16" rx="1.5" fill="#fbf8f4" />
-      <Barcode x={7} y={h - 11} w={(w - 8) / 2 - 17} h={6} />
-      <rect x="7" y={h - 3} width={(w - 8) / 2 - 22} height="1.6" fill="#9a908c" />
-    </g>}
-    {fragile && <g fill="none" stroke="#5b4129" strokeWidth="1.4" strokeLinecap="round"><path d={`M${w - 22} 22 v-8 m-3 3 l3 -3 l3 3`} /><path d={`M${w - 15} 22 v-8 m-3 3 l3 -3 l3 3`} /></g>}
+// Footer conveyor items, drawn with the shared freight art (freight-art.jsx).
+function Carton({ w = 64, h = 54, tape = 'red', label = true, fragile = false, tone = 0 }) {
+  const d = 9, dy = d * .72;
+  return <svg className="fb-parcel" width={w} height={h + dy} viewBox={`0 0 ${w} ${h + dy}`}>
+    <Box x={.3} y={dy} w={w - d - .6} h={h - .3} d={d} tone={tone} tape={tape} label={label} marks fragile={fragile} />
   </svg>;
 }
 function DgParcel() {
-  return <svg className="fb-parcel" width="62" height="64" viewBox="0 0 62 64">
-    <path d="M0 8 L8 0 H62 V56 L54 64 H0 Z" fill="#8f6a41" />
-    <rect x="0" y="8" width="54" height="56" rx="2" fill="url(#cb6456)" />
-    <path d="M0 8 L8 0 H62 L54 8 Z" fill="#e4c597" />
-    <path d="M54 8 L62 0 V56 L54 64 Z" fill="#9c7447" />
-    <g transform="translate(27 36) rotate(45)"><rect x="-13" y="-13" width="26" height="26" rx="1.5" fill="#fff" stroke="#1d1a1b" strokeWidth="1.6" />
-      <g stroke="#1d1a1b" strokeWidth="1.2">{[-8, -4, 0].map(o => <line key={o} x1={-10} y1={o} x2={10} y2={o} transform="rotate(-45)" />)}</g></g>
-    <text x="27" y="47" textAnchor="middle" fontSize="8" fontWeight="700" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
+  const d = 8, dy = d * .72, w = 54, h = 56;
+  return <svg className="fb-parcel" width={w + d} height={h + dy} viewBox={`0 0 ${w + d} ${h + dy}`}>
+    <Box x={.3} y={dy} w={w} h={h - .3} d={d} tone={3} tape="clear" />
+    <g transform={`translate(${w / 2} ${dy + h * .46}) rotate(45)`}>
+      <rect x="-14" y="-14" width="28" height="28" rx=".8" fill="#fbfaf7" stroke="#1d1a1b" strokeWidth=".9" />
+      <rect x="-12.6" y="-12.6" width="25.2" height="25.2" fill="none" stroke="#1d1a1b" strokeWidth=".35" />
+      <g transform="rotate(-45)" fill="#1d1a1b">{[-7.5, -5, -2.5, 0, 2.5, 5, 7.5].map(o => <rect key={o} x={o - .7} y={-13 + Math.abs(o) * .95} width="1.4" height={11 - Math.abs(o) * .95} />)}</g>
+    </g>
+    <text x={w / 2} y={dy + h * .46 + 14} textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
+    <text x={w / 2} y={dy + h - 3} textAnchor="middle" fontSize="2.8" fontWeight="700" letterSpacing=".2" fill="#3d2610" fillOpacity=".8" fontFamily="Geist Variable, sans-serif">UN3480 · LITHIUM ION BATTERIES</text>
   </svg>;
 }
 function WrappedPallet() {
-  return <svg className="fb-parcel" width="92" height="78" viewBox="0 0 92 78">
-    <rect x="2" y="68" width="84" height="5" fill="#b78a57" /><rect x="2" y="73" width="10" height="5" fill="#9c7447" /><rect x="39" y="73" width="10" height="5" fill="#9c7447" /><rect x="76" y="73" width="10" height="5" fill="#9c7447" />
-    {[[4, 40, 26, 28], [31, 40, 26, 28], [58, 40, 26, 28], [10, 14, 34, 26], [45, 14, 34, 26]].map(([x, y, w, h], i) => <g key={i}>
-      <rect x={x} y={y} width={w} height={h} rx="1.5" fill="url(#cb6456)" stroke="#9c7447" strokeWidth=".8" />
-      <rect x={x} y={y + h * .38} width={w} height="3" fill="#d8262e" opacity=".85" />
-    </g>)}
-    <path d="M2 12 H86 V68 H2 Z" fill="url(#fb-wrap)" />
-    <path d="M6 20 L84 30 M4 44 L86 52 M6 58 L82 64" stroke="#ffffff6e" strokeWidth="1.2" />
+  const d = 7, dy = d * .72, w = 86;
+  return <svg className="fb-parcel" width={w + d} height="80" viewBox={`0 0 ${w + d} 80`}>
+    <Pallet x={.3} y={65} w={w} d={d} />
+    {[[1, 37, 28, 28, 0], [29.5, 37, 28, 28, 2], [58, 37, 27.5, 28, 4]].map(([x, y, bw, bh, t]) => <Box key={x} x={x} y={y} w={bw} h={bh} d={d} tone={t} tape={t === 2 ? 'red' : 'clear'} />)}
+    {[[6, 13, 37, 24, 1], [44, 13, 36, 24, 3]].map(([x, y, bw, bh, t]) => <Box key={x} x={x} y={y} w={bw} h={bh} d={d} tone={t} tape="clear" label={t === 1} />)}
+    <Film x={.3} y={12} w={w - .3} h={53} d={d} />
   </svg>;
 }
 function MiniContainer() {
-  return <svg className="fb-parcel" width="168" height="72" viewBox="0 0 168 72">
-    <defs><linearGradient id="fb-ctr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#e5333b" /><stop offset="1" stopColor="#a5141b" /></linearGradient></defs>
-    <path d="M0 8 L8 0 H168 V62 L160 70 H0 Z" fill="#7d0f14" />
-    <rect x="0" y="8" width="160" height="62" rx="2" fill="url(#fb-ctr)" />
-    <path d="M0 8 L8 0 H168 L160 8 Z" fill="#ef5359" />
-    {Array.from({ length: 22 }, (_, i) => <rect key={i} x={6 + i * 6.8} y="12" width="3" height="54" fill="#00000026" />)}
-    <rect x="0" y="8" width="160" height="4" fill="#ffffff2e" /><rect x="0" y="66" width="160" height="4" fill="#00000033" />
-    <rect x="4" y="12" width="2" height="54" fill="#5f0b0f" /><rect x="154" y="12" width="2" height="54" fill="#5f0b0f" />
-    <text x="80" y="44" textAnchor="middle" fontSize="13" fontWeight="700" letterSpacing="-.3" fill="#ffffffe6" fontFamily="Geist Variable, sans-serif">PHOENIX</text>
-    <text x="146" y="22" textAnchor="end" fontSize="5.5" fill="#ffffffb3" fontFamily="monospace">PHXU 204871 2</text>
+  return <svg className="fb-parcel" width="170" height="74" viewBox="0 0 170 74">
+    <Container x={.5} y={8} w={158} h={64} d={10} />
   </svg>;
 }
 function Conveyor() {
   const root = useRef(null);
   useOffscreenPause(root);
   const items = ['box', 'tall', 'dg', 'container', 'box', 'pallet', 'dg', 'tall', 'container', 'box'];
-  const draw = t => t === 'dg' ? <DgParcel /> : t === 'container' ? <MiniContainer /> : t === 'pallet' ? <WrappedPallet /> : t === 'tall' ? <Carton w={52} h={70} fragile /> : <Carton />;
+  const draw = (t, i) => t === 'dg' ? <DgParcel /> : t === 'container' ? <MiniContainer /> : t === 'pallet' ? <WrappedPallet /> : t === 'tall' ? <Carton w={54} h={70} fragile tape="clear" tone={i % 5} /> : <Carton tone={(i * 2) % 5} tape={i % 4 === 0 ? 'red' : 'clear'} />;
   return <div ref={root} className="fb-conveyor" aria-hidden="true">
-    <svg width="0" height="0" style={{ position: 'absolute' }}><defs>
-      <linearGradient id="cb6456" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#d9b384" /><stop offset=".55" stopColor="#c69a66" /><stop offset="1" stopColor="#a87d4e" /></linearGradient>
-      <linearGradient id="fb-sheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".28" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
-      <linearGradient id="fb-wrap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".34" /><stop offset=".5" stopColor="#fff" stopOpacity=".08" /><stop offset="1" stopColor="#fff" stopOpacity=".26" /></linearGradient>
-    </defs></svg>
+    <FreightDefs />
     <div className="fb-belt-track">
       {[0, 1].map(k => <div key={k} className="fb-belt-run">
-        {items.map((t, i) => <span key={i} className="fb-item">{draw(t)}</span>)}
+        {items.map((t, i) => <span key={i} className="fb-item">{draw(t, i)}</span>)}
       </div>)}
     </div>
     <span className="fb-belt"><span className="fb-belt-rollers" /></span>

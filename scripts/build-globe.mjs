@@ -1,0 +1,16 @@
+import * as topo from 'topojson-client'; import * as simp from 'topojson-simplify';
+import { readFileSync, writeFileSync } from 'fs';
+const load = f => JSON.parse(readFileSync('node_modules/world-atlas/' + f));
+const r2 = v => Math.round(v * 100) / 100;
+const flat = ring => ring.flatMap(([a, b]) => [r2(a), r2(b)]);
+let l = load('land-50m.json'); l = simp.presimplify(l, simp.sphericalTriangleArea); l = simp.simplify(l, simp.quantile(l, 0.3));
+const lf = topo.feature(l, l.objects.land); const land = lf.geometry || lf.features[0].geometry;
+const polys = (land.type === 'MultiPolygon' ? land.coordinates : [land.coordinates]).map(p => p.map(flat).filter(r => r.length >= 8));
+let c = load('countries-50m.json'); c = simp.presimplify(c, simp.sphericalTriangleArea); c = simp.simplify(c, simp.quantile(c, 0.3));
+const mesh = topo.mesh(c, c.objects.countries, (a, b) => a !== b);
+const borders = mesh.coordinates.map(flat);
+const au = topo.feature(c, { type: 'GeometryCollection', geometries: c.objects.countries.geometries.filter(g => g.id === '036') }).features[0].geometry;
+const auPolys = au.coordinates.map(p => p.map(flat));
+const out = { land: polys, borders, au: auPolys };
+writeFileSync('public/option2/media/globe.json', JSON.stringify(out));
+console.log(polys.length, polys.flat(2).length / 2, borders.flat().length / 2, JSON.stringify(out).length);

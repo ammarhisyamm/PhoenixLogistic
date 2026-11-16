@@ -597,3 +597,40 @@ body { font-family: 'Manrope Variable', sans-serif; }
 @keyframes fb-pulse-dot { from { transform: scale(.4); opacity: .4; } to { transform: scale(1.6); opacity: 0; } }
 .fb-route-sea { animation: none !important; }
 .fb-network-frame { contain: layout paint; }
+
+/* ---------- Header: the Option 2 bar, in black (owner, round 5) ----------
+   Fit-content bar, 60px tall, 16px corners; logo | nav | actions split by hairlines;
+   nav links get the Option 2 underline that draws in from the left. */
+@media (min-width: 1000px) {
+  .fig-root .fig-header.fig-header { display: flex !important; align-items: stretch; width: fit-content !important; height: 60px !important; left: 50% !important; translate: -50% 0; border-radius: 16px !important; }
+  .fig-root .fig-header.fig-header > .paint-group, .fig-root .fig-header.fig-header > .paint-group > * { border-radius: 16px !important; }
+  .fig-root .fig-header.fig-header > .paint-group > .paint:not(.image-paint):not(.fig-stroke) { background: #161415 !important; }
+  .fig-root .fig-header.fig-header > .paint-group > .fig-stroke { border: 1px solid #ffffff14 !important; }
+  .fig-root .fig-header.fig-header > :is([data-name="Logo"], [data-name="Nav"], [data-name="Actions"]) { position: relative !important; left: auto !important; top: auto !important; translate: none !important; flex: none; }
+  .fig-root .fig-header.fig-header > [data-name="Logo"] { align-self: center; width: 52px !important; height: 44px !important; margin: 0 20px 0 16px; }
+  .fig-root .fig-header.fig-header > [data-name="Logo"] > .paint-group { inset: 0; width: 100%; height: 100%; }
+  .fig-root .fig-header.fig-header > [data-name="Nav"] { display: flex !important; align-items: center; gap: 28px !important; width: auto !important; height: auto !important; padding: 0 28px; border-inline: 1px solid #ffffff1a; }
+  .fig-root .fig-header.fig-header > [data-name="Nav"] > .fig-node { position: relative !important; left: auto !important; top: auto !important; width: auto !important; height: auto !important; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] { display: flex !important; align-items: center; gap: 8px; width: auto !important; height: auto !important; padding: 0 8px; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button { position: relative !important; left: auto !important; top: auto !important; height: 44px !important; border-radius: 10px !important; padding: 0 16px; display: inline-flex !important; align-items: center; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button > .paint-group, .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button > .paint-group > *, .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button::after { border-radius: 10px !important; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button .fig-text { position: relative !important; left: auto !important; top: auto !important; width: auto !important; font: 500 15px/1 'Manrope Variable', sans-serif !important; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button .fig-text { display: flex !important; align-items: center; height: 20px !important; }
+  /* Track reads as a quiet link (Option 2), not an outlined button. */
+  .fig-root .fig-header.fig-header [data-variant^="ghost"] > .paint-group > .fig-stroke { border-color: transparent !important; }
+  .fig-root .fig-header.fig-header [data-variant^="ghost"] { --fill: #ffffff1f; }
+  .fig-root .fig-header.fig-header [data-variant^="ghost"]:hover .fig-text { color: #fff !important; }
+  /* Nav: 15px medium, white; underline draws in on hover and stays on the current page. */
+  .fig-header [data-name="Nav"] a.fig-text, .fig-header .services-menu summary > span { position: relative; font: 500 15px/1 'Manrope Variable', sans-serif !important; text-decoration: none !important; padding-block: 8px; }
+  .fig-header [data-name="Nav"] a.fig-text::after, .fig-header .services-menu summary > span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #fff; transform: scaleX(0); transform-origin: right; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+  .fig-header [data-name="Nav"] a.fig-text:is(:hover, :focus-visible, [aria-current="page"])::after,
+  .fig-header .services-menu summary:is(:hover, :focus-visible) > span::after, .fig-header .services-menu summary[aria-current="location"] > span::after,
+  .fig-header .services-menu[open] summary > span::after { transform: scaleX(1); transform-origin: left; }
+  /* Mega menu keeps its full width under the narrower bar. */
+  .svc-mega { width: 1040px !important; left: calc(var(--mega-x, 0px) + (var(--mega-w, 1040px) - 1040px) / 2) !important; }
+}
+
+/* ---------- Home network: 3D globe (owner, round 5) ---------- */
+.fb-globe { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
+.fb-globe.is-dragging { cursor: grabbing; }
+@media (max-width: 999px) { .fb-network-frame { aspect-ratio: 1 / 1 !important; max-height: none !important; width: 100% !important; } }
