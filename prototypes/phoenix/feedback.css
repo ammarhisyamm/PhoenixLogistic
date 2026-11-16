@@ -695,25 +695,6 @@ body { font-family: 'Geist Variable', sans-serif; }
 }
 
 /* Home About, clean (round 6). Figures are ink and stay ink on hover. */
-.fb-ha { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-direction: column; gap: 64px; }
-.fb-ha-top { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
-.fb-ha-title { margin: 0; font: 600 48px/1.15 'Geist Variable', sans-serif; letter-spacing: -1.2px; color: #232022; }
-.fb-ha-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; }
-.fb-ha-copy p { margin: 0; font: 400 18px/1.6 'Geist Variable', sans-serif; color: #5c5557; text-wrap: pretty; }
-.fb-ha-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 0; }
-.fb-ha-stats > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 8px; padding-top: 24px; border-top: 1px solid #2320221f; }
-.fb-ha-stats dd { margin: 0; font: 600 64px/1 'Geist Variable', sans-serif; letter-spacing: -2px; color: #232022; font-variant-numeric: tabular-nums; }
-.fb-ha-stats dt { font: 400 16px/1.5 'Geist Variable', sans-serif; color: #6c6466; }
-.fb-ha-tiles { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; height: 400px; }
-.fb-ha-photo { position: relative; margin: 0; overflow: hidden; background: #e6dfdd; }
-.fb-ha-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s cubic-bezier(.16,1,.3,1); }
-.fb-ha-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #121011a6, transparent 45%); pointer-events: none; }
-.fb-ha-photo figcaption { position: absolute; z-index: 1; left: 24px; right: 24px; bottom: 20px; color: #fff; font: 500 15px/1.4 'Geist Variable', sans-serif; }
-@media (hover: hover) and (pointer: fine) { .fb-ha-photo:hover img { transform: scale(1.03); } }
-.fb-ha-amazon { display: flex; flex-direction: column; justify-content: space-between; padding: 28px; background: var(--red); color: #fff; }
-.fb-ha-amazon .fb-partner-logo { width: 56px; height: 56px; border-radius: 0; }
-.fb-ha-amazon-title { margin: 0; font: 600 22px/1.2 'Geist Variable', sans-serif; letter-spacing: -.4px; }
-.fb-ha-amazon-text { margin: 8px 0 0; font: 400 15px/1.5 'Geist Variable', sans-serif; color: #ffffffd9; }
 /* Shared outline button for custom blocks: same Option 2 wipe and label roll as the Figma buttons. */
 .fb-obtn { position: relative; isolation: isolate; overflow: hidden; display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px; border: 1px solid #23202233; border-radius: var(--r-btn, 10px); color: #232022; font: 500 15px/1 'Geist Variable', sans-serif; text-decoration: none; transition: color .5s cubic-bezier(.16,1,.3,1), border-color .5s cubic-bezier(.16,1,.3,1); }
 .fb-obtn::after { content: ''; position: absolute; inset: 0; z-index: -1; background: #232022; transform: scaleY(0); transform-origin: bottom; transition: transform .5s cubic-bezier(.16,1,.3,1); }
@@ -728,16 +709,6 @@ body { font-family: 'Geist Variable', sans-serif; }
 .fb-obtn:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
 .fb-obtn:active { transform: translateY(1px); }
 @media (max-width: 999px) {
-  .fb-ha { position: relative; gap: 40px; }
-  .fb-ha-top { grid-template-columns: 1fr; gap: 20px; }
-  .fb-ha-title { font-size: clamp(30px, 7.4vw, 40px); letter-spacing: -.8px; }
-  .fb-ha-copy p { font-size: 16px; }
-  .fb-ha-stats { grid-template-columns: 1fr; gap: 0; }
-  .fb-ha-stats > div { padding: 20px 0; }
-  .fb-ha-stats dd { font-size: 48px; }
-  .fb-ha-tiles { grid-template-columns: 1fr 1fr; height: auto; }
-  .fb-ha-tiles .fb-ha-photo:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
-  .fb-ha-tiles .fb-ha-photo:nth-child(2) { aspect-ratio: 3 / 4; }
 }
 
 /* Home services cards follow their auto layout (photo, title, copy, link) so longer copy pushes
@@ -802,6 +773,165 @@ body { font-family: 'Geist Variable', sans-serif; }
 /* Round 6 · mobile polish for the new parts. */
 @media (max-width: 999px) {
   [data-layer="129:308"] { padding: 0 !important; }
-  .fb-ha-tiles .fb-ha-amazon, .fb-ha-tiles .fb-ha-photo:nth-child(2) { grid-column: 1 / -1; }
-  .fb-ha-tiles .fb-ha-photo:nth-child(2) { aspect-ratio: 4 / 3; }
 }
+
+/* Round 7 · About (home and Why): the "we move freight" layout. */
+.fb-ha { position: absolute; inset: 0 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 80px; min-height: 900px; --ease: cubic-bezier(.16, 1, .3, 1); }
+.fb-ha-left { display: flex; flex-direction: column; justify-content: space-between; gap: 56px; }
+.fb-ha-intro { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; max-width: 520px; }
+.fb-ha-title { margin: 0; font: 600 48px/1.15 'Geist Variable', sans-serif; letter-spacing: -1.2px; color: #232022; }
+.fb-ha-intro p { margin: 0 0 8px; font: 400 18px/1.6 'Geist Variable', sans-serif; color: #5c5557; text-wrap: pretty; }
+.fb-ha-foot { display: flex; flex-direction: column; gap: 32px; }
+.fb-ha-photo { margin: 0; width: 336px; aspect-ratio: 16 / 10; overflow: hidden; background: #e6dfdd; }
+.fb-ha-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fb-ha-line { margin: 0; font: 600 72px/1 'Geist Variable', sans-serif; letter-spacing: -2.6px; color: #232022; }
+.fb-ha-mask { display: block; overflow: hidden; padding-bottom: .08em; margin-bottom: -.04em; }
+.fb-ha-mask > span { display: block; }
+.fb-ha-mask .is-soft { color: #a29a9c; }
+.fb-ha-right { display: flex; flex-direction: column; }
+.fb-ha-eyebrow { position: relative; margin: 0; padding-bottom: 20px; font: 500 15px/1.4 'Geist Variable', sans-serif; color: #232022; }
+.fb-ha-stats { margin: 0; display: flex; flex-direction: column; }
+.fb-ha-stats > div { position: relative; display: flex; flex-direction: column-reverse; gap: 12px; padding: 40px 0; }
+.fb-ha-eyebrow::after, .fb-ha-stats > div::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #2320221f; transform-origin: left; }
+.fb-ha-stats dd { margin: 0; font: 600 128px/.9 'Geist Variable', sans-serif; letter-spacing: -5px; color: #232022; font-variant-numeric: tabular-nums; }
+.fb-ha-stats dt { font: 400 18px/1.4 'Geist Variable', sans-serif; color: #6c6466; }
+.fb-ha-amazon { display: flex; align-items: center; gap: 16px; padding-top: 32px; }
+.fb-ha-amazon .fb-partner-logo { flex: none; display: grid; place-items: center; width: 48px; height: 48px; background: #fff; box-shadow: inset 0 0 0 1px #2320221f; border-radius: 0; }
+.fb-ha-amazon p { margin: 0; display: flex; flex-direction: column; gap: 4px; font: 400 15px/1.5 'Geist Variable', sans-serif; color: #6c6466; }
+.fb-ha-amazon b { font-weight: 600; font-size: 17px; color: #232022; }
+
+/* Motion: lines draw, the photo opens, the headline rises line by line, copy fades up. */
+@media (prefers-reduced-motion: no-preference) {
+  .fb-ha-eyebrow::after, .fb-ha-stats > div::after { transform: scaleX(0); transition: transform 1.2s var(--ease); }
+  .fb-ha-stats > div:nth-child(1)::after { transition-delay: .15s; } .fb-ha-stats > div:nth-child(2)::after { transition-delay: .3s; } .fb-ha-stats > div:nth-child(3)::after { transition-delay: .45s; }
+  .fb-ha-stats > div, .fb-ha-eyebrow, .fb-ha-amazon, .fb-ha-intro > * { opacity: 0; translate: 0 24px; transition: opacity .9s var(--ease), translate .9s var(--ease); }
+  .fb-ha-intro > :nth-child(2) { transition-delay: .08s; } .fb-ha-intro > :nth-child(3) { transition-delay: .16s; }
+  .fb-ha-stats > div:nth-child(1) { transition-delay: .1s; } .fb-ha-stats > div:nth-child(2) { transition-delay: .25s; } .fb-ha-stats > div:nth-child(3) { transition-delay: .4s; }
+  .fb-ha-amazon { transition-delay: .55s; }
+  .fb-ha-photo { clip-path: inset(100% 0 0 0); transition: clip-path 1.2s var(--ease) .2s; }
+  .fb-ha-photo img { scale: 1.15; transition: scale 1.8s var(--ease) .2s; }
+  .fb-ha-mask > span { translate: 0 105%; transition: translate 1s var(--ease); }
+  .fb-ha-mask:nth-child(2) > span { transition-delay: .08s; } .fb-ha-mask:nth-child(3) > span { transition-delay: .3s; } .fb-ha-mask:nth-child(4) > span { transition-delay: .38s; }
+  .fb-ha.is-in .fb-ha-eyebrow::after, .fb-ha.is-in .fb-ha-stats > div::after { transform: none; }
+  .fb-ha.is-in .fb-ha-stats > div, .fb-ha.is-in .fb-ha-eyebrow, .fb-ha.is-in .fb-ha-amazon, .fb-ha.is-in .fb-ha-intro > * { opacity: 1; translate: none; }
+  .fb-ha.is-in .fb-ha-photo { clip-path: inset(0); }
+  .fb-ha.is-in .fb-ha-photo img { scale: 1; }
+  .fb-ha.is-in .fb-ha-mask > span { translate: none; }
+}
+@media (max-width: 999px) {
+  .fb-ha { position: relative; grid-template-columns: 1fr; gap: 48px; min-height: 0; }
+  .fb-ha-title { font-size: clamp(30px, 7.4vw, 40px); letter-spacing: -.8px; }
+  .fb-ha-intro p { font-size: 16px; }
+  .fb-ha-photo { width: 100%; }
+  .fb-ha-line { font-size: clamp(40px, 11vw, 56px); letter-spacing: -1.6px; }
+  .fb-ha-stats > div { padding: 28px 0; }
+  .fb-ha-stats dd { font-size: clamp(64px, 18vw, 96px); letter-spacing: -3px; }
+  .fb-ha-stats dt { font-size: 16px; }
+}
+
+/* Round 7 · Why "Tracking and direct support": the single Track a Shipment tab is a label, not a control. */
+[data-layer="127:264"] { pointer-events: none; cursor: default; }
+[data-layer="127:264"]::after, [data-layer="127:264"]::before { content: none !important; }
+
+/* Round 7 · Navbar: the bar keeps its real size on wide screens (the page canvas scales up, the
+   nav does not), labels at 16px, and Track gets room after the divider. */
+@media (min-width: 1000px) {
+  .fig-root > .fig-header.fig-header { zoom: tan(atan2(1440px, 100cqw)); }
+  .fig-header [data-name="Nav"] a.fig-text, .fig-header .services-menu summary > span,
+  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button .fig-text { font-size: 16px !important; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] { padding: 0 10px 0 20px; gap: 12px; }
+}
+
+/* Round 7 · Services dropdown: same 16px corners as the bar, 10px on the photo; hovering a
+   service no longer fills it, the label just sharpens and the arrow appears. */
+.svc-mega { border-radius: 16px; overflow: hidden; }
+.svc-mega { clip-path: inset(0 0 100% 0 round 16px); }
+.svc-mega.is-open { clip-path: inset(0 0 0 0 round 16px); }
+.svc-mega-media { border-radius: 10px !important; }
+.fig-header .svc-mega-list a.is-active, .fig-header .svc-mega-list a:focus-visible { background: none !important; }
+.fig-header .svc-mega-list a:focus-visible { outline: 2px solid #e31b24; outline-offset: -2px; border-radius: 10px !important; }
+.svc-mega-list:hover a:not(.is-active) { opacity: .55; }
+
+/* Round 7 · Service pages: hero chips and checklist ticks at 8px corners. */
+:is([data-name="Checklist"] [data-name="Icon"], .fig-node[data-name^="Tag / "]):not(#_), :is([data-name="Checklist"] [data-name="Icon"], .fig-node[data-name^="Tag / "]):not(#_) > .paint-group,
+:is([data-name="Checklist"] [data-name="Icon"], .fig-node[data-name^="Tag / "]):not(#_) > .paint-group > * { border-radius: 8px !important; }
+
+/* Round 7 · Why "From office intake": copy centred under each photo, and the side cards fade
+   out softly across the whole row instead of behind two hard white strips. */
+@media (min-width: 1000px) {
+  [data-layer="119:677"] { -webkit-mask-image: linear-gradient(90deg, transparent 10%, #000 32%, #000 68%, transparent 90%); mask-image: linear-gradient(90deg, transparent 10%, #000 32%, #000 68%, transparent 90%); }
+  .process-spot .process-swap > .fig-node:not(.fig-photo), .process-spot > .fig-node > .fig-node:not(.fig-photo):not(.paint-group) { left: 0 !important; width: 100% !important; }
+  .process-spot .fig-node:not(.fig-photo) .fig-node { left: 0 !important; width: 100% !important; }
+  .process-spot .fig-text { left: 0 !important; width: 100% !important; text-align: center !important; justify-content: center !important; text-wrap: balance; }
+  .process-spot .fig-row { justify-content: center; }
+  .process-spot .fig-text:not(.fig-subheading) { padding-inline: 48px; box-sizing: border-box; }
+}
+
+/* Round 7 · Home network: dotted map (after "Our Global Presence") in place of the 3D globe. */
+.fb-gp-globe { max-width: 1120px; margin-top: 24px; }
+.fb-dm { position: absolute; inset: 0; -webkit-mask-image: radial-gradient(ellipse 70% 105% at 50% 100%, #000 82%, transparent 100%); mask-image: radial-gradient(ellipse 70% 105% at 50% 100%, #000 82%, transparent 100%); }
+.fb-dm svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.fb-dm-land { fill: none; stroke: #cfc6c7; stroke-width: 5.2; stroke-linecap: round; transition: stroke .5s ease; }
+.fb-dm-land.is-warm { stroke: #eb7f84; }
+.fb-dm-land.is-hot { stroke: var(--red, #e31b24); }
+.fb-dm-lane { fill: none; stroke: var(--red, #e31b24); stroke-width: 2; stroke-dasharray: .012 .01; opacity: .7; }
+.fb-dm-lane.is-road { stroke-dasharray: none; stroke-width: 2.5; opacity: .85; }
+.fb-dm-pin { cursor: pointer; }
+.fb-dm-drop path { fill: var(--red, #e31b24); stroke: #fff; stroke-width: 2; }
+.fb-dm-drop circle { fill: #fff; }
+.fb-dm-shadow { fill: #23202233; }
+.fb-dm-ring { fill: none; stroke: var(--red, #e31b24); stroke-width: 1.5; opacity: 0; }
+.fb-dm-drop { transform-box: fill-box; transform-origin: 50% 100%; transition: scale .4s cubic-bezier(.34, 1.56, .64, 1); }
+.fb-dm-pin.is-on .fb-dm-drop, .fb-dm-pin:hover .fb-dm-drop { scale: 1.18; }
+.fb-dm-callout line { stroke: #232022; stroke-width: 1; }
+.fb-dm-callout circle { fill: #232022; }
+.fb-dm-card { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; background: #fff; box-shadow: 0 0 0 1px #2320221a, 0 12px 32px -16px #23202240; text-align: left; font-family: 'Geist Variable', sans-serif; }
+.fb-dm-card.is-left { text-align: right; }
+.fb-dm-card b { font-size: 18px; font-weight: 600; color: #232022; }
+.fb-dm-card span { font-size: 14px; color: #5c5557; }
+.fb-dm-card small { font-size: 13px; color: #8a8284; }
+@media (prefers-reduced-motion: no-preference) {
+  .fb-dm-dots { clip-path: inset(0 100% 0 0); transition: clip-path 1.6s cubic-bezier(.65, 0, .35, 1); }
+  .fb-gp.is-drawn .fb-dm-dots { clip-path: inset(0); }
+  .fb-dm-lane { stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s cubic-bezier(.65, 0, .35, 1) 1.2s; }
+  .fb-dm-lane:not(.is-road) { stroke-dasharray: 1; }
+  .fb-dm-lane.is-road { stroke-dasharray: 1; }
+  .fb-gp.is-drawn .fb-dm-lane { stroke-dashoffset: 0; }
+  .fb-dm-pin { opacity: 0; translate: 0 -24px; transition: opacity .4s ease, translate .7s cubic-bezier(.34, 1.56, .64, 1); transition-delay: calc(.9s + var(--i) * .15s); }
+  .fb-gp.is-drawn .fb-dm-pin { opacity: 1; translate: 0 0; }
+  .fb-gp.is-drawn .fb-dm-ring { animation: fb-dm-ping 2.4s ease-out infinite; animation-delay: calc(1.8s + var(--i) * .5s); }
+  .fb-dm-callout { animation: fb-dm-in .45s cubic-bezier(.16, 1, .3, 1) both; }
+  [data-offscreen] .fb-dm-ring { animation-play-state: paused; }
+}
+@keyframes fb-dm-ping { from { opacity: .7; r: 6; } to { opacity: 0; r: 26; } }
+@keyframes fb-dm-in { from { opacity: 0; translate: 0 8px; } }
+@media (max-width: 999px) {
+  .fb-gp-globe { aspect-ratio: 1210 / 760; }
+  .fb-dm-card { padding: 10px 12px; }
+}
+.fb-dm-wrap { position: absolute; inset: 0; }
+.fb-dm-top { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* Round 7 · Contact form in the shadcn/ui manner: 6px fields and card, quiet borders, a ring on
+   focus, and a custom select with a floating list. */
+.fb-quote :is(input, textarea):not(#_) { border-radius: 6px !important; border-color: #e4dfdf; min-height: 44px; box-shadow: 0 1px 2px #2320220d; }
+.fb-quote :is(input, textarea):focus { border-color: #232022; box-shadow: 0 0 0 3px #2320221a; }
+[data-layer="67:1060"]:not(#_), [data-layer="67:1060"]:not(#_) > .paint-group, [data-layer="67:1060"]:not(#_) > .paint-group > * { border-radius: 6px !important; }
+.ui-field { position: relative; display: grid; gap: 8px; }
+.ui-label { font: 500 14px/1.3 'Geist Variable', sans-serif; color: #232022; }
+.ui-select { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; height: 44px; padding: 0 12px 0 14px; border: 1px solid #e4dfdf; border-radius: 6px; background: #fff; box-shadow: 0 1px 2px #2320220d; font: 400 15px/1 'Geist Variable', sans-serif; color: #232022; text-align: left; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; }
+.ui-select[data-placeholder] span { color: #8a8284; }
+.ui-select svg { flex: none; color: #8a8284; }
+.ui-select:focus-visible, .ui-select[aria-expanded="true"] { outline: none; border-color: #232022; box-shadow: 0 0 0 3px #2320221a; }
+.ui-field.is-invalid .ui-select { border-color: var(--red, #e31b24); box-shadow: 0 0 0 3px #e31b241f; }
+.ui-select-list { position: absolute; z-index: 40; left: 0; right: 0; top: calc(100% + 6px); max-height: 280px; overflow: auto; margin: 0; padding: 4px; list-style: none; background: #fff; border: 1px solid #e4dfdf; border-radius: 6px; box-shadow: 0 10px 30px -10px #23202233, 0 2px 6px #2320220f; transform-origin: top; animation: ui-pop .16s cubic-bezier(.16, 1, .3, 1); }
+.ui-select-list li { position: relative; display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 8px 10px 8px 32px; border-radius: 4px; font: 400 14px/1.3 'Geist Variable', sans-serif; color: #232022; cursor: pointer; user-select: none; }
+.ui-select-list li svg { position: absolute; left: 10px; opacity: 0; }
+.ui-select-list li[aria-selected="true"] svg { opacity: 1; }
+.ui-select-list li.is-active { background: #f4f1f1; }
+.ui-native { position: absolute; left: 0; bottom: 0; width: 100%; height: 1px; opacity: 0; pointer-events: none; }
+@keyframes ui-pop { from { opacity: 0; transform: scale(.96) translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .ui-select-list { animation: none; } }
+.fb-quote textarea:not(#_) { min-height: 300px; }
+@media (max-width: 999px) { .fb-quote textarea:not(#_) { min-height: 150px; } }
+@media (max-width: 999px) { [data-layer="69:1497"]:not(#_) { width: 100% !important; align-self: stretch; } .fb-quote { width: 100%; } }

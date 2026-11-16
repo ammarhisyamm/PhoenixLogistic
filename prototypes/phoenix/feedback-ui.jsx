@@ -73,248 +73,70 @@ function useOffscreenPause(ref) {
   }, [ref]);
 }
 
-// Home: the network as a 3D globe on a 2D canvas, projected by hand (orthographic) so a frame
-// costs ~1ms. Land, borders and Australia come from world-atlas, pre-simplified into
-// /option2/media/globe.json by scripts/build-globe.mjs. Drag to spin; the places list turns the
-// globe to that place. The loop only runs while the globe is on screen.
+// Home: the network on a dotted Asia-Pacific map (owner, round 7, after "Our Global Presence").
+// Dots come from world-atlas via scripts/build-dotmap.mjs (/option2/media/dotmap.json), Australia
+// and China flagged. Pins drop in, the China to Sydney lane draws, and the focused place gets a
+// callout on a thin leader line. Hover or tap a place above the map, or a pin, to focus it.
 const GEO = {
-  China: [121.47, 31.23], Sydney: [151.21, -33.87], Melbourne: [144.96, -37.81], Brisbane: [153.03, -27.47],
-  Adelaide: [138.6, -34.93], Perth: [115.86, -31.95], Darwin: [130.84, -12.46], Townsville: [146.8, -19.26],
-  'Alice Springs': [133.88, -23.7],
+  China: [121.47, 31.23], Sydney: [151.21, -33.87], Melbourne: [144.96, -37.81], Australia: [134, -24.5],
 };
-const KEY_PINS = ['China', 'Sydney', 'Melbourne'];
-const VIEW = { null: [-136, 2], Sydney: [-150, 24], Melbourne: [-144, 28], Australia: [-134, 22], China: [-122, -16] };
-const ZOOM = { null: 1, Sydney: 1.14, Melbourne: 1.14, Australia: 1.06, China: 1.08 };
-const LEFT_LABEL = ['Melbourne', 'Adelaide', 'Perth'];
-const RAD = Math.PI / 180;
-const unit = (lon, lat) => { const c = Math.cos(lat * RAD); return [c * Math.cos(lon * RAD), c * Math.sin(lon * RAD), Math.sin(lat * RAD)]; };
-const toXYZ = flat => { const out = new Float32Array(flat.length * 1.5); for (let i = 0, j = 0; i < flat.length; i += 2, j += 3) { const u = unit(flat[i], flat[i + 1]); out[j] = u[0]; out[j + 1] = u[1]; out[j + 2] = u[2]; } return out; };
-const slerp = (a, b, t) => {
-  const d = Math.acos(Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])), s = Math.sin(d) || 1;
-  const ka = Math.sin((1 - t) * d) / s, kb = Math.sin(t * d) / s;
-  return [a[0] * ka + b[0] * kb, a[1] * ka + b[1] * kb, a[2] * ka + b[2] * kb];
+const PIN_INFO = {
+  China: ['China', 'Air and sea freight partners', 'Shanghai, Ningbo and Shenzhen lanes'],
+  Sydney: ['Sydney', 'Head depot · Wetherill Park, NSW', 'Receiving, storage, linehaul'],
+  Melbourne: ['Melbourne', 'Warehouse · Truganina, VIC', 'Storage and metro delivery'],
+  Australia: ['Australia-wide', 'Metro, interstate and linehaul', 'NSW, VIC, QLD, SA, WA, NT'],
 };
-// A ring's bounding cap, so rings on the far side are skipped without projecting them.
-const capOf = xyz => {
-  let x = 0, y = 0, z = 0; for (let i = 0; i < xyz.length; i += 3) { x += xyz[i]; y += xyz[i + 1]; z += xyz[i + 2]; }
-  const n = Math.hypot(x, y, z) || 1; x /= n; y /= n; z /= n;
-  let min = 1; for (let i = 0; i < xyz.length; i += 3) min = Math.min(min, x * xyz[i] + y * xyz[i + 1] + z * xyz[i + 2]);
-  return { c: [x, y, z], r: Math.acos(Math.max(-1, min)) };
-};
-let globeData = null;
-const loadGlobe = () => globeData ??= fetch('/option2/media/globe.json').then(r => r.json()).then(d => {
-  const polys = list => list.map(p => { const rings = p.map(toXYZ); return { rings, cap: capOf(rings[0]) }; });
-  const grat = [];
-  for (let lon = -180; lon < 180; lon += 15) { const f = []; for (let lat = -80; lat <= 80; lat += 2) f.push(lon, lat); grat.push(toXYZ(f)); }
-  for (let lat = -75; lat <= 75; lat += 15) { const f = []; for (let lon = -180; lon <= 180; lon += 2) f.push(lon, lat); grat.push(toXYZ(f)); }
-  return { land: polys(d.land), au: polys(d.au), borders: d.borders.map(toXYZ), grat };
-});
-
-function NetworkGlobe({ focus, lit, routeLit }) {
-  const canvas = useRef(null);
-  const state = useRef({});
-  Object.assign(state.current, { focus, lit, routeLit });
-  useEffect(() => {
-    const cv = canvas.current;
-    if (!cv) return;
-    const ctx = cv.getContext('2d');
-    const still = reduced();
-    let data = null, raf = 0, visible = false, alive = true, w = 0, h = 0, dpr = 1;
-    const rot = [...VIEW.null], vel = [0, 0];
-    let zoom = 1, drag = null, idleAt = -1e4;
-    const t0 = performance.now();
-    const pins = Object.fromEntries(Object.entries(GEO).map(([k, [lon, lat]]) => [k, unit(lon, lat)]));
-    const routes = [['China', 'Sydney', true], ...ROUTES.map(([a, b]) => [a, b, false])].map(([a, b, sea]) => {
-      const A = pins[a], B = pins[b], d = Math.acos(A[0] * B[0] + A[1] * B[1] + A[2] * B[2]);
-      const N = sea ? 90 : 36, lift = sea ? 0.3 : 0.015 + d * 0.32;
-      const pts = Array.from({ length: N + 1 }, (_, j) => { const u = j / N, p = slerp(A, B, u), k = 1 + lift * Math.sin(Math.PI * u); return [p[0] * k, p[1] * k, p[2] * k]; });
-      return { a, b, sea, pts, N };
-    });
-
-    const resize = () => {
-      const r = cv.getBoundingClientRect();
-      const z = cv.offsetWidth ? r.width / cv.offsetWidth : 1;
-      dpr = Math.min(3, Math.max(1, (devicePixelRatio || 1) * z));
-      w = cv.offsetWidth; h = cv.offsetHeight;
-      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    };
-    const ro = new ResizeObserver(() => { resize(); if (!raf) draw(performance.now()); });
-    ro.observe(cv);
-    resize();
-
-    function draw(now) {
-      if (!data || !w) return;
-      const s = state.current, t = (now - t0) / 1000, key = s.focus ?? 'null';
-      const target = VIEW[key] || VIEW.null, sway = still || s.focus ? 0 : Math.sin(t / 6) * 10;
-      if (!drag) {
-        rot[0] += vel[0]; rot[1] += vel[1]; vel[0] *= 0.9; vel[1] *= 0.9;
-        if (now - idleAt > 1600) { rot[0] += (target[0] + sway - rot[0]) * 0.05; rot[1] += (target[1] - rot[1]) * 0.05; }
-      }
-      rot[1] = Math.max(-70, Math.min(70, rot[1]));
-      zoom += ((ZOOM[key] || 1) - zoom) * 0.06;
-
-      const R = Math.min(w, h) * 0.46 * zoom, cx = w / 2, cy = h / 2;
-      const cl = Math.cos(rot[0] * RAD), sl = Math.sin(rot[0] * RAD), cp = Math.cos(rot[1] * RAD), sp = Math.sin(rot[1] * RAD);
-      // Rotated: X across, Y up, D toward the viewer (D > 0 is the near side).
-      const rotate = (x, y, z) => { const x1 = x * cl - y * sl, y1 = x * sl + y * cl; return [y1, z * cp + x1 * sp, x1 * cp - z * sp]; };
-      const depth = v => { const x1 = v[0] * cl - v[1] * sl; return x1 * cp - v[2] * sp; };
-      // One ring, clipped at the horizon: the hidden part is replaced by the shorter arc of the rim.
-      const ring = xyz => {
-        const n = xyz.length / 3, P = new Array(n);
-        let start = -1;
-        for (let i = 0; i < n; i++) { P[i] = rotate(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]); if (start < 0 && P[i][2] > 0) start = i; }
-        if (start < 0) return;
-        const rimAt = (a, b) => { const k = a[2] / (a[2] - b[2]); const X = a[0] + (b[0] - a[0]) * k, Y = a[1] + (b[1] - a[1]) * k, m = Math.hypot(X, Y) || 1; return [X / m, Y / m]; };
-        let exitAng = 0, prev = P[start];
-        ctx.moveTo(cx + R * prev[0], cy - R * prev[1]);
-        for (let s2 = 1; s2 <= n; s2++) {
-          const q = P[(start + s2) % n];
-          if (prev[2] > 0 && q[2] > 0) ctx.lineTo(cx + R * q[0], cy - R * q[1]);
-          else if (prev[2] > 0) { const [X, Y] = rimAt(prev, q); ctx.lineTo(cx + R * X, cy - R * Y); exitAng = Math.atan2(-Y, X); }
-          else if (q[2] > 0) {
-            const [X, Y] = rimAt(prev, q), a1 = Math.atan2(-Y, X);
-            let d = a1 - exitAng; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-            ctx.arc(cx, cy, R, exitAng, a1, d < 0);
-            ctx.lineTo(cx + R * q[0], cy - R * q[1]);
-          }
-          prev = q;
-        }
-        ctx.closePath();
-      };
-      const fill = (list, style) => {
-        ctx.beginPath();
-        for (const { rings, cap } of list) {
-          if (Math.acos(Math.max(-1, Math.min(1, depth(cap.c)))) - cap.r > Math.PI / 2) continue;
-          for (const xyz of rings) ring(xyz);
-        }
-        ctx.fillStyle = style; ctx.fill();
-      };
-      const lines = (list, style, width) => {
-        ctx.beginPath();
-        for (const xyz of list) {
-          let pen = false;
-          for (let i = 0; i < xyz.length; i += 3) {
-            const [X, Y, D] = rotate(xyz[i], xyz[i + 1], xyz[i + 2]);
-            if (D < 0.02) { pen = false; continue; }
-            pen ? ctx.lineTo(cx + R * X, cy - R * Y) : ctx.moveTo(cx + R * X, cy - R * Y); pen = true;
-          }
-        }
-        ctx.strokeStyle = style; ctx.lineWidth = width; ctx.stroke();
-      };
-      const disc = r => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); };
-
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-      // Contact shadow and a faint red halo.
-      ctx.save(); ctx.translate(cx, cy + R * 1.03); ctx.scale(1, 0.12);
-      let g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.85); g.addColorStop(0, '#23202226'); g.addColorStop(1, '#23202200');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 0.85, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      g = ctx.createRadialGradient(cx, cy, R * 0.98, cx, cy, R * 1.1); g.addColorStop(0, '#e31b241f'); g.addColorStop(1, '#e31b2400');
-      ctx.fillStyle = g; disc(R * 1.1); ctx.fill();
-      // Ocean, lit from the upper left.
-      g = ctx.createRadialGradient(cx - R * 0.4, cy - R * 0.45, R * 0.05, cx - R * 0.1, cy - R * 0.1, R * 1.15);
-      g.addColorStop(0, '#ffffff'); g.addColorStop(0.5, '#f6f2f1'); g.addColorStop(1, '#e4dbd9');
-      ctx.fillStyle = g; disc(R); ctx.fill();
-      lines(data.grat, '#23202212', 0.7);
-      fill(data.land, '#c9bcb8');
-      lines(data.borders, '#faf6f5cc', 0.6);
-      const auOn = s.lit('Sydney') || s.lit('Melbourne') || s.focus === 'Australia';
-      fill(data.au, auOn ? '#dcb1ad' : '#cdbcb9');
-      // Shade toward the rim so the ball reads round, then a crisp rim line.
-      g = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.4, R * 0.15, cx, cy, R);
-      g.addColorStop(0, '#ffffff38'); g.addColorStop(0.55, '#ffffff00'); g.addColorStop(0.85, '#2320220f'); g.addColorStop(1, '#23202238');
-      ctx.fillStyle = g; disc(R); ctx.fill();
-      ctx.strokeStyle = '#23202224'; ctx.lineWidth = 1; ctx.stroke();
-
-      // Routes lifted off the surface; a comet with a white head runs along each.
-      const scr = ([x, y, z]) => { const [X, Y, D] = rotate(x, y, z); const vis = D > 0 || X * X + Y * Y > 1; return [cx + R * X, cy - R * Y, vis]; };
-      ctx.lineCap = 'round';
-      routes.forEach(({ a, b, sea, pts, N }, i) => {
-        const on = sea ? s.lit('China') || s.lit('Sydney') : s.routeLit([a, b]);
-        const P = pts.map(scr);
-        ctx.globalAlpha = on ? 1 : 0.15;
-        const path = (from, to) => { ctx.beginPath(); let pen = false; for (let j = from; j <= to; j++) { const [x, y, v] = P[j]; if (!v) { pen = false; continue; } pen ? ctx.lineTo(x, y) : ctx.moveTo(x, y); pen = true; } };
-        if (sea) ctx.setLineDash([3, 5]);
-        path(0, N); ctx.strokeStyle = sea ? '#e31b24cc' : '#e31b2470'; ctx.lineWidth = sea ? 1.6 : 1.5; ctx.stroke();
-        ctx.setLineDash([]);
-        if (on && !still) {
-          const phase = (t * (sea ? 0.12 : 0.24) + i * 0.37) % 1, span = N * (sea ? 0.25 : 0.4);
-          const head = phase * (N + span), tail = head - span;
-          for (let j = Math.max(1, Math.ceil(tail)); j <= Math.min(N, Math.floor(head)); j++) {
-            if (!P[j - 1][2] || !P[j][2]) continue;
-            const f = (j - tail) / span;
-            ctx.beginPath(); ctx.moveTo(P[j - 1][0], P[j - 1][1]); ctx.lineTo(P[j][0], P[j][1]);
-            ctx.strokeStyle = `rgba(227,27,36,${f.toFixed(3)})`; ctx.lineWidth = 1 + f * 2.2; ctx.stroke();
-          }
-          const hj = Math.floor(head);
-          if (hj <= N && hj >= 0 && P[hj][2]) {
-            ctx.beginPath(); ctx.arc(P[hj][0], P[hj][1], 3.4, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#e31b24'; ctx.stroke();
-          }
-        }
-        ctx.globalAlpha = 1;
-      });
-
-      // Pins and labels, fading out toward the rim.
-      Object.entries(pins).forEach(([name, v]) => {
-        const [X, Y, D] = rotate(v[0], v[1], v[2]);
-        if (D <= 0.05) return;
-        const isKey = KEY_PINS.includes(name), x = cx + R * X, y = cy - R * Y;
-        ctx.globalAlpha = Math.min(1, (D - 0.05) / 0.25) * (s.lit(name) ? 1 : 0.22);
-        if (isKey && !still) {
-          const ph = (t * 0.5 + name.length * 0.13) % 1;
-          ctx.beginPath(); ctx.arc(x, y, 6 + ph * 20, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(227,27,36,${(0.3 * (1 - ph)).toFixed(3)})`; ctx.fill();
-        }
-        ctx.beginPath(); ctx.arc(x, y, isKey ? 6 : 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = isKey ? '#e31b24' : '#232022'; ctx.fill();
-        ctx.lineWidth = isKey ? 2.5 : 1.8; ctx.strokeStyle = '#fff'; ctx.stroke();
-        if (!isKey && R < 230) { ctx.globalAlpha = 1; return; }
-        const left = LEFT_LABEL.includes(name), lx = x + (left ? -1 : 1) * (isKey ? 12 : 8);
-        ctx.font = isKey ? "600 15px 'Geist Variable', sans-serif" : "600 12px 'Geist Variable', sans-serif";
-        ctx.textAlign = left ? 'right' : 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-        ctx.lineWidth = 4; ctx.strokeStyle = '#faf6f5e6'; ctx.strokeText(name, lx, y);
-        ctx.fillStyle = isKey ? '#232022' : '#5c5557'; ctx.fillText(name, lx, y);
-        ctx.globalAlpha = 1;
-      });
-    }
-
-    const loop = () => {
-      if (raf || !visible || !data) return;
-      const tick = now => { raf = 0; draw(now); if (visible && (!still || drag)) raf = requestAnimationFrame(tick); };
-      raf = requestAnimationFrame(tick);
-    };
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting;
-      if (!visible) { cancelAnimationFrame(raf); raf = 0; return; }
-      if (data) loop(); else loadGlobe().then(d => { if (alive) { data = d; draw(performance.now()); loop(); } });
-    }, { rootMargin: '300px 0px' });
-    io.observe(cv);
-
-    // Drag to spin, with a little inertia; it eases back to the network after a pause.
-    const down = e => { drag = { x: e.clientX, y: e.clientY, id: e.pointerId }; vel[0] = vel[1] = 0; cv.setPointerCapture?.(e.pointerId); cv.classList.add('is-dragging'); loop(); };
-    const move = e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      const k = 70 / Math.max(120, Math.min(w, h) * 0.46);
-      const dx = (e.clientX - drag.x) * k, dy = (e.clientY - drag.y) * k;
-      rot[0] += dx; rot[1] -= dy; vel[0] = dx * 0.5; vel[1] = -dy * 0.5;
-      drag.x = e.clientX; drag.y = e.clientY;
-    };
-    const up = () => { if (!drag) return; drag = null; idleAt = performance.now(); cv.classList.remove('is-dragging'); };
-    cv.addEventListener('pointerdown', down); cv.addEventListener('pointermove', move);
-    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-    // Re-render once when the focus changes under reduced motion (no loop then).
-    state.current.kick = () => { if (still && data) { rot[0] = (VIEW[state.current.focus ?? 'null'] || VIEW.null)[0]; rot[1] = (VIEW[state.current.focus ?? 'null'] || VIEW.null)[1]; zoom = ZOOM[state.current.focus ?? 'null'] || 1; draw(performance.now()); } };
-    return () => { alive = false; io.disconnect(); ro.disconnect(); cancelAnimationFrame(raf); cv.removeEventListener('pointerdown', down); cv.removeEventListener('pointermove', move); cv.removeEventListener('pointerup', up); cv.removeEventListener('pointercancel', up); };
-  }, []);
-  useEffect(() => { state.current.kick?.(); }, [focus]);
-  return <canvas ref={canvas} className="fb-globe" role="img" aria-label="Globe showing Phoenix routes across Australia and the sea lane from China. Drag to spin." />;
+let dotData;
+const loadDots = () => dotData ??= fetch('/option2/media/dotmap.json').then(r => r.json());
+function DotMap({ focus, setFocus, drawn }) {
+  const [map, setMap] = useState(null);
+  useEffect(() => { let live = true; loadDots().then(d => live && setMap(d)).catch(() => {}); return () => { live = false; }; }, []);
+  if (!map) return <div className="fb-dm-wrap" aria-hidden="true" />;
+  const G = 10, at = ([lon, lat]) => [(lon - map.west) / map.step * G + G / 2, (map.north - lat) / map.step * G + G / 2];
+  const W = map.cols * G, H = map.rows * G;
+  const tone = flag => flag === 1 ? (focus && focus !== 'China' ? 'is-hot' : 'is-warm') : flag === 2 ? (focus === 'China' ? 'is-hot' : 'is-warm') : '';
+  const groups = { '': [], 'is-warm': [], 'is-hot': [] };
+  map.dots.forEach(([x, y, f]) => groups[tone(f)].push(`M${x * G + G / 2} ${y * G + G / 2}h0`));
+  const [cx, cy] = at(GEO.China), [sx, sy] = at(GEO.Sydney), [mx, my] = at(GEO.Melbourne);
+  const pins = ['China', 'Sydney', 'Melbourne'];
+  const callout = focus && at(GEO[focus]);
+  const lead = focus === 'China' ? 20 : 70;
+  const box = `0 ${(map.north - 50) / map.step * G} ${W} ${95 / map.step * G}`;
+  return <div className="fb-dm-wrap">
+  <div className="fb-dm">
+    <svg viewBox={box} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of Phoenix Global Logistics locations in China and Australia">
+      <g className="fb-dm-dots">
+        {Object.entries(groups).map(([cls, d]) => <path key={cls || 'base'} className={'fb-dm-land ' + cls} d={d.join('')} />)}
+      </g>
+      <path className="fb-dm-lane" d={`M${cx} ${cy} Q${(cx + sx) / 2 + 120} ${(cy + sy) / 2 - 40} ${sx} ${sy}`} pathLength="1" />
+      <path className="fb-dm-lane is-road" d={`M${mx} ${my} Q${(mx + sx) / 2} ${(my + sy) / 2 + 20} ${sx} ${sy}`} pathLength="1" />
+    </svg>
+  </div>
+    <svg className="fb-dm-top" viewBox={box} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {pins.map((name, i) => {
+        const [x, y] = at(GEO[name]);
+        return <g key={name} className={'fb-dm-pin' + (focus === name || (focus === 'Australia' && name !== 'China') ? ' is-on' : '')} style={{ '--i': i }} transform={`translate(${x} ${y})`}
+          onMouseEnter={() => setFocus(name)} onMouseLeave={() => setFocus(null)} onClick={() => setFocus(f => f === name ? null : name)}>
+          <ellipse className="fb-dm-shadow" cx="0" cy="0" rx="9" ry="3" />
+          <circle className="fb-dm-ring" cx="0" cy="0" r="10" />
+          <g className="fb-dm-drop"><path d="M0 0C-3-9-14-15-14-27a14 14 0 0 1 28 0C14-15 3-9 0 0Z" /><circle cx="0" cy="-27" r="5.5" /></g>
+        </g>;
+      })}
+      {callout && <g className="fb-dm-callout" key={focus} transform={`translate(${callout[0]} ${callout[1] - 44})`}>
+        <line x1="0" y1="0" x2="0" y2={-lead} />
+        <circle cx="0" cy={-lead} r="3.5" />
+        <foreignObject x={focus === 'China' ? -300 : 10} y={-lead - 80} width="290" height="110">
+          <div className={'fb-dm-card' + (focus === 'China' ? ' is-left' : '')}>
+            <b>{PIN_INFO[focus][0]}</b><span>{PIN_INFO[focus][1]}</span><small>{PIN_INFO[focus][2]}</small>
+          </div>
+        </foreignObject>
+      </g>}
+    </svg>
+  </div>;
 }
 
 function NetworkMap() {
   const [focus, setFocus] = useState(null);
-  const lit = name => !focus || PLACES.find(p => p.id === focus).routes.includes(name);
-  const routeLit = ([a, b]) => !focus || (focus === 'Australia' ? true : [a, b].includes(focus));
   const root = useRef(null);
   const [drawn, setDrawn] = useState(false);
   useEffect(() => {
@@ -339,43 +161,75 @@ function NetworkMap() {
         </button>
       </li>)}
     </ul>
-    <div className="fb-gp-globe"><NetworkGlobe focus={focus} lit={lit} routeLit={routeLit} /></div>
+    <div className="fb-gp-globe"><DotMap focus={focus} setFocus={setFocus} drawn={drawn} /></div>
   </div>;
 }
 
-// Home / Why: Amazon partner card in the empty left column, moved down from the hero.
-// Home / Why: About, rebuilt clean (owner, round 6): title and copy on one row, three figures in
-// ink on a hairline, then a row of fleet photo, depot photo and the Amazon partner card.
-const ABOUT_STATS = [['1,200+', 'containers handled a year'], ['960k+', 'boxes processed a year'], ['20+', 'years in cargo and logistics']];
-// Each page gets its own pair of photos so nothing repeats across the site.
+// Home / Why: About (owner, round 7): the "we move freight" layout. Left, the intro copy up
+// top and a small photo plus a two-tone headline at the foot; right, the figures stacked on
+// hairlines. Everything animates in once: lines draw, the headline rises, the numbers count up.
+const ABOUT_STATS = [[1200, ',', '+', 'Containers handled a year'], [960, '', 'k+', 'Boxes processed a year'], [20, '', '+', 'Years in cargo and logistics']];
 const ABOUT_PHOTOS = {
-  home: [['rollers-03', 'Phoenix curtainsider truck on the motorway at golden hour', 'Linehaul fleet · Sydney ⇄ Melbourne'], ['warehouse-63', 'Phoenix Global Logistics signage on the Wetherill Park depot', 'Head depot · Wetherill Park']],
-  why: [['night-09', 'Phoenix truck on a Sydney motorway at night', 'Night linehaul · Sydney'], ['warehouse-40', 'Forklift loading a Phoenix curtainsider at the depot', 'Loading dock · Wetherill Park']],
+  home: ['rollers-03', 'Phoenix curtainsider truck on the motorway at golden hour'],
+  why: ['night-09', 'Phoenix truck on a Sydney motorway at night'],
 };
+const fmt = (n, sep) => sep ? Math.round(n).toLocaleString('en-AU') : String(Math.round(n));
+function CountUp({ to, sep, suffix, run, delay = 0 }) {
+  const [v, setV] = useState(to);
+  useEffect(() => {
+    if (!run) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setV(to); return; }
+    let raf, start;
+    const tick = t => {
+      start ??= t + delay;
+      const p = Math.min(1, Math.max(0, (t - start) / 1600));
+      setV(to * (1 - Math.pow(1 - p, 4)));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    setV(0); raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [run, to, delay]);
+  return <>{fmt(v, sep)}{suffix}</>;
+}
 function HomeAbout({ page }) {
-  const pics = ABOUT_PHOTOS[page] || ABOUT_PHOTOS.home;
-  return <div className="fb-ha">
-    <div className="fb-ha-top">
-      <h2 className="fb-ha-title">About Phoenix</h2>
-      <div className="fb-ha-copy">
+  const [photo, alt] = ABOUT_PHOTOS[page] || ABOUT_PHOTOS.home;
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) { setInView(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect(); } }, { threshold: .2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={ref} className={'fb-ha' + (inView ? ' is-in' : '')}>
+    <div className="fb-ha-left">
+      <div className="fb-ha-intro">
+        <h2 className="fb-ha-title">About Phoenix</h2>
         <p>Experience carried forward into a new chapter. Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience. Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
         <a className="fb-obtn" href="/about"><span className="btn-roll"><span>About us</span><span aria-hidden="true">About us</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></a>
       </div>
+      <div className="fb-ha-foot">
+        <figure className="fb-ha-photo"><img src={card(photo)} alt={alt} loading="lazy" /></figure>
+        <p className="fb-ha-line" aria-label="Twenty years in cargo. Family-owned, end to end.">
+          <span className="fb-ha-mask"><span className="is-soft">Twenty years</span></span>
+          <span className="fb-ha-mask"><span className="is-soft">in cargo.</span></span>
+          <span className="fb-ha-mask"><span>Family-owned,</span></span>
+          <span className="fb-ha-mask"><span>end to end.</span></span>
+        </p>
+      </div>
     </div>
-    <dl className="fb-ha-stats">
-      {ABOUT_STATS.map(([n, l]) => <div key={l}><dt>{l}</dt><dd>{n}</dd></div>)}
-    </dl>
-    <div className="fb-ha-tiles">
-      {pics.map(([name, alt, caption]) => <figure key={name} className="fb-ha-photo">
-        <img src={card(name)} alt={alt} loading="lazy" />
-        <figcaption>{caption}</figcaption>
-      </figure>)}
+    <div className="fb-ha-right">
+      <p className="fb-ha-eyebrow">Phoenix in numbers</p>
+      <dl className="fb-ha-stats">
+        {ABOUT_STATS.map(([to, sep, suffix, label], i) => <div key={label}>
+          <dt>{label}</dt>
+          <dd><CountUp to={to} sep={sep} suffix={suffix} run={inView} delay={i * 160} /></dd>
+        </div>)}
+      </dl>
       <div className="fb-ha-amazon">
-        <span className="fb-partner-logo"><AmazonMark size={36} /></span>
-        <div>
-          <p className="fb-ha-amazon-title">Amazon Partner Carrier</p>
-          <p className="fb-ha-amazon-text">Approved for small-parcel deliveries into Amazon fulfilment centres across NSW, QLD and VIC.</p>
-        </div>
+        <span className="fb-partner-logo"><AmazonMark size={32} /></span>
+        <p><b>Amazon Partner Carrier</b><span>Approved for small-parcel deliveries into Amazon fulfilment centres across NSW, QLD and VIC.</span></p>
       </div>
     </div>
   </div>;
@@ -616,6 +470,72 @@ function Conveyor() {
 
 // Contact: a shorter quote form (client: name, company and country, phone, services, freight type, notes).
 const freightTypes = ['Pallets', 'Cartons / loose cargo', 'Full container (20ft or 40ft)', 'Amazon FBA shipment', 'Dangerous goods', 'Other'];
+// Contact (round 7): select in the shadcn/ui style. A trigger with a chevron, a floating list with
+// a check on the chosen item, full keyboard support (arrows, Home/End, Enter, Escape, type to
+// jump). A hidden native select carries the value so the form, FormData and required checks work.
+function UiSelect({ label, name, placeholder, options }) {
+  const [value, setValue] = useState('');
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const root = useRef(null), trigger = useRef(null), native = useRef(null);
+  const id = `ui-${name}`;
+  useEffect(() => {
+    if (!open) return;
+    const away = e => { if (!root.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener('pointerdown', away);
+    return () => document.removeEventListener('pointerdown', away);
+  }, [open]);
+  useEffect(() => {
+    const el = native.current;
+    if (!el) return;
+    const invalid = e => { e.preventDefault(); root.current?.classList.add('is-invalid'); trigger.current?.focus(); };
+    el.addEventListener('invalid', invalid);
+    return () => el.removeEventListener('invalid', invalid);
+  }, []);
+  const choose = i => {
+    const v = options[i][0];
+    setValue(v); setOpen(false); root.current?.classList.remove('is-invalid');
+    if (native.current) { native.current.value = v; native.current.dispatchEvent(new Event('change', { bubbles: true })); }
+    trigger.current?.focus();
+  };
+  const show = () => { setActive(Math.max(0, options.findIndex(o => o[0] === value))); setOpen(true); };
+  const onKey = e => {
+    if (!open) {
+      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(e.key)) { e.preventDefault(); show(); }
+      return;
+    }
+    if (e.key === 'Escape') { e.preventDefault(); setOpen(false); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); setActive(a => Math.min(options.length - 1, a + 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(a => Math.max(0, a - 1)); }
+    else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+    else if (e.key === 'End') { e.preventDefault(); setActive(options.length - 1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(active); }
+    else if (e.key === 'Tab') setOpen(false);
+    else if (e.key.length === 1) { const i = options.findIndex(o => o[1].toLowerCase().startsWith(e.key.toLowerCase())); if (i >= 0) setActive(i); }
+  };
+  const current = options.find(o => o[0] === value);
+  return <div className="ui-field" ref={root}>
+    <span className="ui-label" id={`${id}-label`}>{label}</span>
+    <button ref={trigger} type="button" className="ui-select" role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-controls={`${id}-list`}
+      aria-labelledby={`${id}-label`} aria-activedescendant={open ? `${id}-${active}` : undefined} data-placeholder={current ? undefined : ''}
+      onClick={() => open ? setOpen(false) : show()} onKeyDown={onKey}>
+      <span>{current ? current[1] : placeholder}</span>
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m5 6 3-3 3 3M5 10l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </button>
+    {open && <ul className="ui-select-list" role="listbox" id={`${id}-list`} aria-labelledby={`${id}-label`}>
+      {options.map(([v, text], i) => <li key={v} id={`${id}-${i}`} role="option" aria-selected={v === value} className={i === active ? 'is-active' : ''}
+        onPointerEnter={() => setActive(i)} onPointerDown={e => e.preventDefault()} onClick={() => choose(i)}>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        {text}
+      </li>)}
+    </ul>}
+    <select ref={native} name={name} required defaultValue="" className="ui-native" tabIndex={-1} aria-hidden="true">
+      <option value="" disabled>{placeholder}</option>
+      {options.map(([v, text]) => <option key={v} value={v}>{text}</option>)}
+    </select>
+  </div>;
+}
+
 function QuoteForm() {
   return <div className="fb-quote">
     <label><span>Your name*</span><input name="name" required autoComplete="name" placeholder="Full name" /></label>
@@ -623,8 +543,8 @@ function QuoteForm() {
     <label><span>Country*</span><input name="country" required autoComplete="country-name" placeholder="E.g. Australia" /></label>
     <label><span>Phone*</span><input name="phone" type="tel" required autoComplete="tel" placeholder="+61" /></label>
     <label className="fb-wide"><span>Email*</span><input name="email" type="email" required autoComplete="email" placeholder="So we can send your quote" /></label>
-    <label><span>Service*</span><select name="service" required defaultValue=""><option value="" disabled>Choose a service</option>{services.map(s => <option key={s.slug} value={s.slug}>{s.title}</option>)}</select></label>
-    <label><span>Freight type*</span><select name="freight" required defaultValue=""><option value="" disabled>Choose a freight type</option>{freightTypes.map(f => <option key={f}>{f}</option>)}</select></label>
+    <UiSelect label="Service*" name="service" placeholder="Choose a service" options={services.map(s => [s.slug, s.title])} />
+    <UiSelect label="Freight type*" name="freight" placeholder="Choose a freight type" options={freightTypes.map(f => [f, f])} />
     <label className="fb-wide"><span>Special requests</span><textarea name="notes" rows="5" placeholder="Pick-up and delivery locations, timing, dimensions or anything we should know." /></label>
   </div>;
 }

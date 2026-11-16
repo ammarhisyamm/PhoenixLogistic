@@ -29,6 +29,7 @@ const hidden = new Set([
   '198:556',            // static truck cut-out, replaced by the loading animation
   '252:406',            // small Our Values photo, replaced by the sticky photo panel
   '187:437',            // AI texture behind the quick tools card (round 6: no generated imagery)
+  '119:735', '119:737',  // Why process carousel: hard white blur strips, replaced by a soft mask (round 7)
 ]);
 
 // Photo swaps (client: "change photo" on service rows and the related-services card).
@@ -50,7 +51,7 @@ const replace = {
   '129:308': 'ops-cards',    // Why Phoenix: contact operations as platform cards (round 6)
 };
 // Sections whose height changes with the new layouts; later sections move up or down to match.
-const sectionHeight = { '187:477': 884 + 1100, '193:854': 1180, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
+const sectionHeight = { '187:477': 884 + 1100, '193:854': 1240, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
 const after = {
   '193:854': 'network',        // Home network section: map on the right, places on the left
   '252:404': 'values-photo',   // About: Our Values photo and facts in the left column
