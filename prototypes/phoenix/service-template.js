@@ -6,9 +6,9 @@ const card = name => `/option2/photos/${name}@1200.webp`;
 const DETAIL_PHOTOS = {
   'amazon-fba-logistics': ['warehouse-109', 'drone-05', 'warehouse-139'],
   'warehousing-and-3pl': ['warehouse-81', 'warehouse-96', 'warehouse-131'],
-  'road-freight-and-transport': ['rollers-02', 'night-08', 'rollers-01'],
-  'international-freight': ['warehouse-145', 'warehouse-144', 'drone-11'],
-  'customs-clearance': ['warehouse-136', 'warehouse-127', 'warehouse-73'],
+  'road-freight-and-transport': ['rollers-02', 'night-08', 'night-11'],
+  'international-freight': ['warehouse-10', 'drone-06', 'night-03'],
+  'customs-clearance': ['warehouse-138', 'warehouse-127', 'warehouse-98'],
   'dangerous-goods': ['warehouse-87', 'warehouse-50', 'warehouse-37'],
 };
 

@@ -58,8 +58,8 @@
 .fb-network-map { position: absolute; left: 820px; top: 34px; width: 470px; height: 690px; pointer-events: auto; }
 .fb-network-places { position: absolute; left: 80px; top: 420px; width: 620px; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
 .fb-network-places li { display: grid; gap: 4px; padding: 20px 0; border-top: 1px solid #23202226; }
-.fb-network-places b { font: 700 30px/1.1 'Manrope Variable', sans-serif; letter-spacing: -.02em; color: #232022; }
-.fb-network-places span { font: 400 15px/1.4 'Manrope Variable', sans-serif; color: #6c6466; }
+.fb-network-places b { font: 600 30px/1.1 'Geist Variable', sans-serif; letter-spacing: -.02em; color: #232022; }
+.fb-network-places span { font: 400 15px/1.4 'Geist Variable', sans-serif; color: #6c6466; }
 .fb-land { fill: #e7e0de; }
 .fb-land-key { fill: #d9cfcc; }
 .fb-route { fill: none; stroke: var(--red); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
@@ -67,7 +67,7 @@
 .fb-pin circle { fill: #232022; stroke: #fff; stroke-width: 3; }
 .fb-pin-key circle:not(.fb-pulse) { fill: var(--red); }
 .fb-pulse { fill: var(--red) !important; stroke: none !important; opacity: .25; transform-box: fill-box; transform-origin: center; }
-.fb-pin text { font: 700 26px 'Manrope Variable', sans-serif; fill: #232022; paint-order: stroke; stroke: #f7f1f0; stroke-width: 6px; }
+.fb-pin text { font: 600 26px 'Geist Variable', sans-serif; fill: #232022; paint-order: stroke; stroke: #f7f1f0; stroke-width: 6px; }
 @media (prefers-reduced-motion: no-preference) {
   .fb-network.is-drawn .fb-route:not(.fb-route-sea) { animation: fb-draw 1.6s cubic-bezier(.65,0,.35,1) forwards; animation-delay: calc(var(--i, 0) * 120ms + 200ms); }
   .fb-route-sea { animation: fb-sail 6s linear infinite; }
@@ -85,8 +85,8 @@
 .fb-partner-card { display: flex; gap: 18px; align-items: center; padding: 22px 24px; border-radius: var(--r-card); background: #1b191a; color: #fff; }
 .fb-partner-logo { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: var(--r-card); background: #fff; color: #232022; }
 .fb-partner-logo svg path { fill: #232022; }
-.fb-partner-title { margin: 0; font: 700 22px/1.2 'Manrope Variable', sans-serif; }
-.fb-partner-text { margin: 6px 0 0; font: 400 15px/1.5 'Manrope Variable', sans-serif; color: #ffffffbf; }
+.fb-partner-title { margin: 0; font: 600 22px/1.2 'Geist Variable', sans-serif; }
+.fb-partner-text { margin: 6px 0 0; font: 400 15px/1.5 'Geist Variable', sans-serif; color: #ffffffbf; }
 
 /* ---------- Tracking: stage route ---------- */
 .fb-route-bar { position: absolute; left: 0; top: -36px; width: 1280px; height: 24px; pointer-events: none; }
@@ -123,15 +123,15 @@
 .fb-values { position: absolute; left: 0; top: 70px; width: 475px; height: 1180px; }
 .fb-values-sticky { position: sticky; top: 120px; margin: 0; display: grid; gap: 16px; }
 .fb-values-sticky img { width: 100%; height: 520px; object-fit: cover; border-radius: var(--r-card); display: block; }
-.fb-values-sticky figcaption { display: grid; gap: 2px; font: 400 14px/1.5 'Manrope Variable', sans-serif; color: #6c6466; }
-.fb-values-sticky figcaption b { font: 700 18px/1.3 'Manrope Variable', sans-serif; color: #232022; }
+.fb-values-sticky figcaption { display: grid; gap: 2px; font: 400 14px/1.5 'Geist Variable', sans-serif; color: #6c6466; }
+.fb-values-sticky figcaption b { font: 600 18px/1.3 'Geist Variable', sans-serif; color: #232022; }
 .fb-values-facts { margin: 8px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .fb-values-facts div { padding: 18px 20px; border-radius: var(--r-card); background: #fff; }
-.fb-values-facts dt { font: 700 34px/1 'Manrope Variable', sans-serif; color: var(--red); letter-spacing: -.02em; }
-.fb-values-facts dd { margin: 6px 0 0; font: 400 14px/1.4 'Manrope Variable', sans-serif; color: #3f3c3d; }
+.fb-values-facts dt { font: 600 34px/1 'Geist Variable', sans-serif; color: var(--red); letter-spacing: -.02em; }
+.fb-values-facts dd { margin: 6px 0 0; font: 400 14px/1.4 'Geist Variable', sans-serif; color: #3f3c3d; }
 
 /* ---------- Services: live checklist ---------- */
-.fb-live { position: absolute; left: 0; top: 156px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #fdecec; color: #b8121b; font: 500 13px/1 'Manrope Variable', sans-serif; }
+.fb-live { position: absolute; left: 0; top: 156px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #fdecec; color: #b8121b; font: 500 13px/1 'Geist Variable', sans-serif; }
 .fb-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
 @media (prefers-reduced-motion: no-preference) {
   .fb-live-dot { animation: fb-blink 1.6s ease-in-out infinite; }
@@ -158,22 +158,22 @@
 .fb-box::after, .fb-box-tall::after { content: ''; position: absolute; left: 0; right: 0; top: 34%; height: 9%; background: var(--red); }
 .fb-container { width: 120px; height: 52px; border-radius: 2px; background: repeating-linear-gradient(90deg, #b8121b 0 6px, #9e0f17 6px 9px); }
 .fb-dg { width: 44px; height: 44px; background: #c49a6c; }
-.fb-dg i { position: absolute; inset: 9px; display: grid; place-items: center; rotate: 45deg; background: #fff; border: 2px solid #232022; font: 700 11px/1 'Manrope Variable', sans-serif; font-style: normal; color: #232022; }
+.fb-dg i { position: absolute; inset: 9px; display: grid; place-items: center; rotate: 45deg; background: #fff; border: 2px solid #232022; font: 600 11px/1 'Geist Variable', sans-serif; font-style: normal; color: #232022; }
 .fb-dg i::first-letter { display: inline-block; }
 .fb-belt { position: absolute; left: 0; right: 0; bottom: 84px; height: 12px; border-radius: 6px; background: repeating-linear-gradient(90deg, #3a3637 0 14px, #2a2728 14px 18px); box-shadow: 0 6px 0 -3px #ffffff14; }
 .fb-conveyor::before, .fb-conveyor::after { content: ''; position: absolute; top: 0; bottom: 0; width: 70px; z-index: 1; pointer-events: none; }
 .fb-conveyor::before { left: 0; background: linear-gradient(90deg, #232022, #23202200); }
 .fb-conveyor::after { right: 0; background: linear-gradient(-90deg, #232022, #23202200); }
-.fb-conveyor-caption { position: absolute; z-index: 2; left: 0; bottom: 30px; margin: 0; font: 500 15px/1.4 'Manrope Variable', sans-serif; color: #ffffffb3; }
+.fb-conveyor-caption { position: absolute; z-index: 2; left: 0; bottom: 30px; margin: 0; font: 500 15px/1.4 'Geist Variable', sans-serif; color: #ffffffb3; }
 @media (prefers-reduced-motion: no-preference) { .fb-belt-track { animation: fb-belt 26s linear infinite; } .fb-belt { animation: fb-belt-move 1s linear infinite; } }
 @keyframes fb-belt { to { transform: translateX(-50%); } }
 @keyframes fb-belt-move { to { background-position: 18px 0; } }
 
 /* ---------- Contact: shorter quote form ---------- */
 .fb-quote { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 22px 16px; }
-.fb-quote label { display: grid; gap: 8px; font: 500 14px/1.3 'Manrope Variable', sans-serif; color: #232022; }
+.fb-quote label { display: grid; gap: 8px; font: 500 14px/1.3 'Geist Variable', sans-serif; color: #232022; }
 .fb-quote .fb-wide { grid-column: 1 / -1; }
-.fb-quote :is(input, select, textarea) { width: 100%; min-height: 50px; padding: 12px 14px; border: 1px solid #d9d2d0; border-radius: var(--r-btn); background: #fff; font: 400 15px/1.4 'Manrope Variable', sans-serif; color: #232022; transition: border-color .2s, box-shadow .2s; }
+.fb-quote :is(input, select, textarea) { width: 100%; min-height: 50px; padding: 12px 14px; border: 1px solid #d9d2d0; border-radius: var(--r-btn); background: #fff; font: 400 15px/1.4 'Geist Variable', sans-serif; color: #232022; transition: border-color .2s, box-shadow .2s; }
 .fb-quote textarea { min-height: 330px; resize: vertical; }
 .fb-quote :is(input, select, textarea):focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 3px #e31b2422; }
 
@@ -208,7 +208,7 @@
 }
 
 /* ---------- Round 2 (owner notes, 15 Nov) ---------- */
-body { font-family: 'Manrope Variable', sans-serif; }
+body { font-family: 'Geist Variable', sans-serif; }
 
 /* Header hover / pressed states: never a black block. */
 @media (min-width: 1000px) {
@@ -225,7 +225,7 @@ body { font-family: 'Manrope Variable', sans-serif; }
 /* Network map: faded edges, live traffic, hover to focus a place. */
 .fb-network-frame { position: absolute; left: 790px; top: 20px; width: 530px; height: 720px; pointer-events: auto; }
 .fb-network-frame .fb-network-map { position: static; width: 100%; height: 100%; }
-.fb-network-live { position: absolute; left: 80px; top: 372px; margin: 0; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #fff; color: #232022; font: 600 13px/1 'Manrope Variable', sans-serif; box-shadow: 0 6px 18px -12px #23202266; }
+.fb-network-live { position: absolute; left: 80px; top: 372px; margin: 0; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: #fff; color: #232022; font: 600 13px/1 'Geist Variable', sans-serif; box-shadow: 0 6px 18px -12px #23202266; }
 .fb-network-places { top: 430px; }
 .fb-network-places li { padding: 0; }
 .fb-network-places button { display: grid; gap: 4px; width: 100%; padding: 20px 12px 20px 0; border: 0; background: none; text-align: left; cursor: pointer; font: inherit; border-radius: var(--r-btn); transition: background-color .25s, padding .25s; }
@@ -252,42 +252,42 @@ body { font-family: 'Manrope Variable', sans-serif; }
 /* Home / Why About: bento. */
 .fb-about { position: absolute; left: 80px; top: 100px; width: 1280px; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: 420px 236px; gap: 16px; }
 .fb-about-copy { grid-column: 1 / 3; grid-row: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; padding: 8px 40px 8px 0; }
-.fb-about-copy h2 { margin: 0 0 6px; font: 700 64px/1.02 'Manrope Variable', sans-serif; letter-spacing: -.035em; color: #232022; }
-.fb-about-copy p { margin: 0; font: 400 17px/1.6 'Manrope Variable', sans-serif; color: #3f3c3d; max-width: 52ch; }
-.fb-btn { align-self: flex-start; margin-top: 8px; display: inline-flex; gap: 10px; align-items: center; padding: 14px 20px; border-radius: var(--r-btn); background: #232022; color: #fff; font: 600 15px/1 'Manrope Variable', sans-serif; transition: background-color .25s; }
+.fb-about-copy h2 { margin: 0 0 6px; font: 600 64px/1.02 'Geist Variable', sans-serif; letter-spacing: -.035em; color: #232022; }
+.fb-about-copy p { margin: 0; font: 400 17px/1.6 'Geist Variable', sans-serif; color: #3f3c3d; max-width: 52ch; }
+.fb-btn { align-self: flex-start; margin-top: 8px; display: inline-flex; gap: 10px; align-items: center; padding: 14px 20px; border-radius: var(--r-btn); background: #232022; color: #fff; font: 600 15px/1 'Geist Variable', sans-serif; transition: background-color .25s; }
 .fb-btn:hover { background: var(--red); }
 .fb-about-hero { grid-column: 3 / 5; grid-row: 1; position: relative; margin: 0; border-radius: var(--r-card); overflow: hidden; }
 .fb-about-hero img, .fb-about-wide img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.23,1,.32,1); }
 .fb-about-hero:hover img, .fb-about-wide:hover img { transform: scale(1.04); }
-.fb-about-hero figcaption { position: absolute; left: 16px; bottom: 16px; padding: 8px 12px; border-radius: 999px; background: #ffffffe6; font: 600 13px/1 'Manrope Variable', sans-serif; color: #232022; }
+.fb-about-hero figcaption { position: absolute; left: 16px; bottom: 16px; padding: 8px 12px; border-radius: 999px; background: #ffffffe6; font: 600 13px/1 'Geist Variable', sans-serif; color: #232022; }
 .fb-about-amazon { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; justify-content: space-between; padding: 24px; border-radius: var(--r-card); background: #1b191a; color: #fff; }
 .fb-about-amazon .fb-partner-logo { width: 56px; height: 56px; }
 .fb-about-amazon .fb-partner-title { margin-top: auto; font-size: 20px; }
 .fb-about-stat { display: flex; flex-direction: column; justify-content: space-between; padding: 24px; border-radius: var(--r-card); background: #f5f2f1; transition: background-color .3s, translate .4s cubic-bezier(.23,1,.32,1); }
 .fb-about-stat:hover { background: #fdecec; translate: 0 -4px; }
-.fb-about-stat b { font: 700 64px/1 'Manrope Variable', sans-serif; letter-spacing: -.04em; color: var(--red); }
-.fb-about-stat span { font: 500 15px/1.4 'Manrope Variable', sans-serif; color: #3f3c3d; }
+.fb-about-stat b { font: 600 64px/1 'Geist Variable', sans-serif; letter-spacing: -.04em; color: var(--red); }
+.fb-about-stat span { font: 500 15px/1.4 'Geist Variable', sans-serif; color: #3f3c3d; }
 .fb-about-wide { display: none; }
 
 /* About: Our Values. */
 .fb-values2 { position: absolute; left: 80px; top: 110px; width: 1280px; }
 .fb-values2-head { display: grid; grid-template-columns: 1fr 1.4fr; gap: 16px 80px; align-items: end; margin-bottom: 56px; }
-.fb-values2-label { grid-column: 1 / -1; margin: 0; font: 600 14px/1 'Manrope Variable', sans-serif; color: var(--red); }
-.fb-values2-head h2 { margin: 0; font: 700 56px/1.05 'Manrope Variable', sans-serif; letter-spacing: -.035em; color: #232022; }
-.fb-values2-head p:last-child { margin: 0; font: 400 18px/1.6 'Manrope Variable', sans-serif; color: #3f3c3d; }
+.fb-values2-label { grid-column: 1 / -1; margin: 0; font: 600 14px/1 'Geist Variable', sans-serif; color: var(--red); }
+.fb-values2-head h2 { margin: 0; font: 600 56px/1.05 'Geist Variable', sans-serif; letter-spacing: -.035em; color: #232022; }
+.fb-values2-head p:last-child { margin: 0; font: 400 18px/1.6 'Geist Variable', sans-serif; color: #3f3c3d; }
 .fb-values2-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .fb-value { border-radius: var(--r-card); overflow: hidden; background: #fff; transition: translate .45s cubic-bezier(.23,1,.32,1), box-shadow .45s; }
 .fb-value:hover { translate: 0 -6px; box-shadow: 0 24px 40px -28px #23202266; }
 .fb-value img { width: 100%; height: 260px; object-fit: cover; display: block; }
 .fb-value > div { padding: 24px 24px 28px; display: grid; gap: 10px; }
-.fb-value-n { font: 700 14px/1 'Manrope Variable', sans-serif; color: var(--red); }
-.fb-value h3 { margin: 0; font: 700 26px/1.15 'Manrope Variable', sans-serif; letter-spacing: -.02em; color: #232022; }
-.fb-value p { margin: 0; font: 400 16px/1.55 'Manrope Variable', sans-serif; color: #3f3c3d; }
+.fb-value-n { font: 600 14px/1 'Geist Variable', sans-serif; color: var(--red); }
+.fb-value h3 { margin: 0; font: 600 26px/1.15 'Geist Variable', sans-serif; letter-spacing: -.02em; color: #232022; }
+.fb-value p { margin: 0; font: 400 16px/1.55 'Geist Variable', sans-serif; color: #3f3c3d; }
 .fb-values2-facts { margin: 16px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .fb-values2-facts div { padding: 24px; border-radius: var(--r-card); background: #1b191a; }
-.fb-values2-facts dt { font: 700 44px/1 'Manrope Variable', sans-serif; letter-spacing: -.03em; color: #fff; }
+.fb-values2-facts dt { font: 600 44px/1 'Geist Variable', sans-serif; letter-spacing: -.03em; color: #fff; }
 .fb-values2-facts div:first-child dt { color: #ff5a60; }
-.fb-values2-facts dd { margin: 8px 0 0; font: 400 15px/1.45 'Manrope Variable', sans-serif; color: #ffffffb3; }
+.fb-values2-facts dd { margin: 8px 0 0; font: 400 15px/1.45 'Geist Variable', sans-serif; color: #ffffffb3; }
 
 /* Services: related cards expand on hover. */
 @media (min-width: 1000px) {
@@ -299,7 +299,7 @@ body { font-family: 'Manrope Variable', sans-serif; }
   [data-related-card] [data-name="Frame 1171275656"] { display: none !important; }
   [data-related-card]::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: linear-gradient(0deg, #141213cc, transparent 55%); opacity: 0; transition: opacity .5s; border-radius: inherit; }
   [data-related-card][data-expanded]::after { opacity: 1; }
-  [data-related-card] .related-card-label { display: block; position: absolute; left: 24px; bottom: 22px; z-index: 1; color: #fff; font: 700 30px/1.15 'Manrope Variable', sans-serif; letter-spacing: -.02em; white-space: nowrap; opacity: 0; translate: 0 10px; transition: opacity .4s .15s, translate .5s .15s cubic-bezier(.23,1,.32,1); }
+  [data-related-card] .related-card-label { display: block; position: absolute; left: 24px; bottom: 22px; z-index: 1; color: #fff; font: 600 30px/1.15 'Geist Variable', sans-serif; letter-spacing: -.02em; white-space: nowrap; opacity: 0; translate: 0 10px; transition: opacity .4s .15s, translate .5s .15s cubic-bezier(.23,1,.32,1); }
   [data-related-card][data-expanded] .related-card-label { opacity: 1; translate: 0 0; }
 }
 
@@ -371,7 +371,7 @@ body { font-family: 'Manrope Variable', sans-serif; }
 .fb-values-facts div { padding: 20px 24px; border-radius: var(--r-card); background: #1b191a; }
 .fb-values-facts dt { font: 600 40px/1 'Geist Variable', sans-serif; letter-spacing: -1px; color: #fff; }
 .fb-values-facts div:first-child dt { color: #ff5a60; }
-.fb-values-facts dd { margin: 8px 0 0; font: 400 14px/1.45 'Manrope Variable', sans-serif; color: #ffffffb3; }
+.fb-values-facts dd { margin: 8px 0 0; font: 400 14px/1.45 'Geist Variable', sans-serif; color: #ffffffb3; }
 
 /* Radius scale applied everywhere. The Figma export writes border-radius: 0 inline, so these need !important;
    the hover wash (::after) inherits from the button, which is why hovers used to go square. */
@@ -414,7 +414,7 @@ body { font-family: 'Manrope Variable', sans-serif; }
 .svc-mega-media::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, #121011d9); }
 .svc-mega-caption { position: absolute; z-index: 1; left: 22px; right: 22px; bottom: 20px; color: #fff; display: grid; gap: 8px; }
 .svc-mega-caption b { font: 600 26px/1.1 'Geist Variable', sans-serif; letter-spacing: -1px; }
-.svc-mega-caption small { font: 400 14px/1.5 'Manrope Variable', sans-serif; color: #ffffffd9; }
+.svc-mega-caption small { font: 400 14px/1.5 'Geist Variable', sans-serif; color: #ffffffd9; }
 @media (prefers-reduced-motion: reduce) { .svc-mega, .svc-mega-list li { transition: none; } }
 .fig-header .services-menu .svc-mega-list { position: static; width: auto; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
 
@@ -502,7 +502,7 @@ body { font-family: 'Manrope Variable', sans-serif; }
 .fb-partner-hero { position: relative; margin: 0; min-height: 0; overflow: hidden; }
 .fb-partner .fb-partner-hero img { width: 100%; height: 100%; object-fit: cover; object-position: 48% 50%; }
 .fb-partner-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #121011a6, transparent 40%); pointer-events: none; }
-.fb-partner-hero figcaption { position: absolute; z-index: 1; left: 24px; bottom: 22px; color: #fff; font: 600 15px/1.3 'Manrope Variable', sans-serif; letter-spacing: .01em; }
+.fb-partner-hero figcaption { position: absolute; z-index: 1; left: 24px; bottom: 22px; color: #fff; font: 600 15px/1.3 'Geist Variable', sans-serif; letter-spacing: .01em; }
 .fb-partner-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; min-height: 0; }
 .fb-partner .fb-partner-row img { width: 100%; height: 100%; object-fit: cover; }
 .fb-partner-row .fb-partner-card { flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 28px; background: var(--red); }
@@ -584,7 +584,7 @@ body { font-family: 'Manrope Variable', sans-serif; }
 
 /* Titles: Geist SemiBold, a touch lighter than bold, in brand ink rather than pure black. */
 .fig-text:is(.fig-display, .fig-heading, .fig-subheading):not(.fig-number):not(.fig-stat-value):not(.fig-button *),
-.fb-network-places b, .fb-partner-title, .related-card-label { font-weight: 560 !important; }
+.fb-network-places b, .fb-partner-title, .related-card-label { font-weight: 600 !important; }
 .fig-text:is(.fig-heading, .fig-subheading):not(.fig-number) { -webkit-font-smoothing: antialiased; }
 
 /* Network map, lighter: land is a pre-rendered image, pins and routes are one small SVG, and the pulses are
@@ -614,14 +614,14 @@ body { font-family: 'Manrope Variable', sans-serif; }
   .fig-root .fig-header.fig-header > [data-name="Actions"] { display: flex !important; align-items: center; gap: 8px; width: auto !important; height: auto !important; padding: 0 8px; }
   .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button { position: relative !important; left: auto !important; top: auto !important; height: 44px !important; border-radius: 10px !important; padding: 0 16px; display: inline-flex !important; align-items: center; }
   .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button > .paint-group, .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button > .paint-group > *, .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button::after { border-radius: 10px !important; }
-  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button .fig-text { position: relative !important; left: auto !important; top: auto !important; width: auto !important; font: 500 15px/1 'Manrope Variable', sans-serif !important; }
+  .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button .fig-text { position: relative !important; left: auto !important; top: auto !important; width: auto !important; font: 500 15px/1 'Geist Variable', sans-serif !important; }
   .fig-root .fig-header.fig-header > [data-name="Actions"] > .fig-button .fig-text { display: flex !important; align-items: center; height: 20px !important; }
   /* Track reads as a quiet link (Option 2), not an outlined button. */
   .fig-root .fig-header.fig-header [data-variant^="ghost"] > .paint-group > .fig-stroke { border-color: transparent !important; }
   .fig-root .fig-header.fig-header [data-variant^="ghost"] { --fill: #ffffff1f; }
   .fig-root .fig-header.fig-header [data-variant^="ghost"]:hover .fig-text { color: #fff !important; }
   /* Nav: 15px medium, white; underline draws in on hover and stays on the current page. */
-  .fig-header [data-name="Nav"] a.fig-text, .fig-header .services-menu summary > span { position: relative; font: 500 15px/1 'Manrope Variable', sans-serif !important; text-decoration: none !important; padding-block: 8px; }
+  .fig-header [data-name="Nav"] a.fig-text, .fig-header .services-menu summary > span { position: relative; font: 500 15px/1 'Geist Variable', sans-serif !important; text-decoration: none !important; padding-block: 8px; }
   .fig-header [data-name="Nav"] a.fig-text::after, .fig-header .services-menu summary > span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: #fff; transform: scaleX(0); transform-origin: right; transition: transform .5s cubic-bezier(.16,1,.3,1); }
   .fig-header [data-name="Nav"] a.fig-text:is(:hover, :focus-visible, [aria-current="page"])::after,
   .fig-header .services-menu summary:is(:hover, :focus-visible) > span::after, .fig-header .services-menu summary[aria-current="location"] > span::after,
@@ -634,3 +634,174 @@ body { font-family: 'Manrope Variable', sans-serif; }
 .fb-globe { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: pan-y; -webkit-tap-highlight-color: transparent; }
 .fb-globe.is-dragging { cursor: grabbing; }
 @media (max-width: 999px) { .fb-network-frame { aspect-ratio: 1 / 1 !important; max-height: none !important; width: 100% !important; } }
+
+/* ---------- Round 6 (owner audit, 16 Nov) ---------- */
+/* Navigation, Function Health style: quiet links that brighten, a 1px underline drawn from the
+   left a few px under the text, kept on the current page. Track is a plain link, not a filled
+   button, so its label can never vanish into a white wipe. */
+@media (min-width: 1000px) {
+  .fig-header [data-name="Nav"] a.fig-text, .fig-header .services-menu summary > span,
+  .fig-root .fig-header.fig-header [data-variant^="ghost"] .fig-text { padding-block: 0 !important; color: #ffffffc7 !important; transition: color .3s ease; }
+  .fig-header [data-name="Nav"] a.fig-text::after, .fig-header .services-menu summary > span::after { bottom: -6px !important; height: 1px !important; background: currentColor !important; }
+  .fig-header [data-name="Nav"] a.fig-text:is(:hover, :focus-visible, [aria-current="page"]),
+  .fig-header .services-menu summary:is(:hover, :focus-visible) > span, .fig-header .services-menu[open] summary > span,
+  .fig-header .services-menu summary[aria-current="location"] > span { color: #fff !important; }
+  .fig-header [data-name="Nav"] a.fig-text:focus-visible, .fig-header .services-menu summary:focus-visible { outline: none; }
+  .fig-header [data-name="Nav"] a.fig-text:focus-visible::after { height: 2px !important; }
+  /* Track: link treatment, same underline. */
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"] { --fill: transparent !important; background: none !important; padding: 0 12px !important; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"]::after { content: none !important; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"] > .paint-group { display: none !important; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"] .fig-text { position: relative !important; overflow: visible !important; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"] .fig-text::after { content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"]:is(:hover, :focus-visible) .fig-text { color: #fff !important; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"]:is(:hover, :focus-visible) .fig-text::after { transform: scaleX(1); transform-origin: left; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"] .btn-roll > span { transform: none !important; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"] .btn-roll > span + span { display: none; }
+  .fig-root .fig-header.fig-header .fig-button[data-variant^="ghost"]:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+}
+
+/* Home services: the pinned stage scales down to fit short screens, so the title and cards are
+   never pushed up under the header on a laptop. */
+@media (min-width: 1000px) {
+  [data-layer="187:477"] > .pin-stage { top: 0 !important; zoom: min(1, tan(atan2(calc(100vh * 1440), calc(100cqw * 884)))); }
+}
+
+/* Home network, centred (owner: like "Our Global Presence"): heading, places in one row, globe below. */
+.fb-gp { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 100px 80px 72px; text-align: center; }
+.fb-gp-head { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 760px; }
+.fb-gp-live { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 8px; padding: 7px 12px; background: #fff; color: #232022; font: 500 13px/1 'Geist Variable', sans-serif; letter-spacing: .01em; box-shadow: 0 0 0 1px #2320221a; }
+.fb-gp-title { margin: 0; font: 600 48px/1.15 'Geist Variable', sans-serif; letter-spacing: -1.2px; color: #232022; text-wrap: balance; }
+.fb-gp-lead { margin: 0; max-width: 600px; font: 400 18px/1.6 'Geist Variable', sans-serif; color: #5c5557; text-wrap: pretty; }
+.fb-gp-places { display: grid; grid-template-columns: repeat(4, 1fr); width: 100%; max-width: 1040px; margin: 48px 0 0; padding: 0; list-style: none; }
+.fb-gp-places li + li { box-shadow: -1px 0 0 #2320221a; }
+.fb-gp-places button { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 8px 16px 12px; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.fb-gp-places b { font: 600 22px/1.2 'Geist Variable', sans-serif; letter-spacing: -.4px; color: #232022; }
+.fb-gp-places i { display: block; width: 16px; height: 2px; background: var(--red); transition: width .5s cubic-bezier(.16,1,.3,1); }
+.fb-gp-places span { font: 400 14px/1.5 'Geist Variable', sans-serif; color: #6c6466; }
+.fb-gp-places button:is(:hover, :focus-visible, .is-on) i { width: 40px; }
+.fb-gp-places button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+.fb-gp.has-focus .fb-gp-places button:not(.is-on) { opacity: .55; }
+.fb-gp-places button { transition: opacity .3s ease; }
+.fb-gp-globe { position: relative; flex: 1; width: 100%; max-width: 760px; min-height: 0; margin-top: 16px; }
+@media (max-width: 999px) {
+  .fb-gp { position: relative; inset: auto; padding: 64px 20px 40px; }
+  .fb-gp-title { font-size: clamp(30px, 7.4vw, 40px); letter-spacing: -.8px; }
+  .fb-gp-lead { font-size: 16px; }
+  .fb-gp-places { grid-template-columns: 1fr 1fr; margin-top: 28px; row-gap: 12px; }
+  .fb-gp-places li:nth-child(3) { box-shadow: none; }
+  .fb-gp-places b { font-size: 18px; }
+  .fb-gp-globe { flex: none; aspect-ratio: 1; margin-top: 8px; }
+}
+
+/* Home About, clean (round 6). Figures are ink and stay ink on hover. */
+.fb-ha { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-direction: column; gap: 64px; }
+.fb-ha-top { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.fb-ha-title { margin: 0; font: 600 48px/1.15 'Geist Variable', sans-serif; letter-spacing: -1.2px; color: #232022; }
+.fb-ha-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; }
+.fb-ha-copy p { margin: 0; font: 400 18px/1.6 'Geist Variable', sans-serif; color: #5c5557; text-wrap: pretty; }
+.fb-ha-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin: 0; }
+.fb-ha-stats > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 8px; padding-top: 24px; border-top: 1px solid #2320221f; }
+.fb-ha-stats dd { margin: 0; font: 600 64px/1 'Geist Variable', sans-serif; letter-spacing: -2px; color: #232022; font-variant-numeric: tabular-nums; }
+.fb-ha-stats dt { font: 400 16px/1.5 'Geist Variable', sans-serif; color: #6c6466; }
+.fb-ha-tiles { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; height: 400px; }
+.fb-ha-photo { position: relative; margin: 0; overflow: hidden; background: #e6dfdd; }
+.fb-ha-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s cubic-bezier(.16,1,.3,1); }
+.fb-ha-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(0deg, #121011a6, transparent 45%); pointer-events: none; }
+.fb-ha-photo figcaption { position: absolute; z-index: 1; left: 24px; right: 24px; bottom: 20px; color: #fff; font: 500 15px/1.4 'Geist Variable', sans-serif; }
+@media (hover: hover) and (pointer: fine) { .fb-ha-photo:hover img { transform: scale(1.03); } }
+.fb-ha-amazon { display: flex; flex-direction: column; justify-content: space-between; padding: 28px; background: var(--red); color: #fff; }
+.fb-ha-amazon .fb-partner-logo { width: 56px; height: 56px; border-radius: 0; }
+.fb-ha-amazon-title { margin: 0; font: 600 22px/1.2 'Geist Variable', sans-serif; letter-spacing: -.4px; }
+.fb-ha-amazon-text { margin: 8px 0 0; font: 400 15px/1.5 'Geist Variable', sans-serif; color: #ffffffd9; }
+/* Shared outline button for custom blocks: same Option 2 wipe and label roll as the Figma buttons. */
+.fb-obtn { position: relative; isolation: isolate; overflow: hidden; display: inline-flex; align-items: center; gap: 10px; height: 48px; padding: 0 22px; border: 1px solid #23202233; border-radius: var(--r-btn, 10px); color: #232022; font: 500 15px/1 'Geist Variable', sans-serif; text-decoration: none; transition: color .5s cubic-bezier(.16,1,.3,1), border-color .5s cubic-bezier(.16,1,.3,1); }
+.fb-obtn::after { content: ''; position: absolute; inset: 0; z-index: -1; background: #232022; transform: scaleY(0); transform-origin: bottom; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+.fb-obtn svg { transition: translate .5s cubic-bezier(.16,1,.3,1); }
+@media (hover: hover) and (pointer: fine) {
+  .fb-obtn:hover { color: #fff; border-color: #232022; }
+  .fb-obtn:hover::after { transform: scaleY(1); }
+  .fb-obtn:hover svg { translate: 4px 0; }
+  .fb-obtn:hover .btn-roll > span { transform: translateY(-150%); }
+  .fb-obtn:hover .btn-roll > span + span { transform: none; }
+}
+.fb-obtn:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+.fb-obtn:active { transform: translateY(1px); }
+@media (max-width: 999px) {
+  .fb-ha { position: relative; gap: 40px; }
+  .fb-ha-top { grid-template-columns: 1fr; gap: 20px; }
+  .fb-ha-title { font-size: clamp(30px, 7.4vw, 40px); letter-spacing: -.8px; }
+  .fb-ha-copy p { font-size: 16px; }
+  .fb-ha-stats { grid-template-columns: 1fr; gap: 0; }
+  .fb-ha-stats > div { padding: 20px 0; }
+  .fb-ha-stats dd { font-size: 48px; }
+  .fb-ha-tiles { grid-template-columns: 1fr 1fr; height: auto; }
+  .fb-ha-tiles .fb-ha-photo:first-child { grid-column: 1 / -1; aspect-ratio: 4 / 3; }
+  .fb-ha-tiles .fb-ha-photo:nth-child(2) { aspect-ratio: 3 / 4; }
+}
+
+/* Home services cards follow their auto layout (photo, title, copy, link) so longer copy pushes
+   the link down instead of running into it; the link sits on one baseline across the row. */
+@media (min-width: 1000px) {
+  [data-layer="323:1069"] > .fig-node { display: flex !important; flex-direction: column; gap: 12px; }
+  [data-layer="323:1069"] > .fig-node > .fig-node, [data-layer="323:1069"] > .fig-node > .fig-node:not([data-name="Photo"]) .fig-node:not(.fig-vector):not(.fig-vector *):not([data-name^="Icon"] *) { position: relative !important; left: auto !important; top: auto !important; }
+  [data-layer="323:1069"] > .fig-node > .fig-node:not([data-name="Photo"]), [data-layer="323:1069"] > .fig-node > .fig-node:not([data-name="Photo"]) .fig-node:not([data-name^="Icon"]):not([data-name^="Icon"] *) { height: auto !important; }
+  [data-layer="323:1069"] > .fig-node > [data-name="Photo"] { flex: none; }
+  [data-layer="323:1069"] > .fig-node > .fig-node:last-child { margin-top: auto; }
+  [data-layer="323:1069"] [data-name="H More"] { display: inline-flex !important; align-items: center; gap: 8px; width: auto !important; }
+  [data-layer="323:1069"] [data-name="H More"] > .fig-text { width: auto !important; }
+  [data-layer="323:1069"] [data-name="Paragraph"] .fig-text { color: #5c5557 !important; }
+}
+
+/* Round 6 · Why Phoenix "Contact operations directly": platform cards. Grey tiles, icon top
+   left, copy bottom left; hover wipes the Phoenix red gradient up and lifts the card a touch. */
+[data-layer="129:308"] { background: none !important; }
+[data-layer="129:308"] > .paint-group { display: none !important; }
+.fb-ops { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; width: 100%; height: 100%; }
+.fb-ops-card {
+  position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;
+  gap: 32px; min-height: 300px; padding: 24px; background: #f1eded; color: #232022; text-decoration: none; cursor: pointer;
+  transition: transform .6s cubic-bezier(.22, 1, .36, 1), color .35s ease, box-shadow .6s cubic-bezier(.22, 1, .36, 1);
+}
+.fb-ops-card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(120% 90% at 0% 100%, #ff6a3d 0%, transparent 60%), linear-gradient(160deg, #e8232c 0%, #c3141d 100%);
+  clip-path: inset(100% 0 0 0); transition: clip-path .6s cubic-bezier(.22, 1, .36, 1);
+}
+.fb-ops-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.fb-ops-icon { display: grid; place-items: center; width: 48px; height: 48px; background: #fff; color: #232022; transition: background .35s ease, color .35s ease; }
+.fb-ops-arrow { opacity: 0; transform: translate(-6px, 6px); transition: opacity .35s ease, transform .6s cubic-bezier(.22, 1, .36, 1); }
+.fb-ops-qr { width: 112px; height: 112px; background: #fff; padding: 6px; border: 1px solid #e3dede; }
+.fb-ops-copy { display: flex; flex-direction: column; gap: 8px; }
+.fb-ops-copy b { font: 600 22px/28px 'Geist Variable', sans-serif; letter-spacing: -.3px; }
+.fb-ops-copy span { font: 400 16px/26px 'Geist Variable', sans-serif; color: #5c5557; overflow-wrap: anywhere; transition: color .35s ease; }
+@media (hover: hover) {
+  .fb-ops-card:hover { transform: translateY(-4px); color: #fff; box-shadow: 0 18px 40px -24px #c3141d99; }
+  .fb-ops-card:hover::before { clip-path: inset(0); }
+  .fb-ops-card:hover .fb-ops-icon { background: #ffffff26; color: #fff; }
+  .fb-ops-card:hover .fb-ops-copy span { color: #ffffffd9; }
+  .fb-ops-card:hover .fb-ops-arrow { opacity: 1; transform: none; }
+}
+.fb-ops-card:focus-visible { outline: 2px solid #e31b24; outline-offset: 3px; }
+.fb-ops-card:active { transform: translateY(-1px); transition-duration: .15s; }
+@media (prefers-reduced-motion: reduce) { .fb-ops-card, .fb-ops-card::before, .fb-ops-arrow { transition: none; } .fb-ops-card:hover { transform: none; } }
+@media (max-width: 999px) {
+  .fb-ops { grid-template-columns: repeat(2, minmax(0, 1fr)); height: auto; }
+  .fb-ops-card { min-height: 220px; padding: 20px; }
+  .fb-ops-qr { width: 88px; height: 88px; }
+}
+@media (max-width: 560px) { .fb-ops { grid-template-columns: 1fr; } .fb-ops-card { min-height: 180px; } }
+
+/* Round 6 · one gutter: content sits 80px in from both edges at 1440. */
+@media (min-width: 1000px) {
+  [data-layer="187:416"] { --x: 80px !important; }       /* home hero copy (was 69.5) */
+  [data-layer="187:434"] { --x: 920px !important; }      /* home quick tools card ends at 1360 */
+  [data-layer="208:589"] { --w: 614px !important; }      /* why intro text kept inside its column */
+}
+
+/* Round 6 · mobile polish for the new parts. */
+@media (max-width: 999px) {
+  [data-layer="129:308"] { padding: 0 !important; }
+  .fb-ha-tiles .fb-ha-amazon, .fb-ha-tiles .fb-ha-photo:nth-child(2) { grid-column: 1 / -1; }
+  .fb-ha-tiles .fb-ha-photo:nth-child(2) { aspect-ratio: 4 / 3; }
+}

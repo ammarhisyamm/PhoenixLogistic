@@ -1,7 +1,7 @@
 // Components added for client feedback round 1. Each one is placed by feedback.js against a
 // Figma layer and positioned in that layer's own artboard coordinates.
 import { useEffect, useRef, useState } from 'react';
-import { company, services } from '../../src/data';
+import { company, services, transportEmail } from '../../src/data';
 import { MAP } from '../option2/mapData';
 import { photos } from '../option2/photos';
 import { FreightDefs, Box, Pallet, Film, Container } from './freight-art';
@@ -271,7 +271,7 @@ function NetworkGlobe({ focus, lit, routeLit }) {
         ctx.lineWidth = isKey ? 2.5 : 1.8; ctx.strokeStyle = '#fff'; ctx.stroke();
         if (!isKey && R < 230) { ctx.globalAlpha = 1; return; }
         const left = LEFT_LABEL.includes(name), lx = x + (left ? -1 : 1) * (isKey ? 12 : 8);
-        ctx.font = isKey ? "700 15px 'Manrope Variable', sans-serif" : "600 12px 'Manrope Variable', sans-serif";
+        ctx.font = isKey ? "600 15px 'Geist Variable', sans-serif" : "600 12px 'Geist Variable', sans-serif";
         ctx.textAlign = left ? 'right' : 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
         ctx.lineWidth = 4; ctx.strokeStyle = '#faf6f5e6'; ctx.strokeText(name, lx, y);
         ctx.fillStyle = isKey ? '#232022' : '#5c5557'; ctx.fillText(name, lx, y);
@@ -323,32 +323,73 @@ function NetworkMap() {
     return () => io.disconnect();
   }, []);
   useOffscreenPause(root);
-  return <div ref={root} className={'fb-network' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
-    <p className="fb-network-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
-    <ul className="fb-network-places" aria-label="Where we operate">
+  return <div ref={root} className={'fb-gp' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
+    <div className="fb-gp-head">
+      <p className="fb-gp-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
+      <h2 className="fb-gp-title">Connecting China with Australia.</h2>
+      <p className="fb-gp-lead">Supply-chain partners in China, and road coverage across practically all of Australia from Sydney and Melbourne.</p>
+    </div>
+    <ul className="fb-gp-places" aria-label="Where we operate">
       {PLACES.map(place => <li key={place.id}>
         <button type="button" className={focus === place.id ? 'is-on' : ''} aria-pressed={focus === place.id}
           onMouseEnter={() => setFocus(place.id)} onMouseLeave={() => setFocus(null)}
           onFocus={() => setFocus(place.id)} onBlur={() => setFocus(null)}
           onClick={() => setFocus(f => f === place.id ? null : place.id)}>
-          <b>{place.title}</b><span>{place.text}</span>
+          <b>{place.title}</b><i aria-hidden="true" /><span>{place.text}</span>
         </button>
       </li>)}
     </ul>
-    <div className="fb-network-frame"><NetworkGlobe focus={focus} lit={lit} routeLit={routeLit} /></div>
+    <div className="fb-gp-globe"><NetworkGlobe focus={focus} lit={lit} routeLit={routeLit} /></div>
   </div>;
 }
 
 // Home / Why: Amazon partner card in the empty left column, moved down from the hero.
+// Home / Why: About, rebuilt clean (owner, round 6): title and copy on one row, three figures in
+// ink on a hairline, then a row of fleet photo, depot photo and the Amazon partner card.
+const ABOUT_STATS = [['1,200+', 'containers handled a year'], ['960k+', 'boxes processed a year'], ['20+', 'years in cargo and logistics']];
+// Each page gets its own pair of photos so nothing repeats across the site.
+const ABOUT_PHOTOS = {
+  home: [['rollers-03', 'Phoenix curtainsider truck on the motorway at golden hour', 'Linehaul fleet · Sydney ⇄ Melbourne'], ['warehouse-63', 'Phoenix Global Logistics signage on the Wetherill Park depot', 'Head depot · Wetherill Park']],
+  why: [['night-09', 'Phoenix truck on a Sydney motorway at night', 'Night linehaul · Sydney'], ['warehouse-40', 'Forklift loading a Phoenix curtainsider at the depot', 'Loading dock · Wetherill Park']],
+};
+function HomeAbout({ page }) {
+  const pics = ABOUT_PHOTOS[page] || ABOUT_PHOTOS.home;
+  return <div className="fb-ha">
+    <div className="fb-ha-top">
+      <h2 className="fb-ha-title">About Phoenix</h2>
+      <div className="fb-ha-copy">
+        <p>Experience carried forward into a new chapter. Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience. Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
+        <a className="fb-obtn" href="/about"><span className="btn-roll"><span>About us</span><span aria-hidden="true">About us</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></a>
+      </div>
+    </div>
+    <dl className="fb-ha-stats">
+      {ABOUT_STATS.map(([n, l]) => <div key={l}><dt>{l}</dt><dd>{n}</dd></div>)}
+    </dl>
+    <div className="fb-ha-tiles">
+      {pics.map(([name, alt, caption]) => <figure key={name} className="fb-ha-photo">
+        <img src={card(name)} alt={alt} loading="lazy" />
+        <figcaption>{caption}</figcaption>
+      </figure>)}
+      <div className="fb-ha-amazon">
+        <span className="fb-partner-logo"><AmazonMark size={36} /></span>
+        <div>
+          <p className="fb-ha-amazon-title">Amazon Partner Carrier</p>
+          <p className="fb-ha-amazon-text">Approved for small-parcel deliveries into Amazon fulfilment centres across NSW, QLD and VIC.</p>
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
 function PartnerPanel() {
   return <div className="fb-partner">
     <div className="fb-partner-sticky">
       <figure className="fb-partner-hero">
-        <img src={card('rollers-03')} alt="Phoenix curtainsider truck on the motorway at golden hour" loading="lazy" />
+        <img src={card('night-09')} alt="Phoenix truck on a Sydney motorway at night" loading="lazy" />
         <figcaption>Linehaul fleet · Sydney ⇄ Melbourne</figcaption>
       </figure>
       <div className="fb-partner-row">
-        <img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" />
+        <img src={card('warehouse-40')} alt="Forklift loading a Phoenix curtainsider at the depot" loading="lazy" />
         <div className="fb-partner-card">
           <span className="fb-partner-logo"><AmazonMark size={40} /></span>
           <div>
@@ -478,7 +519,7 @@ function LoadPallet({ id, tall = true }) {
     <Pallet x={1} y={182} w={w} d={7} />
     {Array.from({ length: rows }, (_, r) => [0, 1, 2].map(c => <Box key={id + r + c} x={2 + c * 49.5} y={top + r * rh} w={48.5} h={rh - .5} d={7} tone={r * 3 + c + (tall ? 0 : 2)} tape={(r + c) % 3 === 0 ? 'red' : 'clear'} label={r === rows - 1 && c !== 1} marks={r === 0 && c === 2} />))}
     <Film x={1} y={top - 1} w={w + 1} h={183 - top} d={7} />
-    <g transform={`translate(${w - 52} ${top + 12})`}><rect width="44" height="15" fill="#e31b24" /><rect width="44" height=".6" fill="#ff8a8f" /><text x="22" y="10.4" textAnchor="middle" fontSize="7.6" fontWeight="700" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".5">PHOENIX</text></g>
+    <g transform={`translate(${w - 52} ${top + 12})`}><rect width="44" height="15" fill="#e31b24" /><rect width="44" height=".6" fill="#ff8a8f" /><text x="22" y="10.4" textAnchor="middle" fontSize="7.6" fontWeight="600" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".5">PHOENIX</text></g>
   </svg>;
 }
 function LoadStack() {
@@ -538,8 +579,8 @@ function DgParcel() {
       <rect x="-12.6" y="-12.6" width="25.2" height="25.2" fill="none" stroke="#1d1a1b" strokeWidth=".35" />
       <g transform="rotate(-45)" fill="#1d1a1b">{[-7.5, -5, -2.5, 0, 2.5, 5, 7.5].map(o => <rect key={o} x={o - .7} y={-13 + Math.abs(o) * .95} width="1.4" height={11 - Math.abs(o) * .95} />)}</g>
     </g>
-    <text x={w / 2} y={dy + h * .46 + 14} textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
-    <text x={w / 2} y={dy + h - 3} textAnchor="middle" fontSize="2.8" fontWeight="700" letterSpacing=".2" fill="#3d2610" fillOpacity=".8" fontFamily="Geist Variable, sans-serif">UN3480 · LITHIUM ION BATTERIES</text>
+    <text x={w / 2} y={dy + h * .46 + 14} textAnchor="middle" fontSize="7.5" fontWeight="600" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
+    <text x={w / 2} y={dy + h - 3} textAnchor="middle" fontSize="2.8" fontWeight="600" letterSpacing=".2" fill="#3d2610" fillOpacity=".8" fontFamily="Geist Variable, sans-serif">UN3480 · LITHIUM ION BATTERIES</text>
   </svg>;
 }
 function WrappedPallet() {
@@ -597,7 +638,7 @@ function AboutBento() {
       <h2>About Phoenix</h2>
       <p>Experience carried forward into a new chapter. Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience.</p>
       <p>Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
-      <a className="fb-btn" href="/about">About us <span aria-hidden="true">→</span></a>
+      <a className="fb-obtn" href="/about">About us <span aria-hidden="true">→</span></a>
     </div>
     <figure className="fb-about-hero"><img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" /><figcaption>Wetherill Park, Sydney · Head depot</figcaption></figure>
     <div className="fb-about-amazon">
@@ -704,15 +745,46 @@ function ServicesPin() {
   return <span ref={ref} className="fb-services-pin" hidden />;
 }
 
+// Why Phoenix: "Contact operations directly" as a row of platform cards (round 6 reference):
+// quiet grey tiles with the icon top-left and the copy bottom-left; on hover the Phoenix red
+// gradient wipes up, the copy turns white and the card lifts a touch.
+const OPS_ICONS = {
+  mail: <path d="M4 7.5 12 13l8-5.5M5 5h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />,
+  phone: <path d="M8.6 4.5 6.3 4.2a1.5 1.5 0 0 0-1.6 1.2c-.5 3 .6 6.4 3.5 9.4 3 2.9 6.4 4 9.4 3.5a1.5 1.5 0 0 0 1.2-1.6l-.3-2.3a1.5 1.5 0 0 0-1.1-1.3l-2.4-.6a1.5 1.5 0 0 0-1.5.5l-.8 1a10 10 0 0 1-4.4-4.4l1-.8a1.5 1.5 0 0 0 .5-1.5L9.9 5.6a1.5 1.5 0 0 0-1.3-1.1Z" />,
+  chat: <path d="M15.5 9.2c-.4-2.8-3.1-4.7-6.3-4.7-3.5 0-6.4 2.4-6.4 5.3 0 1.6.9 3 2.2 4l-.5 2 2.4-1.2c.7.2 1.5.3 2.3.3M21.2 14.6c0-2.4-2.4-4.4-5.3-4.4s-5.3 2-5.3 4.4 2.4 4.4 5.3 4.4c.6 0 1.2-.1 1.8-.2l2 1-.4-1.7c1.1-.8 1.9-2.1 1.9-3.5Z" />,
+  pin: <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />,
+};
+const OPS_CARDS = [
+  { icon: 'mail', title: 'Email Operations', text: transportEmail, href: `mailto:${transportEmail}` },
+  { icon: 'phone', title: 'Request a Callback', text: 'Send your phone number and shipment reference.', href: '/contact' },
+  { icon: 'pin', title: 'Visit a Depot', text: 'Wetherill Park, NSW and Truganina, VIC.', href: '/contact' },
+  { icon: 'chat', title: 'Scan to Connect', text: 'WeChat for local and cross-border enquiries.', qr: '/phoenix-prototype/a485409f0d78530d44d5ad3b329e6b01b6089637.png' },
+];
+function OpsCards() {
+  return <div className="fb-ops">
+    {OPS_CARDS.map(c => {
+      const Tag = c.href ? 'a' : 'div';
+      return <Tag key={c.title} className="fb-ops-card" href={c.href} tabIndex={c.href ? undefined : 0}>
+        <span className="fb-ops-top">
+          <span className="fb-ops-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{OPS_ICONS[c.icon]}</svg></span>
+          {c.qr ? <img className="fb-ops-qr" src={c.qr} alt="Phoenix Global Logistics WeChat QR code" width="112" height="112" loading="lazy" />
+            : <svg className="fb-ops-arrow" viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 14 14 6M7.5 6H14v6.5" /></svg>}
+        </span>
+        <span className="fb-ops-copy"><b>{c.title}</b><span>{c.text}</span></span>
+      </Tag>;
+    })}
+  </div>;
+}
+
 const parts = {
-  network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
+  'home-about': HomeAbout, 'ops-cards': OpsCards, network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
   'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm,
   'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover, 'services-pin': ServicesPin,
 };
 
-export function FeedbackPart({ name }) {
+export function FeedbackPart({ name, page }) {
   const Part = parts[name];
-  return Part ? <Part /> : null;
+  return Part ? <Part page={page} /> : null;
 }
 
 export { company };

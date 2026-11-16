@@ -25,9 +25,12 @@ const words = n => n?.characters ?? kids(n).map(words).join(' ').trim();
 const normalized = (s='') => s.toLowerCase().replace(/[’']/g,'').replace(/\s+/g,' ').trim();
 // Serif display faces read like a cookbook to the client; headings use a bold sans instead.
 const serif = f => /DM Serif|Sawarabi/.test(f||'');
-// Client: Manrope across the site.
-const font = f => 'Manrope Variable';
-const weight = s => /semi/i.test(s)?600:/bold/i.test(s)?700:/medium/i.test(s)?500:400;
+// Owner (round 6): one family, Geist, and nothing heavier than semibold.
+const font = f => 'Geist Variable';
+const weight = s => /semi|bold/i.test(s)?600:/medium/i.test(s)?500:400;
+// Body sizes snap to one scale: 12 legal · 14 small · 16 body · 18 lead.
+const textSize = n => n >= 24 || !n ? n : n <= 12 ? 12 : n <= 14 ? 14 : n <= 16 ? 16 : 18;
+const textLeading = n => n >= 24 ? null : n <= 12 ? '18px' : n <= 14 ? '22px' : n <= 16 ? '26px' : '29px';
 const isVector = n => /^(VECTOR|BOOLEAN_OPERATION|LINE|POLYGON|STAR)$/.test(n.type);
 
 function gradient(p,w,h){
@@ -169,14 +172,14 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const edges=extra.stroke??Array(4).fill(typeof s.strokeWeight==='number'?s.strokeWeight:0);
  const effect=extra.effects?.find(e=>e.type==='DROP_SHADOW'&&e.visible);
  const row=s.autoLayout?.direction==='HORIZONTAL'&&!section&&(children.every(k=>k.bounds?.width<250)||b.height<=85);
- const isShape=!children.length&&!isText&&!svg&&!image;
+ const isShape=!children.length&&!isText&&!svg&&!image&&!n.after&&!n.custom;
  const subheading=isText&&(s.fontSize??0)>=24&&(s.fontSize??0)<45;
  const numeric=isText&&/^\d[\d,.+%k]*$/i.test(value?.trim()||'');
  const metric=numeric&&name==='Proof / Number';
  const icon=!isText&&children.length>0&&b.width<=72&&b.height<=72&&!button;
  const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',subheading&&'fig-subheading',numeric&&'fig-number',metric&&'fig-stat-value',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta',icon&&'fig-icon',isText&&serif(s.fontFamily)&&'fig-display'].filter(Boolean).join(' ');
  const style={'--x':px(b.x),'--y':px(b.y),'--w':px(b.width),'--h':px(b.height),'--gap':px(s.autoLayout?.gap||10),'--ratio':b.width/Math.max(1,b.height),borderRadius:n.type==='ELLIPSE'?'50%':typeof s.cornerRadius==='number'?s.cornerRadius:undefined,overflow:s.clipsContent?'hidden':undefined,opacity:s.opacity??undefined,boxShadow:effect?[px(effect.offset.x),px(effect.offset.y),px(effect.radius),px(effect.spread||0),rgb(effect.color)].join(' '):undefined};
- if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:inline?(currentNavLink?600:400):serif(s.fontFamily)?700:weight(s.fontStyle),'--text-size':px(s.fontSize||14),'--leading':s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3',textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
+ if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:inline?(currentNavLink?600:400):serif(s.fontFamily)?600:Math.min(600,Number(s.fontWeight)||weight(s.fontStyle)),'--text-size':px(textSize(s.fontSize||14)),'--leading':textLeading(s.fontSize||14)||(s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3'),textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
  const cta=section&&/cta/i.test(name);
  const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero,dark:ctx.dark||hero||footer||cta};
  const variant=(href||actions)&&!tab&&(button||submit||previous||next)?buttonVariant(fills,ctx.dark&&!ctx.header):undefined;

@@ -25,26 +25,34 @@ const text = {
 const hidden = new Set([
   '187:428', '192:812', // Amazon badge leaves the hero; it moves down the page
   '193:863',            // depot list, replaced by the network map
+  '193:855',            // network title block: the globe section draws its own centred heading
   '198:556',            // static truck cut-out, replaced by the loading animation
   '252:406',            // small Our Values photo, replaced by the sticky photo panel
+  '187:437',            // AI texture behind the quick tools card (round 6: no generated imagery)
 ]);
 
 // Photo swaps (client: "change photo" on service rows and the related-services card).
 const photo = {
   '109:285': card('warehouse-136'),   // About > Operations (was a cropped forklift shot)
   '109:287': card('rollers-04'),      // About > Transport
+  // Round 6: no AI imagery. The desk shot on the tracking CTA and the Why/process panels
+  // becomes a real photo from the Phoenix shoot.
+  '158:398': card('warehouse-26'),
+  '119:670': card('warehouse-100'),
+  '119:688': card('warehouse-100'),
 };
 
 // Components rendered in place of, or after, a layer's own children.
 const replace = {
+  '191:764': 'home-about',  // Home About, rebuilt clean (round 6)
+  '208:581': 'home-about',  // Why Phoenix About: same layout, its own photos
   '69:1497': 'quote-form',   // Contact: shorter quote form
+  '129:308': 'ops-cards',    // Why Phoenix: contact operations as platform cards (round 6)
 };
 // Sections whose height changes with the new layouts; later sections move up or down to match.
-const sectionHeight = { '187:477': 884 + 1100 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
+const sectionHeight = { '187:477': 884 + 1100, '193:854': 1180, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
 const after = {
   '193:854': 'network',        // Home network section: map on the right, places on the left
-  '191:764': 'partner-panel',  // Home About: photo and Amazon partner card fill the left column
-  '208:581': 'partner-panel',  // Why Phoenix About: same
   '252:404': 'values-photo',   // About: Our Values photo and facts in the left column
   '62:893': 'stage-route',     // Tracking: truck moving through the four stages
   '198:545': 'truck-load',     // About: pallets loaded, curtain closes, truck drives off
@@ -68,6 +76,8 @@ export function applyFeedback(tree, page) {
     const n = { ...node };
     if (text[n.id] != null) n.characters = text[n.id];
     n.characters = swapEmails(n.characters);
+    // Home service cards: copy wraps to the card, not to hard breaks from the Figma file.
+    if (n.id?.startsWith('323:') && n.characters) n.characters = n.characters.replace(/\n/g, ' ');
     if (hidden.has(n.id)) n.styles = { ...n.styles, visible: false };
     if (photo[n.id]) n.photoUrl = photo[n.id];
     if (replace[n.id]) n.custom = replace[n.id];
@@ -86,7 +96,8 @@ export function applyFeedback(tree, page) {
   }
   const out = adapt(tree);
   resizeSections(out);
-  if (page === 'home' || page === 'services') out.heroVideo = true;
+  // The hero film belongs to the home page; service pages show their own photo.
+  if (page === 'home') out.heroVideo = true;
   return out;
 }
 
