@@ -56,6 +56,7 @@ export function usePageMotion(viewport) {
         let i = 0;
         const items = section.querySelectorAll('.fig-heading, .fig-subheading, .fig-text, .fig-photo, .fig-button, [data-fill-card], [data-related-card], .fb-reveal');
         for (const item of items) {
+          if (item.closest('.fig-header, header')) continue;
           if (item.closest('[data-feedback]') && !item.classList.contains('fb-reveal')) continue;
           if (picks.some(p => p.contains(item))) continue;
           if (item.getBoundingClientRect().top < innerHeight) continue;
@@ -65,7 +66,6 @@ export function usePageMotion(viewport) {
           revealObserver.observe(item);
         }
       }
-      for (const item of element.querySelectorAll('.fb-values-sticky')) revealObserver.observe(item);
     }
 
     async function enhance() {

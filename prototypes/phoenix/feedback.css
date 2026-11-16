@@ -1101,8 +1101,6 @@ body { font-family: 'Geist Variable', sans-serif; }
   .fb-ha-photo:not(#_) img { scale: 1.3; transition: scale 2s cubic-bezier(.16,1,.3,1) .25s; }
   .fb-ha.is-in .fb-ha-photo:not(#_) { clip-path: inset(0); }
   .fb-ha.is-in .fb-ha-photo:not(#_) img { scale: 1.06; }
-  .fb-values-sticky img { clip-path: inset(0 0 0 100%); scale: 1.2; transition: clip-path 1.4s cubic-bezier(.76,0,.24,1), scale 2s cubic-bezier(.16,1,.3,1); }
-  .fb-values-sticky.is-in img { clip-path: inset(0); scale: 1; }
 }
 
 /* Everything else: content fades and rises in as it is reached; photos open from the bottom */
