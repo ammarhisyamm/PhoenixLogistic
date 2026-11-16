@@ -1054,3 +1054,62 @@ body { font-family: 'Geist Variable', sans-serif; }
 .fb-sector h3 { min-height: 2.4em; display: flex; align-items: flex-end; }
 .fb-sector p { min-height: 4.65em; }
 [data-layer="187:650"]:not(#_) { --w: 620px !important; overflow: visible !important; }
+
+/* ===== Round 10: motion from the client's references ===== */
+/* Services: How we work, pinned story */
+.fb-hww { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 100px 80px; }
+.fb-hww-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 80px; margin-bottom: 56px; }
+.fb-hww-head h2 { margin: 0; font: 600 48px/1.1 'Geist Variable', sans-serif; letter-spacing: -1.2px; color: #232022; }
+.fb-hww-head p { margin: 0; max-width: 440px; font: 400 17px/1.6 'Geist Variable', sans-serif; color: #5c5557; }
+.fb-hww-track { position: relative; flex: 1; }
+.fb-hww-stage { position: absolute; left: 0; right: 0; top: 0; height: 620px; display: grid; grid-template-columns: 7fr 5fr; gap: 80px; align-items: stretch; will-change: transform; }
+.fb-hww-media { position: relative; margin: 0; overflow: hidden; border-radius: 6px; background: #232022; }
+.fb-hww-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; clip-path: inset(100% 0 0 0); scale: 1.18;
+  transition: clip-path 1.1s cubic-bezier(.76,0,.24,1), scale 1.6s cubic-bezier(.16,1,.3,1); }
+.fb-hww-media img.is-on, .fb-hww-media img.is-past { clip-path: inset(0); scale: 1; }
+.fb-hww-media img.is-past { scale: 1.06; }
+.fb-hww-media figcaption { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: center; gap: 24px; padding: 48px 28px 24px; background: linear-gradient(transparent, #0000008c); color: #fff; }
+.fb-hww-count { font: 500 15px/1 'Geist Variable', sans-serif; font-variant-numeric: tabular-nums; }
+.fb-hww-count i { font-style: normal; color: #ffffff8c; }
+.fb-hww-bar { display: flex; flex: 1; gap: 6px; }
+.fb-hww-bar i { position: relative; flex: 1; height: 2px; background: #ffffff40; overflow: hidden; }
+.fb-hww-bar i::after { content: ''; position: absolute; inset: 0; background: var(--red, #e31b24); transform-origin: left; transform: scaleX(var(--f, 0)); }
+.fb-hww-copy { position: relative; margin: 0; padding: 0; list-style: none; }
+.fb-hww-copy li { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; gap: 16px; opacity: 0; translate: 0 48px; pointer-events: none;
+  transition: opacity .6s ease, translate .9s cubic-bezier(.16,1,.3,1); }
+.fb-hww-copy li.is-on { opacity: 1; translate: 0 0; pointer-events: auto; transition-delay: .15s; }
+.fb-hww-copy li.is-past { translate: 0 -48px; }
+.fb-hww-kicker { font: 500 13px/1 'Geist Variable', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--red, #e31b24); }
+.fb-hww h3 { margin: 0; font: 600 36px/1.15 'Geist Variable', sans-serif; letter-spacing: -.8px; color: #232022; }
+.fb-hww-copy p, .fb-hww-list p { margin: 0; max-width: 440px; font: 400 17px/1.6 'Geist Variable', sans-serif; color: #5c5557; }
+.fb-hww-list { display: none; }
+[data-layer="61:264"]:not(#_) { overflow: visible !important; }
+@media (max-width: 999px) {
+  .fb-hww { position: relative; inset: auto; padding: 64px 20px; }
+  .fb-hww-head { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
+  .fb-hww-head h2 { font-size: 34px; }
+  .fb-hww-track { display: none; }
+  .fb-hww-list { display: grid; gap: 44px; margin: 0; padding: 0; list-style: none; }
+  .fb-hww-list li { display: flex; flex-direction: column; gap: 12px; }
+  .fb-hww-list img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 6px; margin-bottom: 8px; }
+  .fb-hww h3 { font-size: 24px; }
+}
+
+/* About: a wider, slower photo wipe (reference: image slides open sideways) */
+@media (prefers-reduced-motion: no-preference) {
+  .fb-ha-photo:not(#_) { clip-path: inset(0 0 0 100%); transition: clip-path 1.4s cubic-bezier(.76,0,.24,1) .25s; }
+  .fb-ha-photo:not(#_) img { scale: 1.3; transition: scale 2s cubic-bezier(.16,1,.3,1) .25s; }
+  .fb-ha.is-in .fb-ha-photo:not(#_) { clip-path: inset(0); }
+  .fb-ha.is-in .fb-ha-photo:not(#_) img { scale: 1.06; }
+  .fb-values-sticky img { clip-path: inset(0 0 0 100%); scale: 1.2; transition: clip-path 1.4s cubic-bezier(.76,0,.24,1), scale 2s cubic-bezier(.16,1,.3,1); }
+  .fb-values-sticky.is-in img { clip-path: inset(0); scale: 1; }
+}
+
+/* Everything else: content fades and rises in as it is reached; photos open from the bottom */
+@media (prefers-reduced-motion: no-preference) {
+  [data-rv] { opacity: 0; translate: 0 32px; transition: opacity .8s ease var(--rv-d, 0s), translate 1.1s cubic-bezier(.16,1,.3,1) var(--rv-d, 0s), clip-path 1.2s cubic-bezier(.76,0,.24,1) var(--rv-d, 0s); }
+  [data-rv].fig-photo, .fb-reveal[data-rv] img { }
+  [data-rv].fig-photo { opacity: 1; translate: none; clip-path: inset(100% 0 0 0); }
+  [data-rv="in"] { opacity: 1; translate: 0 0; }
+  [data-rv="in"].fig-photo { clip-path: inset(0); }
+}

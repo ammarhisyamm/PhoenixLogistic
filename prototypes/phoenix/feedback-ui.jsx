@@ -578,6 +578,66 @@ function FooterNav() {
   </nav>;
 }
 
+// Services (round 10): How we work as a pinned story, after the client's reference. On desktop the
+// stage holds still while the page scrolls: the photo on the left wipes to the next step, a red
+// progress bar fills, and the copy on the right slides through the three steps. Mobile stacks.
+const findNode = (n, id) => n.id === id ? n : (n.children || []).reduce((hit, c) => hit || findNode(c, id), null);
+function HowWeWork({ n }) {
+  const root = useRef(null);
+  const stage = useRef(null);
+  const [step, setStep] = useState(0);
+  const [prog, setProg] = useState(0);
+  const t = id => findNode(n, id)?.characters || '';
+  const steps = [['61:542', '209:465', '209:466'], ['209:474', '209:476', '209:477'], ['209:480', '209:482', '209:483']]
+    .map(([img, title, text]) => ({ img: findNode(n, img)?.photoUrl, title: t(title), text: t(text) }));
+  useEffect(() => {
+    const sec = root.current, st = stage.current;
+    if (!sec || !st) return;
+    const desktop = matchMedia('(min-width: 1000px)');
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      if (!desktop.matches) { st.style.transform = ''; return; }
+      const track = st.parentElement, r = track.getBoundingClientRect(), z = r.width / track.offsetWidth || 1;
+      const stageH = st.offsetHeight * z, run = r.height - stageH;
+      const top = Math.min(Math.max(-r.top + Math.max(0, (innerHeight - stageH) / 2), 0), run);
+      st.style.transform = `translateY(${top / z}px)`;
+      const p = run > 0 ? top / run : 0;
+      setProg(p);
+      setStep(Math.min(steps.length - 1, Math.floor(p * steps.length * .999)));
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    addEventListener('scroll', on, { passive: true });
+    addEventListener('resize', on);
+    desktop.addEventListener('change', on);
+    return () => { removeEventListener('scroll', on); removeEventListener('resize', on); desktop.removeEventListener('change', on); cancelAnimationFrame(raf); };
+  }, []);
+  return <div ref={root} className="fb-hww">
+    <header className="fb-hww-head"><h2>{t('61:267')}</h2><p>{t('61:268')}</p></header>
+    <div className="fb-hww-track">
+      <div ref={stage} className="fb-hww-stage">
+        <figure className="fb-hww-media">
+          {steps.map((s, i) => <img key={i} src={s.img} alt="" loading="lazy" className={i < step ? 'is-past' : i === step ? 'is-on' : ''} />)}
+          <figcaption><span className="fb-hww-count">0{step + 1}<i> / 0{steps.length}</i></span>
+            <span className="fb-hww-bar">{steps.map((_, i) => <i key={i} style={{ '--f': Math.min(1, Math.max(0, prog * steps.length - i)) }} />)}</span>
+          </figcaption>
+        </figure>
+        <ol className="fb-hww-copy">
+          {steps.map((s, i) => <li key={i} className={i < step ? 'is-past' : i === step ? 'is-on' : ''}>
+            <span className="fb-hww-kicker">Step 0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p>
+          </li>)}
+        </ol>
+      </div>
+    </div>
+    <ol className="fb-hww-list">
+      {steps.map((s, i) => <li key={i} className="fb-reveal">
+        <img src={s.img} alt="" loading="lazy" /><span className="fb-hww-kicker">Step 0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p>
+      </li>)}
+    </ol>
+  </div>;
+}
+
 // Contact: a shorter quote form (client: name, company and country, phone, services, freight type, notes).
 const freightTypes = ['Pallets', 'Cartons / loose cargo', 'Full container (20ft or 40ft)', 'Amazon FBA shipment', 'Dangerous goods', 'Other'];
 // Contact (round 7): select in the shadcn/ui style. A trigger with a chevron, a floating list with
@@ -808,13 +868,13 @@ function OpsCards() {
 
 const parts = {
   'home-about': HomeAbout, 'ops-cards': OpsCards, network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
-  'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm, 'belt-scene': BeltScene, sectors: Sectors, 'footer-nav': FooterNav,
+  'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm, 'belt-scene': BeltScene, 'how-we-work': HowWeWork, sectors: Sectors, 'footer-nav': FooterNav,
   'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover, 'services-pin': ServicesPin,
 };
 
-export function FeedbackPart({ name, page }) {
+export function FeedbackPart({ name, page, n }) {
   const Part = parts[name];
-  return Part ? <Part page={page} /> : null;
+  return Part ? <Part page={page} n={n} /> : null;
 }
 
 export { company };

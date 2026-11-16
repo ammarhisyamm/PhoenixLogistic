@@ -50,11 +50,12 @@ const replace = {
   '191:764': 'home-about',  // Home About, rebuilt clean (round 6)
   '208:581': 'home-about',  // Why Phoenix About: same layout, its own photos
   '69:1497': 'quote-form',   // Contact: shorter quote form
+  '61:264': 'how-we-work',   // Services (round 10): pinned How we work story
   '187:609': 'sectors',      // Home (round 9): five industry cards
   '129:308': 'ops-cards',    // Why Phoenix: contact operations as platform cards (round 6)
 };
 // Sections whose height changes with the new layouts; later sections move up or down to match.
-const sectionHeight = { '187:605': 660, '66:952': 1344 - 290, '187:477': 884 + 1100, '193:854': 1300, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
+const sectionHeight = { '61:264': 2500, '187:605': 660, '66:952': 1344 - 290, '187:477': 884 + 1100, '193:854': 1300, '187:446': 1110, '208:580': 1110 }; // Home services: room for the pinned sideways scroll (see SERVICES_PIN)
 const after = {
   '193:854': 'network',        // Home network section: map on the right, places on the left
   '252:404': 'values-photo',   // About: Our Values photo and facts in the left column
