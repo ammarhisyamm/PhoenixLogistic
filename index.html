@@ -14,57 +14,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Round 10: first-visit loader. A counter climbs to 100 while freight photos flick in the
-         centre; the last photo opens up and the page is revealed. Once per session, skipped for
-         reduced motion. Static so it shows before any JavaScript bundle arrives. -->
-    <div id="pgl-loader" aria-hidden="true">
-      <style>
-        #pgl-loader{position:fixed;inset:0;z-index:2147483000;background:#fff;color:#232022;font-family:'Geist Variable',system-ui,sans-serif;clip-path:inset(0 0 0 0);transition:clip-path .9s cubic-bezier(.76,0,.24,1)}
-        #pgl-loader.is-out{clip-path:inset(0 0 100% 0)}
-        #pgl-loader .pl-stage{position:absolute;left:50%;top:50%;width:min(22vw,240px);aspect-ratio:4/3;translate:-50% -50%;overflow:hidden;transition:width 1s cubic-bezier(.76,0,.24,1),aspect-ratio 1s cubic-bezier(.76,0,.24,1)}
-        #pgl-loader.is-open .pl-stage{width:100vw;aspect-ratio:auto;height:100vh}
-        #pgl-loader .pl-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;scale:1.08}
-        #pgl-loader .pl-stage img.on{opacity:1;scale:1;transition:scale 1.2s cubic-bezier(.16,1,.3,1)}
-        #pgl-loader .pl-count{position:absolute;right:clamp(20px,4vw,56px);top:clamp(16px,3vw,40px);font-size:clamp(64px,11vw,168px);font-weight:500;letter-spacing:-.05em;line-height:.9;font-variant-numeric:tabular-nums;transition:opacity .4s}
-        #pgl-loader .pl-count small{font-size:.28em;letter-spacing:0;vertical-align:top;margin-left:.1em;color:#e31b24}
-        #pgl-loader .pl-logo{position:absolute;left:50%;bottom:clamp(20px,4vw,40px);translate:-50% 0;height:44px;transition:opacity .4s}
-        #pgl-loader .pl-bar{position:absolute;left:clamp(20px,4vw,56px);top:clamp(28px,4vw,56px);width:120px;height:2px;background:#2320221a}
-        #pgl-loader .pl-bar i{display:block;height:100%;width:0;background:#e31b24}
-        #pgl-loader.is-open .pl-count,#pgl-loader.is-open .pl-logo,#pgl-loader.is-open .pl-bar{opacity:0}
-        @media (prefers-reduced-motion:reduce){#pgl-loader{display:none}}
-      </style>
-      <div class="pl-stage"></div>
-      <div class="pl-count"><span>0</span><small>%</small></div>
-      <div class="pl-bar"><i></i></div>
-      <img class="pl-logo" src="/assets/phoenix-logo.png" alt="" />
-    </div>
-    <script>
-      (function () {
-        var el = document.getElementById('pgl-loader');
-        var skip = false;
-        try { skip = sessionStorage.getItem('pgl-loaded') === '1'; } catch (e) {}
-        if (skip || matchMedia('(prefers-reduced-motion: reduce)').matches) { el.remove(); return; }
-        try { sessionStorage.setItem('pgl-loaded', '1'); } catch (e) {}
-        var root = document.documentElement; root.style.overflow = 'hidden';
-        var names = ['drone-07', 'warehouse-45', 'rollers-05', 'warehouse-124', 'night-08', 'drone-01'];
-        var stage = el.querySelector('.pl-stage'), num = el.querySelector('.pl-count span'), bar = el.querySelector('.pl-bar i');
-        var imgs = names.map(function (n) { var i = new Image(); i.alt = ''; i.decoding = 'async'; i.src = '/option2/photos/' + n + '@640.webp'; stage.appendChild(i); return i; });
-        imgs[imgs.length - 1].src = '/option2/photos/drone-01@1200.webp';
-        var total = 2200, start = performance.now(), shown = -1;
-        function ease(t) { return 1 - Math.pow(1 - t, 3); }
-        function frame(now) {
-          var t = Math.min(1, (now - start) / total), v = Math.round(ease(t) * 100);
-          num.textContent = v; bar.style.width = v + '%';
-          var k = Math.min(imgs.length - 1, Math.floor(t * imgs.length));
-          if (k !== shown) { imgs.forEach(function (im, j) { im.classList.toggle('on', j === k); }); shown = k; }
-          if (t < 1) return requestAnimationFrame(frame);
-          el.classList.add('is-open');
-          setTimeout(function () { el.classList.add('is-out'); root.style.overflow = ''; }, 900);
-          setTimeout(function () { el.remove(); }, 1900);
-        }
-        requestAnimationFrame(frame);
-      })();
-    </script>
     <script type="module" src="/prototypes/phoenix/main.jsx"></script>
   </body>
 </html>

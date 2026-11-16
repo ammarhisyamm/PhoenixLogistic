@@ -36,38 +36,6 @@ export function usePageMotion(viewport) {
       if (lead && lead.getBoundingClientRect().top >= innerHeight) sectionObserver.observe(lead);
     }
 
-    // Round 10: content below the fold fades and rises in when reached (photos open from the
-    // bottom), staggered within each section. Custom parts keep their own motion, except items
-    // marked .fb-reveal. Attributes are removed after the entrance so hover transitions are untouched.
-    const revealObserver = new IntersectionObserver(entries => {
-      for (const { target, isIntersecting } of entries) {
-        if (!isIntersecting) continue;
-        revealObserver.unobserve(target);
-        if (target.hasAttribute('data-rv')) {
-          target.setAttribute('data-rv', 'in');
-          setTimeout(() => { target.removeAttribute('data-rv'); target.style.removeProperty('--rv-d'); }, 1600);
-        } else target.classList.add('is-in');
-      }
-    }, { rootMargin: '0px 0px -10% 0px' });
-    if (!preference.matches) {
-      const picks = [];
-      for (const section of element.querySelectorAll('.fig-section')) {
-        if (section.matches('.fig-header, .fig-footer')) continue;
-        let i = 0;
-        const items = section.querySelectorAll('.fig-heading, .fig-subheading, .fig-text, .fig-photo, .fig-button, [data-fill-card], [data-related-card], .fb-reveal');
-        for (const item of items) {
-          if (item.closest('[data-feedback]') && !item.classList.contains('fb-reveal')) continue;
-          if (picks.some(p => p.contains(item))) continue;
-          if (item.getBoundingClientRect().top < innerHeight) continue;
-          picks.push(item);
-          item.setAttribute('data-rv', '');
-          item.style.setProperty('--rv-d', `${Math.min(i++, 6) * 70}ms`);
-          revealObserver.observe(item);
-        }
-      }
-      for (const item of element.querySelectorAll('.fb-values-sticky')) revealObserver.observe(item);
-    }
-
     async function enhance() {
       if (preference.matches || disconnect) return;
       try {
@@ -84,7 +52,6 @@ export function usePageMotion(viewport) {
       removeEventListener('scroll', onScroll);
       root.removeAttribute('data-header-hidden');
       sectionObserver.disconnect();
-      revealObserver.disconnect();
       disconnect?.();
       preference.removeEventListener('change', enhance);
     };

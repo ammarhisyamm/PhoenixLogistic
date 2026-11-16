@@ -23,22 +23,6 @@ export function connectScrollMotion(viewport) {
       entrance.from(copy, { y: distance, opacity: .72 }, .1);
     }
 
-    // Round 10: the first section's photo or video drifts slower than the page and its copy fades
-    // out on the way up (reference: aerial shot with text that lifts away).
-    const hero = viewport.querySelector('.fig-section');
-    const media = hero?.querySelector('video, .image-paint');
-    if (hero && media) {
-      gsap.fromTo(media, { yPercent: 0, scale: 1 }, { yPercent: conditions.desktop ? 14 : 8, scale: 1.08, ease: 'none',
-        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
-      const copy = [...hero.querySelectorAll('.fig-heading, .fig-text, .fig-button')].filter(el => !el.closest('[data-feedback], form'));
-      if (copy.length) gsap.to(copy, { y: conditions.desktop ? -70 : -30, opacity: 0, ease: 'none',
-        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom 20%', scrub: true } });
-    }
-    // About photos drift inside their frame.
-    for (const img of viewport.querySelectorAll('.fb-ha-photo img, .fb-values-sticky img')) {
-      gsap.fromTo(img, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } });
-    }
-
     const truck = viewport.querySelector('[data-layer="198:556"]');
     const truckImage = truck?.querySelector('.image-paint');
     if (truckImage) {
