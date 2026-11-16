@@ -31,6 +31,9 @@ const weight = s => /semi|bold/i.test(s)?600:/medium/i.test(s)?500:400;
 // Body sizes snap to one scale: 12 legal · 14 small · 16 body · 18 lead.
 const textSize = n => n >= 24 || !n ? n : n <= 12 ? 12 : n <= 14 ? 14 : n <= 16 ? 16 : 18;
 const textLeading = n => n >= 24 ? null : n <= 12 ? '18px' : n <= 14 ? '22px' : n <= 16 ? '26px' : '29px';
+const isNearBlack = p => { if (!p || (p.opacity ?? 1) < .7) return false; const c = p.color; if (!c) return false;
+ const [r, g, b] = typeof c === 'string' ? (c.length >= 7 ? [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255) : [1, 1, 1]) : [c.r, c.g, c.b];
+ return (c.a ?? 1) > .7 && .2126 * r + .7152 * g + .0722 * b < .25; };
 const isVector = n => /^(VECTOR|BOOLEAN_OPERATION|LINE|POLYGON|STAR)$/.test(n.type);
 
 function gradient(p,w,h){
@@ -180,6 +183,10 @@ function Node({n,parent,root=false,section=false,inactive=false}){
  const cls=['fig-node',root&&'fig-root',section&&'fig-section',isText&&'fig-text',heading&&'fig-heading',subheading&&'fig-subheading',numeric&&'fig-number',metric&&'fig-stat-value',hero&&'fig-hero',header&&'fig-header',footer&&'fig-footer',svg&&'fig-vector',image&&!children.length&&'fig-photo',row&&'fig-row',button&&'fig-button',field&&'fig-field',isShape&&'fig-shape',b.width<=72&&!children.length&&!isText&&'fig-small',name==='Blur'&&'fig-blur',section&&/cta/i.test(name)&&'fig-cta',icon&&'fig-icon',isText&&serif(s.fontFamily)&&'fig-display'].filter(Boolean).join(' ');
  const style={'--x':px(b.x),'--y':px(b.y),'--w':px(b.width),'--h':px(b.height),'--gap':px(s.autoLayout?.gap||10),'--ratio':b.width/Math.max(1,b.height),borderRadius:n.type==='ELLIPSE'?'50%':typeof s.cornerRadius==='number'?s.cornerRadius:undefined,overflow:s.clipsContent?'hidden':undefined,opacity:s.opacity??undefined,boxShadow:effect?[px(effect.offset.x),px(effect.offset.y),px(effect.radius),px(effect.spread||0),rgb(effect.color)].join(' '):undefined};
  if(isText)Object.assign(style,{fontFamily:font(s.fontFamily),fontWeight:inline?(currentNavLink?600:400):serif(s.fontFamily)?600:Math.min(600,Number(s.fontWeight)||weight(s.fontStyle)),'--text-size':px(textSize(s.fontSize||14)),'--leading':textLeading(s.fontSize||14)||(s.lineHeight?.unit==='PIXELS'?px(s.lineHeight.value):s.lineHeight?.unit==='PERCENT'?s.lineHeight.value+'%':'1.3'),textAlign:(s.textAlignHorizontal||'LEFT').toLowerCase(),color:fills[0]?rgb(fills[0].color??'#232022',fills[0].opacity):'#232022',letterSpacing:s.letterSpacing?.unit==='PIXELS'?px(s.letterSpacing.value):s.letterSpacing?.value?(s.letterSpacing.value/100)+'em':undefined,textDecoration:s.textDecoration==='UNDERLINE'?'underline':undefined});
+ // Owner (round 7): subtitles and body copy read in the soft grey, never near-black. Applies to
+ // regular-weight paragraphs (six words or more) on light backgrounds; headings, labels, links and
+ // buttons keep their colour.
+ if(isText&&!heading&&!subheading&&!rollText&&!href&&(Number(s.fontWeight)||weight(s.fontStyle))<500&&(s.fontSize||14)<=20&&(value||'').trim().split(/\s+/).length>=6&&isNearBlack(fills[0]))style.color='#5c5557';
  const cta=section&&/cta/i.test(name);
  const scope={...ctx,header:ctx.header||header,footer:ctx.footer||footer,hero:ctx.hero||hero,dark:ctx.dark||hero||footer||cta};
  const variant=(href||actions)&&!tab&&(button||submit||previous||next)?buttonVariant(fills,ctx.dark&&!ctx.header):undefined;

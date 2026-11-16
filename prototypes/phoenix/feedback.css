@@ -935,3 +935,39 @@ body { font-family: 'Geist Variable', sans-serif; }
 .fb-quote textarea:not(#_) { min-height: 300px; }
 @media (max-width: 999px) { .fb-quote textarea:not(#_) { min-height: 150px; } }
 @media (max-width: 999px) { [data-layer="69:1497"]:not(#_) { width: 100% !important; align-self: stretch; } .fb-quote { width: 100%; } }
+
+/* ---------- Round 8 (owner, 16 Nov) ---------- */
+/* About: no headline under the photo; the photo takes the column width instead. */
+.fb-ha-photo { width: 100%; aspect-ratio: 16 / 10; }
+
+/* Home network: full-bleed, tilted dotted map like "Our Global Presence". */
+.fb-gp { padding-bottom: 0; }
+.fb-gp-globe:not(#_) { flex: none; width: calc(100% + 160px); max-width: none; margin: 32px -80px 0; }
+.fb-dm-wrap { position: relative; inset: auto; width: 100%; }
+.fb-dm { position: absolute; inset: 0; container-type: inline-size; overflow: hidden;
+  -webkit-mask-image: radial-gradient(ellipse 78% 118% at 50% 100%, #000 78%, transparent 100%), linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-composite: source-in; mask-image: radial-gradient(ellipse 78% 118% at 50% 100%, #000 78%, transparent 100%), linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-composite: intersect; }
+.fb-dm svg.fb-dm-plane { position: absolute; left: -10%; bottom: 0; width: 120%; height: auto; overflow: visible; transform-origin: 50% 100%; transform: perspective(var(--persp)) rotateX(var(--tilt)); }
+.fb-dm-land { stroke-width: 5.6; }
+.fb-dm-top { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+@media (max-width: 999px) { .fb-gp-globe:not(#_) { width: calc(100% + 40px); margin: 24px -20px 0; aspect-ratio: auto; } }
+
+/* About Our Values facts: white cards, soft grey border, ink figures. */
+.fb-values-facts:not(#_) div { background: #fff; border: 1px solid #e6e0e0; border-radius: 6px; }
+.fb-values-facts:not(#_) dt, .fb-values-facts:not(#_) div:first-child dt { color: #232022; }
+.fb-values-facts:not(#_) dd { color: #6c6466; }
+
+/* Contact form: Special requests grows to meet the button, no empty band. */
+@media (min-width: 1000px) {
+  .fb-quote:not(#_) { height: 100%; grid-template-rows: repeat(4, auto) 1fr; }
+  .fb-quote .fb-wide:last-child { grid-template-rows: auto 1fr; }
+  .fb-quote textarea:not(#_) { min-height: 160px; height: 100%; }
+}
+
+/* Round 8: quote panel only as tall as the left column; textarea fills to the button */
+@media (min-width: 1000px) {
+  [data-layer="67:1360"]:not(#_), [data-layer="67:1060"]:not(#_) { --h: 854px !important; }
+  [data-layer="67:1061"]:not(#_) { --h: 684px !important; }
+  [data-layer="69:1497"]:not(#_) { --h: 572px !important; }
+  [data-layer="69:1498"]:not(#_) { --y: 604px !important; }
+}

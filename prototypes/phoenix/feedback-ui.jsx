@@ -88,36 +88,43 @@ const PIN_INFO = {
 };
 let dotData;
 const loadDots = () => dotData ??= fetch('/option2/media/dotmap.json').then(r => r.json());
-function DotMap({ focus, setFocus, drawn }) {
+// The map lies back like the "Our Global Presence" globe: the dot layer is tilted in CSS
+// (perspective from the bottom centre), and pins and callouts are placed with the same maths so
+// they stand upright on top of it.
+const TILT = 38 * Math.PI / 180, PERSP = 1.3, BLEED = 1.2;
+function DotMap({ focus, setFocus }) {
   const [map, setMap] = useState(null);
   useEffect(() => { let live = true; loadDots().then(d => live && setMap(d)).catch(() => {}); return () => { live = false; }; }, []);
   if (!map) return <div className="fb-dm-wrap" aria-hidden="true" />;
-  const G = 10, at = ([lon, lat]) => [(lon - map.west) / map.step * G + G / 2, (map.north - lat) / map.step * G + G / 2];
-  const W = map.cols * G, H = map.rows * G;
+  const G = 10, top = (map.north - 50) / map.step * G;
+  const W = map.cols * G, H = 95 / map.step * G, P = PERSP * W;
+  const at = ([lon, lat]) => [(lon - map.west) / map.step * G + G / 2, (map.north - lat) / map.step * G + G / 2 - top];
+  const sTop = P / (P + H * Math.sin(TILT));
+  const Hvis = H * Math.cos(TILT) * sTop + 16, Ww = W / BLEED, off = (W - Ww) / 2;
+  const proj = ([x, y]) => { const d = H - y, s = P / (P + d * Math.sin(TILT)); return [W / 2 + (x - W / 2) * s, Hvis - d * Math.cos(TILT) * s]; };
   const tone = flag => flag === 1 ? (focus && focus !== 'China' ? 'is-hot' : 'is-warm') : flag === 2 ? (focus === 'China' ? 'is-hot' : 'is-warm') : '';
   const groups = { '': [], 'is-warm': [], 'is-hot': [] };
-  map.dots.forEach(([x, y, f]) => groups[tone(f)].push(`M${x * G + G / 2} ${y * G + G / 2}h0`));
+  map.dots.forEach(([x, y, f]) => groups[tone(f)].push(`M${x * G + G / 2} ${y * G + G / 2 - top}h0`));
   const [cx, cy] = at(GEO.China), [sx, sy] = at(GEO.Sydney), [mx, my] = at(GEO.Melbourne);
   const pins = ['China', 'Sydney', 'Melbourne'];
-  const callout = focus && at(GEO[focus]);
-  const lead = focus === 'China' ? 20 : 70;
-  const box = `0 ${(map.north - 50) / map.step * G} ${W} ${95 / map.step * G}`;
-  return <div className="fb-dm-wrap">
-  <div className="fb-dm">
-    <svg viewBox={box} preserveAspectRatio="xMidYMid meet" role="img" aria-label="Map of Phoenix Global Logistics locations in China and Australia">
-      <g className="fb-dm-dots">
-        {Object.entries(groups).map(([cls, d]) => <path key={cls || 'base'} className={'fb-dm-land ' + cls} d={d.join('')} />)}
-      </g>
-      <path className="fb-dm-lane" d={`M${cx} ${cy} Q${(cx + sx) / 2 + 120} ${(cy + sy) / 2 - 40} ${sx} ${sy}`} pathLength="1" />
-      <path className="fb-dm-lane is-road" d={`M${mx} ${my} Q${(mx + sx) / 2} ${(my + sy) / 2 + 20} ${sx} ${sy}`} pathLength="1" />
-    </svg>
-  </div>
-    <svg className="fb-dm-top" viewBox={box} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  const callout = focus && proj(at(GEO[focus]));
+  const lead = focus === 'China' ? 24 : 64;
+  return <div className="fb-dm-wrap" style={{ aspectRatio: `${Ww} / ${Hvis}` }}>
+    <div className="fb-dm">
+      <svg className="fb-dm-plane" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: `${W} / ${H}`, '--persp': `${PERSP * BLEED * 100}cqw`, '--tilt': `${TILT}rad` }} role="img" aria-label="Map of Phoenix Global Logistics locations in China and Australia">
+        <g className="fb-dm-dots">
+          {Object.entries(groups).map(([cls, d]) => <path key={cls || 'base'} className={'fb-dm-land ' + cls} d={d.join('')} />)}
+        </g>
+        <path className="fb-dm-lane" d={`M${cx} ${cy} Q${(cx + sx) / 2 + 120} ${(cy + sy) / 2 - 40} ${sx} ${sy}`} pathLength="1" />
+        <path className="fb-dm-lane is-road" d={`M${mx} ${my} Q${(mx + sx) / 2} ${(my + sy) / 2 + 20} ${sx} ${sy}`} pathLength="1" />
+      </svg>
+    </div>
+    <svg className="fb-dm-top" viewBox={`${off} 0 ${Ww} ${Hvis}`} aria-hidden="true">
       {pins.map((name, i) => {
-        const [x, y] = at(GEO[name]);
+        const [x, y] = proj(at(GEO[name]));
         return <g key={name} className={'fb-dm-pin' + (focus === name || (focus === 'Australia' && name !== 'China') ? ' is-on' : '')} style={{ '--i': i }} transform={`translate(${x} ${y})`}
           onMouseEnter={() => setFocus(name)} onMouseLeave={() => setFocus(null)} onClick={() => setFocus(f => f === name ? null : name)}>
-          <ellipse className="fb-dm-shadow" cx="0" cy="0" rx="9" ry="3" />
+          <ellipse className="fb-dm-shadow" cx="0" cy="0" rx="10" ry="3.5" />
           <circle className="fb-dm-ring" cx="0" cy="0" r="10" />
           <g className="fb-dm-drop"><path d="M0 0C-3-9-14-15-14-27a14 14 0 0 1 28 0C14-15 3-9 0 0Z" /><circle cx="0" cy="-27" r="5.5" /></g>
         </g>;
@@ -161,7 +168,7 @@ function NetworkMap() {
         </button>
       </li>)}
     </ul>
-    <div className="fb-gp-globe"><DotMap focus={focus} setFocus={setFocus} drawn={drawn} /></div>
+    <div className="fb-gp-globe"><DotMap focus={focus} setFocus={setFocus} /></div>
   </div>;
 }
 
@@ -211,12 +218,6 @@ function HomeAbout({ page }) {
       </div>
       <div className="fb-ha-foot">
         <figure className="fb-ha-photo"><img src={card(photo)} alt={alt} loading="lazy" /></figure>
-        <p className="fb-ha-line" aria-label="Twenty years in cargo. Family-owned, end to end.">
-          <span className="fb-ha-mask"><span className="is-soft">Twenty years</span></span>
-          <span className="fb-ha-mask"><span className="is-soft">in cargo.</span></span>
-          <span className="fb-ha-mask"><span>Family-owned,</span></span>
-          <span className="fb-ha-mask"><span>end to end.</span></span>
-        </p>
       </div>
     </div>
     <div className="fb-ha-right">
