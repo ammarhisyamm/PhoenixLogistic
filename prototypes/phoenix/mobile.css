@@ -168,7 +168,7 @@
     z-index: -1;
     background: linear-gradient(0deg, #151215ed, #15121500 82%);
   }
-  .related-card-label { display: block; color: white; font: 600 clamp(16px, 3.6vw, 24px)/1.2 'Manrope Variable', sans-serif; }
+  .related-card-label { display: block; color: white; font: 600 clamp(16px, 3.6vw, 24px)/1.2 'Geist Variable', sans-serif; }
 
   /* Keep the quote panel's label, field, and hint aligned across all input types. */
   [data-layer="67:1360"].fig-node,

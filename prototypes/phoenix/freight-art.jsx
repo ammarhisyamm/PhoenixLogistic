@@ -59,7 +59,7 @@ export function ShipLabel({ x, y, w, h, tilt = 0 }) {
     <rect x={x} y={y} width={w} height={h} fill="#fbfaf7" />
     <rect x={x} y={y} width={w} height={h * .17} fill="#231e1f" />
     <rect x={x + pad} y={y + h * .06} width={w * .16} height={h * .06} fill="#e31b24" />
-    <text x={x + pad + w * .2} y={y + h * .118} fontSize={h * .07} fontWeight="700" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".2">PHOENIX</text>
+    <text x={x + pad + w * .2} y={y + h * .118} fontSize={h * .07} fontWeight="600" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".2">PHOENIX</text>
     {[.26, .34, .42].map((k, i) => <rect key={k} x={x + pad} y={y + h * k} width={w * (i === 0 ? .55 : i === 1 ? .7 : .45)} height={lh} fill="#8d8582" />)}
     <rect x={x + pad} y={y + h * .5} width={w - pad * 2} height=".3" fill="#cfc8c4" />
     <Barcode x={x + pad} y={y + h * .56} w={w * .6} h={h * .26} />
@@ -101,7 +101,7 @@ export function Box({ x, y, w, h, d = 8, tone = 0, tape = 'red', label = false, 
       <rect x={tx} y={y} width={tw} height={h * .36} fill={tape === 'red' ? 'url(#fa-tape-red)' : 'url(#fa-tape-clear)'} opacity={tape === 'red' ? .95 : 1} />
       <path d={`M${tx} ${y + h * .36}l${tw * .25} ${-.5}l${tw * .25} .6l${tw * .25} -.4l${tw * .25} .4`} stroke={tape === 'red' ? '#8f0f15' : '#7a5328'} strokeOpacity=".5" strokeWidth=".3" fill="none" />
       <rect x={tx + tw * .18} y={y + .4} width={tw * .12} height={h * .34} fill="#fff" opacity={tape === 'red' ? .28 : .35} />
-      {tape === 'red' && w > 40 && <text x={tx + tw / 2} y={y + h * .2} fontSize={tw * .42} fontWeight="700" fill="#fff" fillOpacity=".85" textAnchor="middle" fontFamily="Geist Variable, sans-serif" transform={`rotate(90 ${tx + tw / 2} ${y + h * .18})`} letterSpacing=".2">PHOENIX</text>}
+      {tape === 'red' && w > 40 && <text x={tx + tw / 2} y={y + h * .2} fontSize={tw * .42} fontWeight="600" fill="#fff" fillOpacity=".85" textAnchor="middle" fontFamily="Geist Variable, sans-serif" transform={`rotate(90 ${tx + tw / 2} ${y + h * .18})`} letterSpacing=".2">PHOENIX</text>}
     </g>}
     {label && <ShipLabel x={x + w * .07} y={y + h * .56} w={Math.min(w * .44, 34)} h={Math.min(w * .44, 34) * .64} tilt={-1.2} />}
     {dg && <g transform={`translate(${x + w * .72} ${y + h * .55}) rotate(45)`}>
@@ -174,9 +174,9 @@ export function Container({ x = 0, y = 0, w = 160, h = 62, d = 9 }) {
     {casting(x + post / 2 + 1, y + rail / 2 + .3)}{casting(x + w - post / 2 - 1, y + rail / 2 + .3)}
     {casting(x + post / 2 + 1, y + h - rail / 2)}{casting(x + w - post / 2 - 1, y + h - rail / 2)}
     {/* markings */}
-    <text x={x + w * .5} y={y + h * .57} textAnchor="middle" fontSize={h * .2} fontWeight="700" letterSpacing="-.3" fill="#fff" fillOpacity=".92" fontFamily="Geist Variable, sans-serif">PHOENIX</text>
+    <text x={x + w * .5} y={y + h * .57} textAnchor="middle" fontSize={h * .2} fontWeight="600" letterSpacing="-.3" fill="#fff" fillOpacity=".92" fontFamily="Geist Variable, sans-serif">PHOENIX</text>
     <text x={x + w * .5} y={y + h * .7} textAnchor="middle" fontSize={h * .065} fontWeight="500" letterSpacing="1.2" fill="#fff" fillOpacity=".7" fontFamily="Geist Variable, sans-serif">GLOBAL LOGISTICS</text>
-    <text x={x + w - post - 3} y={y + rail + h * .1} textAnchor="end" fontSize={h * .075} fontWeight="700" fill="#fff" fillOpacity=".85" fontFamily="ui-monospace, monospace">PHXU 204871 2</text>
+    <text x={x + w - post - 3} y={y + rail + h * .1} textAnchor="end" fontSize={h * .075} fontWeight="600" fill="#fff" fillOpacity=".85" fontFamily="ui-monospace, monospace">PHXU 204871 2</text>
     <text x={x + w - post - 3} y={y + rail + h * .19} textAnchor="end" fontSize={h * .06} fill="#fff" fillOpacity=".7" fontFamily="ui-monospace, monospace">22G1</text>
     <text x={x + post + 3} y={y + h - rail - h * .12} fontSize={h * .045} fill="#fff" fillOpacity=".6" fontFamily="ui-monospace, monospace">MAX GROSS 30,480 KG</text>
     <text x={x + post + 3} y={y + h - rail - h * .05} fontSize={h * .045} fill="#fff" fillOpacity=".6" fontFamily="ui-monospace, monospace">TARE 2,200 KG</text>

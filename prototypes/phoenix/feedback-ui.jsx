@@ -1,10 +1,11 @@
 // Components added for client feedback round 1. Each one is placed by feedback.js against a
 // Figma layer and positioned in that layer's own artboard coordinates.
 import { useEffect, useRef, useState } from 'react';
-import { company, services } from '../../src/data';
+import { company, services, transportEmail } from '../../src/data';
 import { MAP } from '../option2/mapData';
 import { photos } from '../option2/photos';
 import { FreightDefs, Box, Pallet, Film, Container } from './freight-art';
+import { ShoppingCart, Storefront, Basket, SolarPanel, Factory, ArrowUpRight } from '@phosphor-icons/react';
 
 const reduced = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const card = name => `/option2/photos/${name}@1200.webp`;
@@ -73,248 +74,79 @@ function useOffscreenPause(ref) {
   }, [ref]);
 }
 
-// Home: the network as a 3D globe on a 2D canvas, projected by hand (orthographic) so a frame
-// costs ~1ms. Land, borders and Australia come from world-atlas, pre-simplified into
-// /option2/media/globe.json by scripts/build-globe.mjs. Drag to spin; the places list turns the
-// globe to that place. The loop only runs while the globe is on screen.
+// Home: the network on a dotted Asia-Pacific map (owner, round 7, after "Our Global Presence").
+// Dots come from world-atlas via scripts/build-dotmap.mjs (/option2/media/dotmap.json), Australia
+// and China flagged. Pins drop in, the China to Sydney lane draws, and the focused place gets a
+// callout on a thin leader line. Hover or tap a place above the map, or a pin, to focus it.
 const GEO = {
-  China: [121.47, 31.23], Sydney: [151.21, -33.87], Melbourne: [144.96, -37.81], Brisbane: [153.03, -27.47],
-  Adelaide: [138.6, -34.93], Perth: [115.86, -31.95], Darwin: [130.84, -12.46], Townsville: [146.8, -19.26],
-  'Alice Springs': [133.88, -23.7],
+  China: [121.47, 31.23], Sydney: [151.21, -33.87], Melbourne: [144.96, -37.81], Australia: [134, -24.5],
 };
-const KEY_PINS = ['China', 'Sydney', 'Melbourne'];
-const VIEW = { null: [-136, 2], Sydney: [-150, 24], Melbourne: [-144, 28], Australia: [-134, 22], China: [-122, -16] };
-const ZOOM = { null: 1, Sydney: 1.14, Melbourne: 1.14, Australia: 1.06, China: 1.08 };
-const LEFT_LABEL = ['Melbourne', 'Adelaide', 'Perth'];
-const RAD = Math.PI / 180;
-const unit = (lon, lat) => { const c = Math.cos(lat * RAD); return [c * Math.cos(lon * RAD), c * Math.sin(lon * RAD), Math.sin(lat * RAD)]; };
-const toXYZ = flat => { const out = new Float32Array(flat.length * 1.5); for (let i = 0, j = 0; i < flat.length; i += 2, j += 3) { const u = unit(flat[i], flat[i + 1]); out[j] = u[0]; out[j + 1] = u[1]; out[j + 2] = u[2]; } return out; };
-const slerp = (a, b, t) => {
-  const d = Math.acos(Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])), s = Math.sin(d) || 1;
-  const ka = Math.sin((1 - t) * d) / s, kb = Math.sin(t * d) / s;
-  return [a[0] * ka + b[0] * kb, a[1] * ka + b[1] * kb, a[2] * ka + b[2] * kb];
+const PIN_INFO = {
+  China: ['China', 'Air and sea freight partners', 'Shanghai, Ningbo and Shenzhen lanes'],
+  Sydney: ['Sydney', 'Head depot · Wetherill Park, NSW', 'Receiving, storage, linehaul'],
+  Melbourne: ['Melbourne', 'Warehouse · Truganina, VIC', 'Storage and metro delivery'],
+  Australia: ['Australia-wide', 'Metro, interstate and linehaul', 'NSW, VIC, QLD, SA, WA, NT'],
 };
-// A ring's bounding cap, so rings on the far side are skipped without projecting them.
-const capOf = xyz => {
-  let x = 0, y = 0, z = 0; for (let i = 0; i < xyz.length; i += 3) { x += xyz[i]; y += xyz[i + 1]; z += xyz[i + 2]; }
-  const n = Math.hypot(x, y, z) || 1; x /= n; y /= n; z /= n;
-  let min = 1; for (let i = 0; i < xyz.length; i += 3) min = Math.min(min, x * xyz[i] + y * xyz[i + 1] + z * xyz[i + 2]);
-  return { c: [x, y, z], r: Math.acos(Math.max(-1, min)) };
-};
-let globeData = null;
-const loadGlobe = () => globeData ??= fetch('/option2/media/globe.json').then(r => r.json()).then(d => {
-  const polys = list => list.map(p => { const rings = p.map(toXYZ); return { rings, cap: capOf(rings[0]) }; });
-  const grat = [];
-  for (let lon = -180; lon < 180; lon += 15) { const f = []; for (let lat = -80; lat <= 80; lat += 2) f.push(lon, lat); grat.push(toXYZ(f)); }
-  for (let lat = -75; lat <= 75; lat += 15) { const f = []; for (let lon = -180; lon <= 180; lon += 2) f.push(lon, lat); grat.push(toXYZ(f)); }
-  return { land: polys(d.land), au: polys(d.au), borders: d.borders.map(toXYZ), grat };
-});
-
-function NetworkGlobe({ focus, lit, routeLit }) {
-  const canvas = useRef(null);
-  const state = useRef({});
-  Object.assign(state.current, { focus, lit, routeLit });
-  useEffect(() => {
-    const cv = canvas.current;
-    if (!cv) return;
-    const ctx = cv.getContext('2d');
-    const still = reduced();
-    let data = null, raf = 0, visible = false, alive = true, w = 0, h = 0, dpr = 1;
-    const rot = [...VIEW.null], vel = [0, 0];
-    let zoom = 1, drag = null, idleAt = -1e4;
-    const t0 = performance.now();
-    const pins = Object.fromEntries(Object.entries(GEO).map(([k, [lon, lat]]) => [k, unit(lon, lat)]));
-    const routes = [['China', 'Sydney', true], ...ROUTES.map(([a, b]) => [a, b, false])].map(([a, b, sea]) => {
-      const A = pins[a], B = pins[b], d = Math.acos(A[0] * B[0] + A[1] * B[1] + A[2] * B[2]);
-      const N = sea ? 90 : 36, lift = sea ? 0.3 : 0.015 + d * 0.32;
-      const pts = Array.from({ length: N + 1 }, (_, j) => { const u = j / N, p = slerp(A, B, u), k = 1 + lift * Math.sin(Math.PI * u); return [p[0] * k, p[1] * k, p[2] * k]; });
-      return { a, b, sea, pts, N };
-    });
-
-    const resize = () => {
-      const r = cv.getBoundingClientRect();
-      const z = cv.offsetWidth ? r.width / cv.offsetWidth : 1;
-      dpr = Math.min(3, Math.max(1, (devicePixelRatio || 1) * z));
-      w = cv.offsetWidth; h = cv.offsetHeight;
-      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
-    };
-    const ro = new ResizeObserver(() => { resize(); if (!raf) draw(performance.now()); });
-    ro.observe(cv);
-    resize();
-
-    function draw(now) {
-      if (!data || !w) return;
-      const s = state.current, t = (now - t0) / 1000, key = s.focus ?? 'null';
-      const target = VIEW[key] || VIEW.null, sway = still || s.focus ? 0 : Math.sin(t / 6) * 10;
-      if (!drag) {
-        rot[0] += vel[0]; rot[1] += vel[1]; vel[0] *= 0.9; vel[1] *= 0.9;
-        if (now - idleAt > 1600) { rot[0] += (target[0] + sway - rot[0]) * 0.05; rot[1] += (target[1] - rot[1]) * 0.05; }
-      }
-      rot[1] = Math.max(-70, Math.min(70, rot[1]));
-      zoom += ((ZOOM[key] || 1) - zoom) * 0.06;
-
-      const R = Math.min(w, h) * 0.46 * zoom, cx = w / 2, cy = h / 2;
-      const cl = Math.cos(rot[0] * RAD), sl = Math.sin(rot[0] * RAD), cp = Math.cos(rot[1] * RAD), sp = Math.sin(rot[1] * RAD);
-      // Rotated: X across, Y up, D toward the viewer (D > 0 is the near side).
-      const rotate = (x, y, z) => { const x1 = x * cl - y * sl, y1 = x * sl + y * cl; return [y1, z * cp + x1 * sp, x1 * cp - z * sp]; };
-      const depth = v => { const x1 = v[0] * cl - v[1] * sl; return x1 * cp - v[2] * sp; };
-      // One ring, clipped at the horizon: the hidden part is replaced by the shorter arc of the rim.
-      const ring = xyz => {
-        const n = xyz.length / 3, P = new Array(n);
-        let start = -1;
-        for (let i = 0; i < n; i++) { P[i] = rotate(xyz[i * 3], xyz[i * 3 + 1], xyz[i * 3 + 2]); if (start < 0 && P[i][2] > 0) start = i; }
-        if (start < 0) return;
-        const rimAt = (a, b) => { const k = a[2] / (a[2] - b[2]); const X = a[0] + (b[0] - a[0]) * k, Y = a[1] + (b[1] - a[1]) * k, m = Math.hypot(X, Y) || 1; return [X / m, Y / m]; };
-        let exitAng = 0, prev = P[start];
-        ctx.moveTo(cx + R * prev[0], cy - R * prev[1]);
-        for (let s2 = 1; s2 <= n; s2++) {
-          const q = P[(start + s2) % n];
-          if (prev[2] > 0 && q[2] > 0) ctx.lineTo(cx + R * q[0], cy - R * q[1]);
-          else if (prev[2] > 0) { const [X, Y] = rimAt(prev, q); ctx.lineTo(cx + R * X, cy - R * Y); exitAng = Math.atan2(-Y, X); }
-          else if (q[2] > 0) {
-            const [X, Y] = rimAt(prev, q), a1 = Math.atan2(-Y, X);
-            let d = a1 - exitAng; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-            ctx.arc(cx, cy, R, exitAng, a1, d < 0);
-            ctx.lineTo(cx + R * q[0], cy - R * q[1]);
-          }
-          prev = q;
-        }
-        ctx.closePath();
-      };
-      const fill = (list, style) => {
-        ctx.beginPath();
-        for (const { rings, cap } of list) {
-          if (Math.acos(Math.max(-1, Math.min(1, depth(cap.c)))) - cap.r > Math.PI / 2) continue;
-          for (const xyz of rings) ring(xyz);
-        }
-        ctx.fillStyle = style; ctx.fill();
-      };
-      const lines = (list, style, width) => {
-        ctx.beginPath();
-        for (const xyz of list) {
-          let pen = false;
-          for (let i = 0; i < xyz.length; i += 3) {
-            const [X, Y, D] = rotate(xyz[i], xyz[i + 1], xyz[i + 2]);
-            if (D < 0.02) { pen = false; continue; }
-            pen ? ctx.lineTo(cx + R * X, cy - R * Y) : ctx.moveTo(cx + R * X, cy - R * Y); pen = true;
-          }
-        }
-        ctx.strokeStyle = style; ctx.lineWidth = width; ctx.stroke();
-      };
-      const disc = r => { ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); };
-
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-      // Contact shadow and a faint red halo.
-      ctx.save(); ctx.translate(cx, cy + R * 1.03); ctx.scale(1, 0.12);
-      let g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.85); g.addColorStop(0, '#23202226'); g.addColorStop(1, '#23202200');
-      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, R * 0.85, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      g = ctx.createRadialGradient(cx, cy, R * 0.98, cx, cy, R * 1.1); g.addColorStop(0, '#e31b241f'); g.addColorStop(1, '#e31b2400');
-      ctx.fillStyle = g; disc(R * 1.1); ctx.fill();
-      // Ocean, lit from the upper left.
-      g = ctx.createRadialGradient(cx - R * 0.4, cy - R * 0.45, R * 0.05, cx - R * 0.1, cy - R * 0.1, R * 1.15);
-      g.addColorStop(0, '#ffffff'); g.addColorStop(0.5, '#f6f2f1'); g.addColorStop(1, '#e4dbd9');
-      ctx.fillStyle = g; disc(R); ctx.fill();
-      lines(data.grat, '#23202212', 0.7);
-      fill(data.land, '#c9bcb8');
-      lines(data.borders, '#faf6f5cc', 0.6);
-      const auOn = s.lit('Sydney') || s.lit('Melbourne') || s.focus === 'Australia';
-      fill(data.au, auOn ? '#dcb1ad' : '#cdbcb9');
-      // Shade toward the rim so the ball reads round, then a crisp rim line.
-      g = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.4, R * 0.15, cx, cy, R);
-      g.addColorStop(0, '#ffffff38'); g.addColorStop(0.55, '#ffffff00'); g.addColorStop(0.85, '#2320220f'); g.addColorStop(1, '#23202238');
-      ctx.fillStyle = g; disc(R); ctx.fill();
-      ctx.strokeStyle = '#23202224'; ctx.lineWidth = 1; ctx.stroke();
-
-      // Routes lifted off the surface; a comet with a white head runs along each.
-      const scr = ([x, y, z]) => { const [X, Y, D] = rotate(x, y, z); const vis = D > 0 || X * X + Y * Y > 1; return [cx + R * X, cy - R * Y, vis]; };
-      ctx.lineCap = 'round';
-      routes.forEach(({ a, b, sea, pts, N }, i) => {
-        const on = sea ? s.lit('China') || s.lit('Sydney') : s.routeLit([a, b]);
-        const P = pts.map(scr);
-        ctx.globalAlpha = on ? 1 : 0.15;
-        const path = (from, to) => { ctx.beginPath(); let pen = false; for (let j = from; j <= to; j++) { const [x, y, v] = P[j]; if (!v) { pen = false; continue; } pen ? ctx.lineTo(x, y) : ctx.moveTo(x, y); pen = true; } };
-        if (sea) ctx.setLineDash([3, 5]);
-        path(0, N); ctx.strokeStyle = sea ? '#e31b24cc' : '#e31b2470'; ctx.lineWidth = sea ? 1.6 : 1.5; ctx.stroke();
-        ctx.setLineDash([]);
-        if (on && !still) {
-          const phase = (t * (sea ? 0.12 : 0.24) + i * 0.37) % 1, span = N * (sea ? 0.25 : 0.4);
-          const head = phase * (N + span), tail = head - span;
-          for (let j = Math.max(1, Math.ceil(tail)); j <= Math.min(N, Math.floor(head)); j++) {
-            if (!P[j - 1][2] || !P[j][2]) continue;
-            const f = (j - tail) / span;
-            ctx.beginPath(); ctx.moveTo(P[j - 1][0], P[j - 1][1]); ctx.lineTo(P[j][0], P[j][1]);
-            ctx.strokeStyle = `rgba(227,27,36,${f.toFixed(3)})`; ctx.lineWidth = 1 + f * 2.2; ctx.stroke();
-          }
-          const hj = Math.floor(head);
-          if (hj <= N && hj >= 0 && P[hj][2]) {
-            ctx.beginPath(); ctx.arc(P[hj][0], P[hj][1], 3.4, 0, Math.PI * 2);
-            ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#e31b24'; ctx.stroke();
-          }
-        }
-        ctx.globalAlpha = 1;
-      });
-
-      // Pins and labels, fading out toward the rim.
-      Object.entries(pins).forEach(([name, v]) => {
-        const [X, Y, D] = rotate(v[0], v[1], v[2]);
-        if (D <= 0.05) return;
-        const isKey = KEY_PINS.includes(name), x = cx + R * X, y = cy - R * Y;
-        ctx.globalAlpha = Math.min(1, (D - 0.05) / 0.25) * (s.lit(name) ? 1 : 0.22);
-        if (isKey && !still) {
-          const ph = (t * 0.5 + name.length * 0.13) % 1;
-          ctx.beginPath(); ctx.arc(x, y, 6 + ph * 20, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(227,27,36,${(0.3 * (1 - ph)).toFixed(3)})`; ctx.fill();
-        }
-        ctx.beginPath(); ctx.arc(x, y, isKey ? 6 : 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = isKey ? '#e31b24' : '#232022'; ctx.fill();
-        ctx.lineWidth = isKey ? 2.5 : 1.8; ctx.strokeStyle = '#fff'; ctx.stroke();
-        if (!isKey && R < 230) { ctx.globalAlpha = 1; return; }
-        const left = LEFT_LABEL.includes(name), lx = x + (left ? -1 : 1) * (isKey ? 12 : 8);
-        ctx.font = isKey ? "700 15px 'Manrope Variable', sans-serif" : "600 12px 'Manrope Variable', sans-serif";
-        ctx.textAlign = left ? 'right' : 'left'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-        ctx.lineWidth = 4; ctx.strokeStyle = '#faf6f5e6'; ctx.strokeText(name, lx, y);
-        ctx.fillStyle = isKey ? '#232022' : '#5c5557'; ctx.fillText(name, lx, y);
-        ctx.globalAlpha = 1;
-      });
-    }
-
-    const loop = () => {
-      if (raf || !visible || !data) return;
-      const tick = now => { raf = 0; draw(now); if (visible && (!still || drag)) raf = requestAnimationFrame(tick); };
-      raf = requestAnimationFrame(tick);
-    };
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting;
-      if (!visible) { cancelAnimationFrame(raf); raf = 0; return; }
-      if (data) loop(); else loadGlobe().then(d => { if (alive) { data = d; draw(performance.now()); loop(); } });
-    }, { rootMargin: '300px 0px' });
-    io.observe(cv);
-
-    // Drag to spin, with a little inertia; it eases back to the network after a pause.
-    const down = e => { drag = { x: e.clientX, y: e.clientY, id: e.pointerId }; vel[0] = vel[1] = 0; cv.setPointerCapture?.(e.pointerId); cv.classList.add('is-dragging'); loop(); };
-    const move = e => {
-      if (!drag || e.pointerId !== drag.id) return;
-      const k = 70 / Math.max(120, Math.min(w, h) * 0.46);
-      const dx = (e.clientX - drag.x) * k, dy = (e.clientY - drag.y) * k;
-      rot[0] += dx; rot[1] -= dy; vel[0] = dx * 0.5; vel[1] = -dy * 0.5;
-      drag.x = e.clientX; drag.y = e.clientY;
-    };
-    const up = () => { if (!drag) return; drag = null; idleAt = performance.now(); cv.classList.remove('is-dragging'); };
-    cv.addEventListener('pointerdown', down); cv.addEventListener('pointermove', move);
-    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
-    // Re-render once when the focus changes under reduced motion (no loop then).
-    state.current.kick = () => { if (still && data) { rot[0] = (VIEW[state.current.focus ?? 'null'] || VIEW.null)[0]; rot[1] = (VIEW[state.current.focus ?? 'null'] || VIEW.null)[1]; zoom = ZOOM[state.current.focus ?? 'null'] || 1; draw(performance.now()); } };
-    return () => { alive = false; io.disconnect(); ro.disconnect(); cancelAnimationFrame(raf); cv.removeEventListener('pointerdown', down); cv.removeEventListener('pointermove', move); cv.removeEventListener('pointerup', up); cv.removeEventListener('pointercancel', up); };
-  }, []);
-  useEffect(() => { state.current.kick?.(); }, [focus]);
-  return <canvas ref={canvas} className="fb-globe" role="img" aria-label="Globe showing Phoenix routes across Australia and the sea lane from China. Drag to spin." />;
+let dotData;
+const loadDots = () => dotData ??= fetch('/option2/media/dotmap.json').then(r => r.json());
+// The map lies back like the "Our Global Presence" globe: the dot layer is tilted in CSS
+// (perspective from the bottom centre), and pins and callouts are placed with the same maths so
+// they stand upright on top of it.
+const TILT = 38 * Math.PI / 180, PERSP = 1.3, BLEED = 1.2;
+function DotMap({ focus, setFocus }) {
+  const [map, setMap] = useState(null);
+  useEffect(() => { let live = true; loadDots().then(d => live && setMap(d)).catch(() => {}); return () => { live = false; }; }, []);
+  if (!map) return <div className="fb-dm-wrap" aria-hidden="true" />;
+  const G = 10, top = (map.north - 72) / map.step * G;
+  const W = map.cols * G, H = 117 / map.step * G, P = PERSP * W;
+  const at = ([lon, lat]) => [(lon - map.west) / map.step * G + G / 2, (map.north - lat) / map.step * G + G / 2 - top];
+  const sTop = P / (P + H * Math.sin(TILT));
+  const Hvis = H * Math.cos(TILT) * sTop + 16, Ww = W / BLEED, off = (W - Ww) / 2;
+  const proj = ([x, y]) => { const d = H - y, s = P / (P + d * Math.sin(TILT)); return [W / 2 + (x - W / 2) * s, Hvis - d * Math.cos(TILT) * s]; };
+  const tone = flag => flag === 1 ? (focus && focus !== 'China' ? 'is-hot' : 'is-warm') : flag === 2 ? (focus === 'China' ? 'is-hot' : 'is-warm') : '';
+  const groups = { '': [], 'is-warm': [], 'is-hot': [] };
+  map.dots.forEach(([x, y, f]) => groups[tone(f)].push(`M${x * G + G / 2} ${y * G + G / 2 - top}h0`));
+  const [cx, cy] = at(GEO.China), [sx, sy] = at(GEO.Sydney), [mx, my] = at(GEO.Melbourne);
+  const pins = ['China', 'Sydney', 'Melbourne'];
+  const callout = focus && proj(at(GEO[focus]));
+  const lead = focus === 'China' ? 40 : 64;
+  const flip = callout && callout[0] > W / 2 + Ww * .12;
+  return <div className="fb-dm-wrap" style={{ aspectRatio: `${Ww} / ${Hvis}` }}>
+    <div className="fb-dm-dome" aria-hidden="true" />
+    <div className="fb-dm">
+      <svg className="fb-dm-plane" viewBox={`0 0 ${W} ${H}`} style={{ aspectRatio: `${W} / ${H}`, '--persp': `${PERSP * BLEED * 100}cqw`, '--tilt': `${TILT}rad` }} role="img" aria-label="Map of Phoenix Global Logistics locations in China and Australia">
+        <g className="fb-dm-dots">
+          {Object.entries(groups).map(([cls, d]) => <path key={cls || 'base'} className={'fb-dm-land ' + cls} d={d.join('')} />)}
+        </g>
+        <path className="fb-dm-lane" d={`M${cx} ${cy} Q${(cx + sx) / 2 + 120} ${(cy + sy) / 2 - 40} ${sx} ${sy}`} pathLength="1" />
+        <path className="fb-dm-lane is-road" d={`M${mx} ${my} Q${(mx + sx) / 2} ${(my + sy) / 2 + 20} ${sx} ${sy}`} pathLength="1" />
+      </svg>
+    </div>
+    <svg className="fb-dm-top" viewBox={`${off} 0 ${Ww} ${Hvis}`} aria-hidden="true">
+      {pins.map((name, i) => {
+        const [x, y] = proj(at(GEO[name]));
+        return <g key={name} className={'fb-dm-pin' + (focus === name || (focus === 'Australia' && name !== 'China') ? ' is-on' : '')} style={{ '--i': i }} transform={`translate(${x} ${y})`}
+          onMouseEnter={() => setFocus(name)} onMouseLeave={() => setFocus(null)} onClick={() => setFocus(f => f === name ? null : name)}>
+          <ellipse className="fb-dm-shadow" cx="0" cy="0" rx="10" ry="3.5" />
+          <circle className="fb-dm-ring" cx="0" cy="0" r="10" />
+          <g className="fb-dm-drop"><path d="M0 0C-3-9-14-15-14-27a14 14 0 0 1 28 0C14-15 3-9 0 0Z" /><circle cx="0" cy="-27" r="5.5" /></g>
+        </g>;
+      })}
+      {callout && <g className="fb-dm-callout" key={focus} transform={`translate(${callout[0]} ${callout[1] - 44})`}>
+        <line x1="0" y1="0" x2="0" y2={-lead} />
+        <circle cx="0" cy={-lead} r="3.5" />
+        <foreignObject x={flip ? -196 : 8} y={-lead - 56} width="188" height="76">
+          <div className={'fb-dm-card' + (flip ? ' is-left' : '')}>
+            <b>{PIN_INFO[focus][0]}</b><span>{PIN_INFO[focus][1]}</span><small>{PIN_INFO[focus][2]}</small>
+          </div>
+        </foreignObject>
+      </g>}
+    </svg>
+  </div>;
 }
 
 function NetworkMap() {
   const [focus, setFocus] = useState(null);
-  const lit = name => !focus || PLACES.find(p => p.id === focus).routes.includes(name);
-  const routeLit = ([a, b]) => !focus || (focus === 'Australia' ? true : [a, b].includes(focus));
   const root = useRef(null);
   const [drawn, setDrawn] = useState(false);
   useEffect(() => {
@@ -323,32 +155,99 @@ function NetworkMap() {
     return () => io.disconnect();
   }, []);
   useOffscreenPause(root);
-  return <div ref={root} className={'fb-network' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
-    <p className="fb-network-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
-    <ul className="fb-network-places" aria-label="Where we operate">
+  return <div ref={root} className={'fb-gp' + (focus ? ' has-focus' : '') + (drawn ? ' is-drawn' : '')}>
+    <div className="fb-gp-head">
+      <p className="fb-gp-live"><span className="fb-live-dot" />Live network · NSW, VIC, QLD, SA, WA, NT</p>
+      <h2 className="fb-gp-title">Connecting China with Australia.</h2>
+      <p className="fb-gp-lead">Supply-chain partners in China, and road coverage across practically all of Australia from Sydney and Melbourne.</p>
+    </div>
+    <ul className="fb-gp-places" aria-label="Where we operate">
       {PLACES.map(place => <li key={place.id}>
         <button type="button" className={focus === place.id ? 'is-on' : ''} aria-pressed={focus === place.id}
           onMouseEnter={() => setFocus(place.id)} onMouseLeave={() => setFocus(null)}
           onFocus={() => setFocus(place.id)} onBlur={() => setFocus(null)}
           onClick={() => setFocus(f => f === place.id ? null : place.id)}>
-          <b>{place.title}</b><span>{place.text}</span>
+          <b>{place.title}</b><i aria-hidden="true" /><span>{place.text}</span>
         </button>
       </li>)}
     </ul>
-    <div className="fb-network-frame"><NetworkGlobe focus={focus} lit={lit} routeLit={routeLit} /></div>
+    <div className="fb-gp-globe"><DotMap focus={focus} setFocus={setFocus} /></div>
   </div>;
 }
 
-// Home / Why: Amazon partner card in the empty left column, moved down from the hero.
+// Home / Why: About (owner, round 7): the "we move freight" layout. Left, the intro copy up
+// top and a small photo plus a two-tone headline at the foot; right, the figures stacked on
+// hairlines. Everything animates in once: lines draw, the headline rises, the numbers count up.
+const ABOUT_STATS = [[1200, ',', '+', 'Containers handled a year'], [960, '', 'k+', 'Boxes processed a year'], [20, '', '+', 'Years in cargo and logistics']];
+const ABOUT_PHOTOS = {
+  home: ['rollers-03', 'Phoenix curtainsider truck on the motorway at golden hour'],
+  why: ['night-09', 'Phoenix truck on a Sydney motorway at night'],
+};
+const fmt = (n, sep) => sep ? Math.round(n).toLocaleString('en-AU') : String(Math.round(n));
+function CountUp({ to, sep, suffix, run, delay = 0 }) {
+  const [v, setV] = useState(to);
+  useEffect(() => {
+    if (!run) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { setV(to); return; }
+    let raf, start;
+    const tick = t => {
+      start ??= t + delay;
+      const p = Math.min(1, Math.max(0, (t - start) / 1600));
+      setV(to * (1 - Math.pow(1 - p, 4)));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    setV(0); raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [run, to, delay]);
+  return <>{fmt(v, sep)}{suffix}</>;
+}
+function HomeAbout({ page }) {
+  const [photo, alt] = ABOUT_PHOTOS[page] || ABOUT_PHOTOS.home;
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !('IntersectionObserver' in window)) { setInView(true); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect(); } }, { threshold: .2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={ref} className={'fb-ha' + (inView ? ' is-in' : '')}>
+    <div className="fb-ha-left">
+      <div className="fb-ha-intro">
+        <h2 className="fb-ha-title">About Phoenix</h2>
+        <p>Experience carried forward into a new chapter. Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience. Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
+        <a className="fb-obtn" href="/about"><span className="btn-roll"><span>About us</span><span aria-hidden="true">About us</span></span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg></a>
+      </div>
+      <div className="fb-ha-foot">
+        <figure className="fb-ha-photo"><img src={card(photo)} alt={alt} loading="lazy" /></figure>
+      </div>
+    </div>
+    <div className="fb-ha-right">
+      <p className="fb-ha-eyebrow">Phoenix in numbers</p>
+      <dl className="fb-ha-stats">
+        {ABOUT_STATS.map(([to, sep, suffix, label], i) => <div key={label}>
+          <dt>{label}</dt>
+          <dd><CountUp to={to} sep={sep} suffix={suffix} run={inView} delay={i * 160} /></dd>
+        </div>)}
+      </dl>
+      <div className="fb-ha-amazon">
+        <span className="fb-partner-logo"><AmazonMark size={32} /></span>
+        <p><b>Amazon Partner Carrier</b><span>Approved for small-parcel deliveries into Amazon fulfilment centres across NSW, QLD and VIC.</span></p>
+      </div>
+    </div>
+  </div>;
+}
+
 function PartnerPanel() {
   return <div className="fb-partner">
     <div className="fb-partner-sticky">
       <figure className="fb-partner-hero">
-        <img src={card('rollers-03')} alt="Phoenix curtainsider truck on the motorway at golden hour" loading="lazy" />
+        <img src={card('night-09')} alt="Phoenix truck on a Sydney motorway at night" loading="lazy" />
         <figcaption>Linehaul fleet · Sydney ⇄ Melbourne</figcaption>
       </figure>
       <div className="fb-partner-row">
-        <img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" />
+        <img src={card('warehouse-40')} alt="Forklift loading a Phoenix curtainsider at the depot" loading="lazy" />
         <div className="fb-partner-card">
           <span className="fb-partner-logo"><AmazonMark size={40} /></span>
           <div>
@@ -478,7 +377,7 @@ function LoadPallet({ id, tall = true }) {
     <Pallet x={1} y={182} w={w} d={7} />
     {Array.from({ length: rows }, (_, r) => [0, 1, 2].map(c => <Box key={id + r + c} x={2 + c * 49.5} y={top + r * rh} w={48.5} h={rh - .5} d={7} tone={r * 3 + c + (tall ? 0 : 2)} tape={(r + c) % 3 === 0 ? 'red' : 'clear'} label={r === rows - 1 && c !== 1} marks={r === 0 && c === 2} />))}
     <Film x={1} y={top - 1} w={w + 1} h={183 - top} d={7} />
-    <g transform={`translate(${w - 52} ${top + 12})`}><rect width="44" height="15" fill="#e31b24" /><rect width="44" height=".6" fill="#ff8a8f" /><text x="22" y="10.4" textAnchor="middle" fontSize="7.6" fontWeight="700" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".5">PHOENIX</text></g>
+    <g transform={`translate(${w - 52} ${top + 12})`}><rect width="44" height="15" fill="#e31b24" /><rect width="44" height=".6" fill="#ff8a8f" /><text x="22" y="10.4" textAnchor="middle" fontSize="7.6" fontWeight="600" fill="#fff" fontFamily="Geist Variable, sans-serif" letterSpacing=".5">PHOENIX</text></g>
   </svg>;
 }
 function LoadStack() {
@@ -538,8 +437,8 @@ function DgParcel() {
       <rect x="-12.6" y="-12.6" width="25.2" height="25.2" fill="none" stroke="#1d1a1b" strokeWidth=".35" />
       <g transform="rotate(-45)" fill="#1d1a1b">{[-7.5, -5, -2.5, 0, 2.5, 5, 7.5].map(o => <rect key={o} x={o - .7} y={-13 + Math.abs(o) * .95} width="1.4" height={11 - Math.abs(o) * .95} />)}</g>
     </g>
-    <text x={w / 2} y={dy + h * .46 + 14} textAnchor="middle" fontSize="7.5" fontWeight="700" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
-    <text x={w / 2} y={dy + h - 3} textAnchor="middle" fontSize="2.8" fontWeight="700" letterSpacing=".2" fill="#3d2610" fillOpacity=".8" fontFamily="Geist Variable, sans-serif">UN3480 · LITHIUM ION BATTERIES</text>
+    <text x={w / 2} y={dy + h * .46 + 14} textAnchor="middle" fontSize="7.5" fontWeight="600" fill="#1d1a1b" fontFamily="Geist Variable, sans-serif">9</text>
+    <text x={w / 2} y={dy + h - 3} textAnchor="middle" fontSize="2.8" fontWeight="600" letterSpacing=".2" fill="#3d2610" fillOpacity=".8" fontFamily="Geist Variable, sans-serif">UN3480 · LITHIUM ION BATTERIES</text>
   </svg>;
 }
 function WrappedPallet() {
@@ -573,8 +472,240 @@ function Conveyor() {
   </div>;
 }
 
+// About (round 9): the footer conveyor, moved here and made more realistic. A belt conveyor in
+// brushed aluminium with a rubber belt, legs and soft floor shadow; cartons, a wrapped pallet and
+// a DG parcel ride across with contact shadows. One SVG, so it scales cleanly on mobile.
+const BELT = { F: 300, Dx: 60, Dy: 43, rail: 30, floor: 424, W: 1440 };
+const RUN = 1700;
+function SceneItem({ kind, x }) {
+  const lift = `translate(${x + BELT.Dx * .32} ${BELT.F - BELT.Dy * .32})`;
+  const shadow = (w) => <ellipse cx={w / 2 + 10} cy="1" rx={w * .56} ry="6" fill="#000" opacity=".42" filter="url(#bs-soft)" />;
+  if (kind === 'pallet') return <g transform={lift}>{shadow(178)}
+    <Pallet x={0} y={-15} w={170} d={14} />
+    {[0, 1].map(r => [0, 1, 2].map(c => <Box key={r + '' + c} x={1 + c * 56.5} y={-15 - (r + 1) * 50} w={55.5} h={49.6} d={14} tone={r * 3 + c} tape={(r + c) % 2 ? 'clear' : 'red'} label={r === 0 && c === 0} />))}
+    <Film x={0} y={-116} w={170} h={101} d={14} />
+  </g>;
+  if (kind === 'stack') return <g transform={lift}>{shadow(118)}
+    <Box x={0} y={-82} w={112} h={82} d={14} tone={1} tape="clear" label marks />
+    <Box x={14} y={-144} w={86} h={62} d={14} tone={3} tape="red" />
+  </g>;
+  if (kind === 'tall') return <g transform={lift}>{shadow(90)}<Box x={0} y={-132} w={86} h={132} d={14} tone={4} tape="clear" label marks fragile /></g>;
+  if (kind === 'dg') return <g transform={lift}>{shadow(104)}<Box x={0} y={-92} w={104} h={92} d={14} tone={2} tape="clear" dg label /></g>;
+  return <g transform={lift}>{shadow(124)}<Box x={0} y={-100} w={124} h={100} d={14} tone={0} tape="red" label marks /></g>;
+}
+function BeltScene() {
+  const root = useRef(null);
+  useOffscreenPause(root);
+  const { F, Dx, Dy, rail, floor, W } = BELT;
+  const items = [['box', 40], ['pallet', 330], ['tall', 680], ['stack', 930], ['dg', 1210], ['box', 1450]];
+  const legs = [150, 640, 1130];
+  const belt = `M0 ${F}L${Dx} ${F - Dy}H${W + Dx}L${W} ${F}Z`;
+  return <div ref={root} className="fb-scene" aria-hidden="true">
+    <FreightDefs />
+    <svg viewBox={`0 0 ${W} 445`} className="fb-scene-svg">
+      <defs>
+        <filter id="bs-soft" x="-30%" y="-200%" width="160%" height="500%"><feGaussianBlur stdDeviation="5" /></filter>
+        <filter id="bs-floor" x="-10%" y="-300%" width="120%" height="700%"><feGaussianBlur stdDeviation="10" /></filter>
+        <linearGradient id="bs-belt" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#2e2a2b" /><stop offset="1" stopColor="#1c1a1b" /></linearGradient>
+        <linearGradient id="bs-rail" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f4f2f1" /><stop offset=".18" stopColor="#d9d5d3" /><stop offset=".55" stopColor="#bdb7b5" /><stop offset=".8" stopColor="#a39d9b" /><stop offset="1" stopColor="#7d7775" /></linearGradient>
+        <linearGradient id="bs-leg" x1="0" x2="1"><stop offset="0" stopColor="#8d8785" /><stop offset=".35" stopColor="#e3dfdd" /><stop offset=".6" stopColor="#bdb7b5" /><stop offset="1" stopColor="#77716f" /></linearGradient>
+        <linearGradient id="bs-light" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".1" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+        <clipPath id="bs-belt-clip"><path d={belt} /></clipPath>
+      </defs>
+      <ellipse cx={W / 2} cy={floor + 4} rx={W * .52} ry="10" fill="#3a2a2c" opacity=".28" filter="url(#bs-floor)" />
+      {legs.map(x => <g key={'b' + x}><rect x={x + Dx - 6} y={F - Dy} width="10" height={floor - F + Dy - 10} fill="url(#bs-leg)" opacity=".7" /></g>)}
+      <rect x={Dx} y={F - Dy - 7} width={W} height="8" fill="url(#bs-rail)" />
+      <path d={belt} fill="url(#bs-belt)" />
+      <g clipPath="url(#bs-belt-clip)"><g className="fb-scene-cleats">
+        {Array.from({ length: Math.ceil((W + Dx) / 26) + 2 }, (_, i) => <path key={i} d={`M${i * 26 - 26} ${F}l${Dx} ${-Dy}`} stroke="#fff" strokeOpacity=".05" strokeWidth="1.2" />)}
+      </g></g>
+      <path d={belt} fill="url(#bs-light)" />
+      <path d={`M${Dx} ${F - Dy}H${W + Dx}`} stroke="#000" strokeOpacity=".35" />
+      <g className="fb-scene-run">
+        {[0, RUN].map(o => <g key={o} transform={`translate(${o} 0)`}>{items.map(([k, x], i) => <SceneItem key={i} kind={k} x={x} />)}</g>)}
+      </g>
+      <rect x="0" y={F} width={W} height={rail} fill="url(#bs-rail)" />
+      <rect x="0" y={F + 11} width={W} height="5" fill="#000" opacity=".16" />
+      <rect x="0" y={F + 16} width={W} height="1" fill="#fff" opacity=".5" />
+      <rect x="0" y={F} width={W} height="1.2" fill="#fff" opacity=".9" />
+      {Array.from({ length: 12 }, (_, i) => <circle key={i} cx={60 + i * 120} cy={F + 23} r="2.6" fill="#6f6967" stroke="#f1eeed" strokeWidth=".8" />)}
+      {legs.map(x => <g key={x}>
+        <rect x={x - 9} y={F + rail} width="18" height={floor - F - rail} fill="url(#bs-leg)" />
+        <rect x={x - 9} y={F + rail} width="18" height="6" fill="#000" opacity=".18" />
+        <rect x={x - 16} y={floor - 6} width="32" height="7" rx="1.5" fill="#4a4544" />
+      </g>)}
+    </svg>
+  </div>;
+}
+
+// Home (round 9): industries as five equal cards. White by default, black with a red icon on hover.
+const SECTORS = [
+  ['E-Commerce & Fulfilment', 'Inbound, pick and pack, and Amazon FBA prep for online sellers.', ShoppingCart],
+  ['Retail & Wholesale', 'Store replenishment and pallet distribution, metro and interstate.', Storefront],
+  ['FMCG & Consumer Goods', 'Fast-moving stock received, stored and delivered on schedule.', Basket],
+  ['Solar & Renewable Energy', 'Panels, inverters and battery freight, including dangerous goods.', SolarPanel],
+  ['Industrial & Manufacturing', 'Heavy pallets, parts and raw materials moved by road.', Factory],
+];
+function Sectors() {
+  const root = useRef(null);
+  useEffect(() => {
+    const el = root.current;
+    if (!el) return;
+    if (reduced()) { el.classList.add('is-in'); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add('is-in'); io.disconnect(); } }, { threshold: .2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return <ul ref={root} className="fb-sectors">
+    {SECTORS.map(([title, text, Icon], i) => <li key={title} className="fb-sector" style={{ '--i': i }}>
+      <div className="fb-sector-top"><span className="fb-sector-no">0{i + 1}</span><span className="fb-sector-icon"><Icon size={26} weight="light" /></span></div>
+      <div className="fb-sector-body"><h3>{title}</h3><i aria-hidden="true" /><p>{text}</p></div>
+    </li>)}
+  </ul>;
+}
+
+// Footer (round 9): quick navigation back, short and simple.
+const FOOT_NAV = [
+  ['Services', [['Amazon FBA', '/services/amazon-fba-logistics'], ['Warehousing & 3PL', '/services/warehousing-and-3pl'], ['Road freight', '/services/road-freight-and-transport'], ['International freight', '/services/international-freight'], ['Customs clearance', '/services/customs-clearance'], ['Dangerous goods', '/services/dangerous-goods']]],
+  ['Company', [['Why Phoenix', '/why-phoenix'], ['About us', '/about'], ['Contact', '/contact'], ['Track a shipment', '/tracking'], ['Get a quote', '/contact']]],
+];
+function FooterNav() {
+  return <nav className="fb-fnav" aria-label="Footer">
+    {FOOT_NAV.map(([head, links]) => <div key={head}>
+      <p>{head}</p>
+      <ul>{links.map(([label, href]) => <li key={label}><a href={href}><span>{label}</span><ArrowUpRight size={14} weight="bold" aria-hidden="true" /></a></li>)}</ul>
+    </div>)}
+  </nav>;
+}
+
+// Services (round 10): How we work as a pinned story, after the client's reference. On desktop the
+// stage holds still while the page scrolls: the photo on the left wipes to the next step, a red
+// progress bar fills, and the copy on the right slides through the three steps. Mobile stacks.
+const findNode = (n, id) => n.id === id ? n : (n.children || []).reduce((hit, c) => hit || findNode(c, id), null);
+function HowWeWork({ n }) {
+  const root = useRef(null);
+  const stage = useRef(null);
+  const [step, setStep] = useState(0);
+  const [prog, setProg] = useState(0);
+  const t = id => findNode(n, id)?.characters || '';
+  const steps = [['61:542', '209:465', '209:466'], ['209:474', '209:476', '209:477'], ['209:480', '209:482', '209:483']]
+    .map(([img, title, text]) => ({ img: findNode(n, img)?.photoUrl, title: t(title), text: t(text) }));
+  useEffect(() => {
+    const sec = root.current, st = stage.current;
+    if (!sec || !st) return;
+    const desktop = matchMedia('(min-width: 1000px)');
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      if (!desktop.matches) { st.style.transform = ''; return; }
+      const track = st.parentElement, r = track.getBoundingClientRect(), z = r.width / track.offsetWidth || 1;
+      const stageH = st.offsetHeight * z, run = r.height - stageH;
+      const top = Math.min(Math.max(-r.top + Math.max(0, (innerHeight - stageH) / 2), 0), run);
+      st.style.transform = `translateY(${top / z}px)`;
+      const p = run > 0 ? top / run : 0;
+      setProg(p);
+      setStep(Math.min(steps.length - 1, Math.floor(p * steps.length * .999)));
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    addEventListener('scroll', on, { passive: true });
+    addEventListener('resize', on);
+    desktop.addEventListener('change', on);
+    return () => { removeEventListener('scroll', on); removeEventListener('resize', on); desktop.removeEventListener('change', on); cancelAnimationFrame(raf); };
+  }, []);
+  return <div ref={root} className="fb-hww">
+    <header className="fb-hww-head"><h2>{t('61:267')}</h2><p>{t('61:268')}</p></header>
+    <div className="fb-hww-track">
+      <div ref={stage} className="fb-hww-stage">
+        <figure className="fb-hww-media">
+          {steps.map((s, i) => <img key={i} src={s.img} alt="" loading="lazy" className={i < step ? 'is-past' : i === step ? 'is-on' : ''} />)}
+          <figcaption><span className="fb-hww-count">0{step + 1}<i> / 0{steps.length}</i></span>
+            <span className="fb-hww-bar">{steps.map((_, i) => <i key={i} style={{ '--f': Math.min(1, Math.max(0, prog * steps.length - i)) }} />)}</span>
+          </figcaption>
+        </figure>
+        <ol className="fb-hww-copy">
+          {steps.map((s, i) => <li key={i} className={i < step ? 'is-past' : i === step ? 'is-on' : ''}>
+            <span className="fb-hww-kicker">Step 0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p>
+          </li>)}
+        </ol>
+      </div>
+    </div>
+    <ol className="fb-hww-list">
+      {steps.map((s, i) => <li key={i} className="fb-reveal">
+        <img src={s.img} alt="" loading="lazy" /><span className="fb-hww-kicker">Step 0{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p>
+      </li>)}
+    </ol>
+  </div>;
+}
+
 // Contact: a shorter quote form (client: name, company and country, phone, services, freight type, notes).
 const freightTypes = ['Pallets', 'Cartons / loose cargo', 'Full container (20ft or 40ft)', 'Amazon FBA shipment', 'Dangerous goods', 'Other'];
+// Contact (round 7): select in the shadcn/ui style. A trigger with a chevron, a floating list with
+// a check on the chosen item, full keyboard support (arrows, Home/End, Enter, Escape, type to
+// jump). A hidden native select carries the value so the form, FormData and required checks work.
+function UiSelect({ label, name, placeholder, options }) {
+  const [value, setValue] = useState('');
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(0);
+  const root = useRef(null), trigger = useRef(null), native = useRef(null);
+  const id = `ui-${name}`;
+  useEffect(() => {
+    if (!open) return;
+    const away = e => { if (!root.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener('pointerdown', away);
+    return () => document.removeEventListener('pointerdown', away);
+  }, [open]);
+  useEffect(() => {
+    const el = native.current;
+    if (!el) return;
+    const invalid = e => { e.preventDefault(); root.current?.classList.add('is-invalid'); trigger.current?.focus(); };
+    el.addEventListener('invalid', invalid);
+    return () => el.removeEventListener('invalid', invalid);
+  }, []);
+  const choose = i => {
+    const v = options[i][0];
+    setValue(v); setOpen(false); root.current?.classList.remove('is-invalid');
+    if (native.current) { native.current.value = v; native.current.dispatchEvent(new Event('change', { bubbles: true })); }
+    trigger.current?.focus();
+  };
+  const show = () => { setActive(Math.max(0, options.findIndex(o => o[0] === value))); setOpen(true); };
+  const onKey = e => {
+    if (!open) {
+      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(e.key)) { e.preventDefault(); show(); }
+      return;
+    }
+    if (e.key === 'Escape') { e.preventDefault(); setOpen(false); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); setActive(a => Math.min(options.length - 1, a + 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(a => Math.max(0, a - 1)); }
+    else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
+    else if (e.key === 'End') { e.preventDefault(); setActive(options.length - 1); }
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(active); }
+    else if (e.key === 'Tab') setOpen(false);
+    else if (e.key.length === 1) { const i = options.findIndex(o => o[1].toLowerCase().startsWith(e.key.toLowerCase())); if (i >= 0) setActive(i); }
+  };
+  const current = options.find(o => o[0] === value);
+  return <div className="ui-field" ref={root}>
+    <span className="ui-label" id={`${id}-label`}>{label}</span>
+    <button ref={trigger} type="button" className="ui-select" role="combobox" aria-haspopup="listbox" aria-expanded={open} aria-controls={`${id}-list`}
+      aria-labelledby={`${id}-label`} aria-activedescendant={open ? `${id}-${active}` : undefined} data-placeholder={current ? undefined : ''}
+      onClick={() => open ? setOpen(false) : show()} onKeyDown={onKey}>
+      <span>{current ? current[1] : placeholder}</span>
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m5 6 3-3 3 3M5 10l3 3 3-3" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </button>
+    {open && <ul className="ui-select-list" role="listbox" id={`${id}-list`} aria-labelledby={`${id}-label`}>
+      {options.map(([v, text], i) => <li key={v} id={`${id}-${i}`} role="option" aria-selected={v === value} className={i === active ? 'is-active' : ''}
+        onPointerEnter={() => setActive(i)} onPointerDown={e => e.preventDefault()} onClick={() => choose(i)}>
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        {text}
+      </li>)}
+    </ul>}
+    <select ref={native} name={name} required defaultValue="" className="ui-native" tabIndex={-1} aria-hidden="true">
+      <option value="" disabled>{placeholder}</option>
+      {options.map(([v, text]) => <option key={v} value={v}>{text}</option>)}
+    </select>
+  </div>;
+}
+
 function QuoteForm() {
   return <div className="fb-quote">
     <label><span>Your name*</span><input name="name" required autoComplete="name" placeholder="Full name" /></label>
@@ -582,8 +713,8 @@ function QuoteForm() {
     <label><span>Country*</span><input name="country" required autoComplete="country-name" placeholder="E.g. Australia" /></label>
     <label><span>Phone*</span><input name="phone" type="tel" required autoComplete="tel" placeholder="+61" /></label>
     <label className="fb-wide"><span>Email*</span><input name="email" type="email" required autoComplete="email" placeholder="So we can send your quote" /></label>
-    <label><span>Service*</span><select name="service" required defaultValue=""><option value="" disabled>Choose a service</option>{services.map(s => <option key={s.slug} value={s.slug}>{s.title}</option>)}</select></label>
-    <label><span>Freight type*</span><select name="freight" required defaultValue=""><option value="" disabled>Choose a freight type</option>{freightTypes.map(f => <option key={f}>{f}</option>)}</select></label>
+    <UiSelect label="Service*" name="service" placeholder="Choose a service" options={services.map(s => [s.slug, s.title])} />
+    <UiSelect label="Freight type*" name="freight" placeholder="Choose a freight type" options={freightTypes.map(f => [f, f])} />
     <label className="fb-wide"><span>Special requests</span><textarea name="notes" rows="5" placeholder="Pick-up and delivery locations, timing, dimensions or anything we should know." /></label>
   </div>;
 }
@@ -597,7 +728,7 @@ function AboutBento() {
       <h2>About Phoenix</h2>
       <p>Experience carried forward into a new chapter. Phoenix Global Logistics evolved from Phoenix International Cargo in 2021, building on more than 20 years of cargo and logistics experience.</p>
       <p>Today, our Australian family-owned business links international arrivals with warehouse processing, national road freight and final delivery.</p>
-      <a className="fb-btn" href="/about">About us <span aria-hidden="true">→</span></a>
+      <a className="fb-obtn" href="/about">About us <span aria-hidden="true">→</span></a>
     </div>
     <figure className="fb-about-hero"><img src={card('warehouse-58')} alt="Phoenix Global Logistics signage on the Wetherill Park depot" loading="lazy" /><figcaption>Wetherill Park, Sydney · Head depot</figcaption></figure>
     <div className="fb-about-amazon">
@@ -704,15 +835,46 @@ function ServicesPin() {
   return <span ref={ref} className="fb-services-pin" hidden />;
 }
 
+// Why Phoenix: "Contact operations directly" as a row of platform cards (round 6 reference):
+// quiet grey tiles with the icon top-left and the copy bottom-left; on hover the Phoenix red
+// gradient wipes up, the copy turns white and the card lifts a touch.
+const OPS_ICONS = {
+  mail: <path d="M4 7.5 12 13l8-5.5M5 5h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />,
+  phone: <path d="M8.6 4.5 6.3 4.2a1.5 1.5 0 0 0-1.6 1.2c-.5 3 .6 6.4 3.5 9.4 3 2.9 6.4 4 9.4 3.5a1.5 1.5 0 0 0 1.2-1.6l-.3-2.3a1.5 1.5 0 0 0-1.1-1.3l-2.4-.6a1.5 1.5 0 0 0-1.5.5l-.8 1a10 10 0 0 1-4.4-4.4l1-.8a1.5 1.5 0 0 0 .5-1.5L9.9 5.6a1.5 1.5 0 0 0-1.3-1.1Z" />,
+  chat: <path d="M15.5 9.2c-.4-2.8-3.1-4.7-6.3-4.7-3.5 0-6.4 2.4-6.4 5.3 0 1.6.9 3 2.2 4l-.5 2 2.4-1.2c.7.2 1.5.3 2.3.3M21.2 14.6c0-2.4-2.4-4.4-5.3-4.4s-5.3 2-5.3 4.4 2.4 4.4 5.3 4.4c.6 0 1.2-.1 1.8-.2l2 1-.4-1.7c1.1-.8 1.9-2.1 1.9-3.5Z" />,
+  pin: <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />,
+};
+const OPS_CARDS = [
+  { icon: 'mail', title: 'Email Operations', text: transportEmail, href: `mailto:${transportEmail}` },
+  { icon: 'phone', title: 'Request a Callback', text: 'Send your phone number and shipment reference.', href: '/contact' },
+  { icon: 'pin', title: 'Visit a Depot', text: 'Wetherill Park, NSW and Truganina, VIC.', href: '/contact' },
+  { icon: 'chat', title: 'Scan to Connect', text: 'WeChat for local and cross-border enquiries.', qr: '/phoenix-prototype/a485409f0d78530d44d5ad3b329e6b01b6089637.png' },
+];
+function OpsCards() {
+  return <div className="fb-ops">
+    {OPS_CARDS.map(c => {
+      const Tag = c.href ? 'a' : 'div';
+      return <Tag key={c.title} className="fb-ops-card" href={c.href} tabIndex={c.href ? undefined : 0}>
+        <span className="fb-ops-top">
+          <span className="fb-ops-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{OPS_ICONS[c.icon]}</svg></span>
+          {c.qr ? <img className="fb-ops-qr" src={c.qr} alt="Phoenix Global Logistics WeChat QR code" width="112" height="112" loading="lazy" />
+            : <svg className="fb-ops-arrow" viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 14 14 6M7.5 6H14v6.5" /></svg>}
+        </span>
+        <span className="fb-ops-copy"><b>{c.title}</b><span>{c.text}</span></span>
+      </Tag>;
+    })}
+  </div>;
+}
+
 const parts = {
-  network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
-  'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm,
+  'home-about': HomeAbout, 'ops-cards': OpsCards, network: NetworkMap, 'partner-panel': PartnerPanel, 'stage-route': StageRoute, 'truck-load': TruckLoad,
+  'values-photo': ValuesPhoto, 'include-pulse': IncludePulse, conveyor: Conveyor, 'quote-form': QuoteForm, 'belt-scene': BeltScene, 'how-we-work': HowWeWork, sectors: Sectors, 'footer-nav': FooterNav,
   'about-bento': AboutBento, values: Values, 'related-hover': RelatedHover, 'services-pin': ServicesPin,
 };
 
-export function FeedbackPart({ name }) {
+export function FeedbackPart({ name, page, n }) {
   const Part = parts[name];
-  return Part ? <Part /> : null;
+  return Part ? <Part page={page} n={n} /> : null;
 }
 
 export { company };
